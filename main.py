@@ -129,10 +129,11 @@ def main():
     if fra == 100:
         bpy.context.scene.frame_current = 120 
         for cube in cubeSet:
-            cube.location[2] += 10
+            cube.location[0] -= 10
+            cube.keyframe_insert('location', frame=120)
             cube.scale[2] *= 0.3
             cube.keyframe_insert('scale', frame=120)
-            cube.keyframe_insert('location', frame=120)
+            
         
      
     
