@@ -1,0 +1,49 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf460
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww23200\viewh14580\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs40 \cf0 as you all know in the car industry when they come up with a new design, while starting from scratch, they have little or no information about the structure.\
+\
+As a starting point, they take into account several criterias, such as crashworthiness, ability of structure to overcome loads, etc.\
+\
+They usually start designing the frontal structure of the car, considering the crashworthiness analysis. \
+\
+To do so they come up with a collection of deformable rods, which are assembled just like a puzzle.\
+Later on, they check whether their proposed design is meeting acceleration and energy absorption requirements.\
+#\
+The structure that is deforming in a crash can follow several different sequences or as they are called order of deformation (OoD), where each order of deformation can lead to different results.\
+\
+In a front crash, a car crashes into a wall. In early phase analysis the car is modeled with a mass for the rear part and a collection of rods for the front part. here in between we have the firewall which simply separates the passengers from what\'92s happening in the front.\
+what we need to investigate is how the frontal crash box will deform. will it deform in a single way or are there multiple possibilities? this is what is known as OoD problem.\
+\
+A general OoD problem looks like this(pic) .\
+\
+As you can see this puzzle of rods is made of members like this. each member has 2 nodes and is modeled with a deformable and an undeformable part.\
+linking in serial connection several members makes a loadpath, which is the structure along which the load would be absorbed before reaching the firewall.\
+we also have to consider that there might be gaps and masses in between.\
+the overall crashbox is made of several load paths which are also linked together .\
+\
+i want to give you two example to understand what a load path is \
+\
+the simplest case is a structure with 2 members, each is made of deformable and undeformable part\
+\
+for this specific case there are only  two possibilities\
+this \
+this\
+as you can see the member can deform up to certain point.\
+\
+a more realistic example could be this in which there are two load paths in parallel (representing tyres radiatior \'85) \
+\
+the load paths are obviously going to deform at the same time, but they are independent. \
+\
+these examples are quite easy to solve by hand\
+however dealing with a real OoD problem, such as this, is way more complicated. as you can see there are are connections in between, gaps, masses. The different load paths are not independent anymore. And, since there are many more members the number of possible solutions to the problem is huge. \
+Most importantly  a OoD problem has to be solved whenever the structure is modified. Sadly engineers are still doing that using paper and a pen: here comes the importance of an automated process to solve it.\
+\
+Our software should be able to\
+first 	identify all the possible OoDs\
+second	find the one which corresponds to the given physical data, like masses and material properties \
+third	visualize the results with a animated graphics\
+}
