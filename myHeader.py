@@ -8,7 +8,7 @@ import math
 
 def leerTxt():
     print ("Herzlich willkommen")
-    file = open("C:\FAPSA18\JDPR\TUM\Second_Semester\Sofware_Lab\BMW\pipedata.txt", "r") 
+    file = open("C:\FAPSA18\JDPR\TUM\Second_Semester\Sofware_Lab\BMW\Example2.txt", "r") 
     
     numberNodes = 0
     numberTubes = 0
@@ -30,7 +30,7 @@ def leerTxt():
         else:
             tubes.append([])
             
-        for j in range(4*(i+1)-4,4*(i+1)):
+        for j in range(5*(i+1)-5,5*(i+1)):
             if i < numberNodes:
                 nodes[i].append(float(arreglo[j]))
             else:
@@ -55,12 +55,13 @@ class Node():
         
 class Tube():
     q = 0
-    def __init__(self , num  , nodeA , nodeB  , d, up):
+    def __init__(self , num  , nodeA , nodeB  , d, up, nt):
         self.num = num
         self.nodeA = nodeA
         self.nodeB = nodeB
         self.d = d
         self.up = up
+        self.nt = nt
     def get_num(self):
         return self.num
     def get_A(self):
@@ -73,6 +74,8 @@ class Tube():
         return self.q
     def get_up(self):
         return self.up
+    def get_nt(self):
+        return self.nt
     def calcLength(self):
         return math.sqrt((self.nodeA.get_x() - self.nodeB.get_x()) ** 2 + (self.nodeA.get_y() - self.nodeB.get_y()) ** 2)
     
