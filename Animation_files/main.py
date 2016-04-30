@@ -5,45 +5,44 @@ Created on 25/03/2016
 '''
 import bpy   #Module for blender
 import math
-import myHeader
-import colores
 import imp
 import random
 from bpy import context
 from mathutils import Vector
+from math import pi
 
-#Define variables for primitive shapes
-cubeobject = bpy.ops.mesh.primitive_cube_add
-sphereobject = bpy.ops.mesh.primitive_uv_sphere_add
-cylinderobject = bpy.ops.mesh.primitive_cylinder_add
+import myHeader
+import colores
+import draw_member
 
 #Define the main function
 def main():
-    delete_all()         #Clean everything
+    
     imp.reload(colores)  #Carga librerias
     imp.reload(myHeader) #Carga librerias
-    
-    
-    
-    red = makeMaterial('Red', (1,0,0), (1,1,1), 1)
-    blue = makeMaterial('BlueSemi', (0,0,1), (0.5,0.5,0), 0.5)
+    myHeader.delete_all()         #Clean everything
+
+    red = colores.makeMaterial('Red', (1,0,0), (1,1,1), 1)
+    blue = colores.makeMaterial('BlueSemi', (0,0,1), (0.5,0.5,0), 0.5)
+    gray= colores.makeMaterial('BlueSemi', (1,1,1), (2.5,1.5,1), 0.5)
     
     #Wall
-    bpy.ops.mesh.primitive_cube_add(location = (-100,0,0), rotation=(0,0,math.radians(90)))
+    bpy.ops.mesh.primitive_cube_add(location = (-500,0,0), rotation=(0,0,math.radians(90)))
     w = bpy.context.object
     w.name = "Wall"
-    bpy.ops.transform.resize(value = (100,400, 20)) #for cube
+    bpy.ops.transform.resize(value = (500,2000, 20)) #for cube
     bpy.ops.object.shade_smooth() 
-    setMaterial(bpy.context.object, blue)
+    colores.setMaterial(bpy.context.object, gray)
     
-    (nodes,tubes, numberNodes, numberTubes) = myHeader.leerTxt()
-    my_nodes = []  #Define lista de nodos
-    my_tubes = []  #Define lista de tubos
-    for i in range(numberNodes):
+    (nodes,tubes, numberOfNodes, numberOfMembers, numberOfPaths) = myHeader.leerTxt()   
+    my_nodes = []  #Define nodes list
+    my_elements = []  #Define elements list
+    
+    for i in range(numberOfNodes):
         my_nodes.append(myHeader.Node(i+1, nodes[i][0],nodes[i][1],nodes[i][2]))
-    for i in range(numberTubes):
-        my_tubes.append(myHeader.Tube(i+1,my_nodes[int(tubes[i][0])-1],my_nodes[int(tubes[i][1])-1],tubes[i][2],tubes[i][3],tubes[i][4]))
-        
+    for i in range(numberOfMembers):
+        my_elements.append(myHeader.Element( i+1 ,my_nodes[int(tubes[i][0])-1],my_nodes[int(tubes[i][1])-1],tubes[i][2],tubes[i][3],tubes[i][4],tubes[i][5]))
+
     #Define variables
     cursor = context.scene.cursor_location  #Set the cursor location
     start_pos = (0,0,0)  #Define the first position
@@ -54,188 +53,271 @@ def main():
     c = 0.0
     
     cubeSet = []
+    sphereSet = []
 
-    # Create red cube
-    setMaterial(bpy.context.object, red)
-
-    for i in range(numberTubes):
-        inx1 = my_tubes[i].get_A() - 1
-        iny1 = my_tubes[i].get_A() - 1
-        inx2 = my_tubes[i].get_B() - 1
-        iny2 = my_tubes[i].get_B() - 1
+    for i in range(numberOfMembers):
+        inx1 = my_elements[i].get_A() - 1
+        iny1 = my_elements[i].get_A() - 1
+        inx2 = my_elements[i].get_B() - 1
+        iny2 = my_elements[i].get_B() - 1
         
         xi = (my_nodes[inx1].get_x()) 
         yi = (my_nodes[iny1].get_y()) 
         xj = (my_nodes[inx2].get_x()) 
         yj = (my_nodes[iny2].get_y()) 
-        
+        #Define angles
         a1 = 0
         a2 = math.radians(90)
         a3 = 0
-        
-        x = xi
+        # Define coordinates
+        x = xi + (xj - xi) / 2
         y = yi
         z = 0.0
-        createElementCube(str(i), (x, y, z),my_tubes[i].get_d(), my_tubes[i].calcLength(),(a1, a2, a3))
+        
+        if my_elements[i].get_elementType() == 1:
+            sphereSet.append(myHeader.createElementNode(str(i), (x, y, -100),50))
+            bpy.ops.object.shade_smooth() 
+            colores.setMaterial(bpy.context.object, red)
+        else:
+            sphereSet.append(myHeader.createElementNode(str(i), (x, y, -100),0))
+            bpy.ops.object.shade_smooth() 
+            colores.setMaterial(bpy.context.object, red)
+            
+
+        myHeader.createElementCube(str(i), (x, y, z), my_elements[i].calcLength(),(a1, a2, a3))
         selectedObject = bpy.context.selected_objects
         mesh = selectedObject[0]
         cubeSet.append(selectedObject[0])
-        c += 50 #color
         
-        if my_tubes[i].get_up() == 0:
+        if my_elements[i].get_elementType() == 0:
             getactiveobject = bpy.context.selected_objects[0]
-            getactiveobject.active_material = colores.initcolors(255.0, c+ 2 ,23.0)
+            getactiveobject.active_material = colores.initcolors(0.0, 0.0, 0.0)
             bpy.ops.object.shade_smooth() 
         else:
             getactiveobject = bpy.context.selected_objects[0]
             getactiveobject.active_material = colores.initcolors(255.0, 255.0, 255.0)
             bpy.ops.object.shade_smooth() 
  
+    # create background
+    '''
+    bpy.ops.mesh.primitive_plane_add(location=(1000,0,-4))  
+    plane = bpy.context.object  
+    plane.dimensions = (3000,3000,0)
+    bpy.ops.object.shade_smooth() 
+    colores.setMaterial(bpy.context.object, blue)'''
+
+    ####################################################################
     bpy.context.scene.objects.active = bpy.data.objects["Wall"]
     bpy.data.objects['Wall'].select = True  
     bpy.ops.object.select_all(action = 'TOGGLE')
+    ####################################################################
+    #Path                
+    # Clasify our elements 
+    i = 0
+    time = 0
+    numberOfDeformableElementsPerPath = 0
+    numberOfElementsPerPath = 0
+    deformableElements = list()
+    rigidElements = list()
+    coordinatesX = list()
+    totalElements = list()
+    arraynumberOfDeformableElementsPerPath  = list()
+    arraynumberOfElementsPerPath  = list()
+    path = []
     
-        
-    # get the current scene
-    scn = bpy.context.scene
+    for i in range(numberOfMembers):
+        pathNumber = int(my_elements[i].get_startingLoadpath())
+        positionInPath = int(my_elements[i].get_numberOfElementInLoadpath())
+        numberOfElement = int(my_elements[i].get_num())
+        totalElements.append([ positionInPath, numberOfElement - 1, pathNumber])
 
-    # assign new duration value
+    for i in range(numberOfMembers):
+        pathNumber = int(my_elements[i].get_startingLoadpath())
+        positionInPath = int(my_elements[i].get_numberOfElementInLoadpath())
+        numberOfElement = int(my_elements[i].get_num())
+        
+        if positionInPath != 0:
+            deformableElements.append([ positionInPath, numberOfElement - 1, pathNumber])
+        else:
+            rigidElements.append([positionInPath, numberOfElement - 1, pathNumber ])
+    
+    myHeader.sort(deformableElements, len(deformableElements))
+    myHeader.sortPath(deformableElements, len(deformableElements)) 
+    
+    h = numberOfPaths
+    count = 0
+    for i in range(numberOfPaths):
+        for j in range(len(deformableElements)):
+            if deformableElements[j][2] == h:
+                count += 1
+                numberOfDeformableElementsPerPath = count
+            
+        arraynumberOfDeformableElementsPerPath.append([count])
+        count = 0
+        h -= 1
+        
+    h = numberOfPaths
+    count = 0
+    for i in range(numberOfPaths):
+        for j in range(len(totalElements)):
+            if totalElements[j][2] == h:
+                count += 1
+                numberOfElementsPerPath = count
+            
+        arraynumberOfElementsPerPath.append([count])
+        count = 0
+        h -= 1
+        
+    # Find the element which is the closest to the wall
+    for i in range(numberOfNodes):
+        coordinatesX.append((nodes[i][0]))
+    
+    initialStep = min(coordinatesX)   
+             
+    # Set animation start and stop
+    scn = bpy.context.scene
     scn.frame_start = 0
-    scn.frame_end = 150
-    # 004 Set keyframes for Position XYZ value at Frame 1 and 10 (to hold position) for every cubes
+    scn.frame_end = 90
+    
+    # Set keyframes for Position XYZ value at Frame 1 and 10 (to hold position) for every cubes
     for cube in cubeSet:
         cube.keyframe_insert('location', frame=1)
         cube.keyframe_insert('location', frame=10)  
-        
     
+    #Set keyframes for Position XYZ value at Frame 1 and 10 (to hold position) for every cubes
+    for sphere in sphereSet:
+        sphere.keyframe_insert('location', frame=1)
+        sphere.keyframe_insert('location', frame=10) 
+      
+    #Move all the elements at the initial position  
     for cube in cubeSet:
         bpy.context.scene.frame_current = 30
-        cube.location[0] -= 50
-        cube.keyframe_insert('location', frame=30)
+        cube.location[0] -= initialStep
+        cube.keyframe_insert('location', frame = 30)
+        fcurves = cube.animation_data.action.fcurves
+        for fcurve in fcurves:
+            for kf in fcurve.keyframe_points:
+                kf.interpolation = 'LINEAR'  
+                
+    #Move all the elements at the initial position  
+    for sphere in sphereSet:
+        bpy.context.scene.frame_current = 30
+        sphere.location[0] -= initialStep
+        sphere.keyframe_insert('location', frame = 30)
+        fcurves = sphere.animation_data.action.fcurves
+        for fcurve in fcurves:
+            for kf in fcurve.keyframe_points:
+                kf.interpolation = 'LINEAR'  
+                    
+    offset  = 0
+    offset1 = 0
+    #P a t h
+    for g in range(numberOfPaths):
+        numberOfDeformableElements = arraynumberOfDeformableElementsPerPath[g][0]
+        numberOfElementsInPath = arraynumberOfElementsPerPath[g][0]
+        #print(numberOfDeformableElements)
+        for i in range(numberOfDeformableElements):  
+            k = deformableElements[i + offset][1]
+            cube = cubeSet[k]
+            sphere = sphereSet[k]
+            pos  = cube.location[0]
         
-    #Path 2                 
-    # 005 A Move our Cubes to new position (5 unit in positive Y) at frame 20 and set keyframes
-    i = 1
-    orden =  [[] for i in range(4)]
-    path2 = []
-    while i <5:
-        j = int(my_tubes[i].get_nt())
-        k = int(my_tubes[i].get_num())
-        orden[i-1] = [j,k-1]
-        i += 1  
-    print(orden)
-    sort(orden , 4)
-    i = 0
-
-    print(orden)
-    i = 1
-    time = 0
-    while i <= 4:
-        k = orden[i-1][1]
-        print (k)
-        cube = cubeSet[k]
-        bpy.context.scene.frame_current = 30 + time  
-        cube.keyframe_insert('scale', frame=30 + time)
-        bpy.context.scene.frame_current = 60 + time
-        cube.keyframe_insert('location', frame=60 + time)
-        cube.scale[2] *= 0.0
-        cube.keyframe_insert('scale', frame=60 +time)
-    
-        cube = cubeSet[k]
-        bpy.context.scene.frame_current = 30 + time
-        cube.keyframe_insert('location', frame=32.5 + time)
-        bpy.context.scene.frame_current = 60 + time
-        cube.location[0] = 0 
-        cube.keyframe_insert('location', frame=60 + time)
-    
-        count = k+1
-        offset = 0
-        while count <= 4:
-            cube = cubeSet[count]
-            bpy.context.scene.frame_current = 29.5+ time
-            cube.keyframe_insert('location', frame=29.5+ time)
-            bpy.context.scene.frame_current = 60+ time
-            cube.location[0] = my_tubes[count].calcLength()/2 + offset
-            offset =  my_tubes[count].calcLength() + offset
+            # Translate the element
+            bpy.context.scene.frame_current = 30  + time
+            cube.keyframe_insert('location', frame=30 + time)
+            bpy.context.scene.frame_current = 60 + time
+            cube.location[0] = pos - my_elements[k].calcLength()/2
             cube.keyframe_insert('location', frame=60 + time)
-            count += 1
-            
-        i += 1
-        time +=30
+            fcurves = cube.animation_data.action.fcurves
+            for fcurve in fcurves:
+                for kf in fcurve.keyframe_points:
+                    kf.interpolation = 'LINEAR'
+                    
+            # Translate the element mass
+            bpy.context.scene.frame_current = 30  + time
+            sphere.keyframe_insert('location', frame=30 + time)
+            bpy.context.scene.frame_current = 60 + time
+            sphere.location[0] = pos - my_elements[k].calcLength()/2
+            sphere.keyframe_insert('location', frame=60 + time)
+            fcurves = sphere.animation_data.action.fcurves
+            for fcurve in fcurves:
+                for kf in fcurve.keyframe_points:
+                    kf.interpolation = 'LINEAR'
+        
+            # Deform the element
+            bpy.context.scene.frame_current = 30  + time
+            cube.keyframe_insert('scale', frame=30 + time)
+            bpy.context.scene.frame_current = 60 + time
+            cube.scale[2] *= 0.0
+            cube.keyframe_insert('scale', frame= 60 + time)
+            fcurves = cube.animation_data.action.fcurves
+            for fcurve in fcurves:
+                for kf in fcurve.keyframe_points:
+                    kf.interpolation = 'LINEAR'
+            # Move the rest of the cubes to the wall
+            for p in range(numberOfElementsInPath + offset1):
+                if p > k:
+                    vec  = cubeSet[p].location[0]
+                    bpy.context.scene.frame_current = 30  + time
+                    cubeSet[p].keyframe_insert('location', frame=30 + time)
+                    sphereSet[p].keyframe_insert('location', frame=30 + time)
+                    bpy.context.scene.frame_current = 60 + time
+                    cubeSet[p].location[0] = vec - my_elements[k].calcLength() 
+                    cubeSet[p].keyframe_insert('location', frame = 60 + time) 
+                    sphereSet[p].location[0] = vec - my_elements[k].calcLength() 
+                    sphereSet[p].keyframe_insert('location', frame = 60 + time) 
+                    fcurves = cubeSet[p].animation_data.action.fcurves
+                    for fcurve in fcurves:
+                        for kf in fcurve.keyframe_points:
+                            kf.interpolation = 'LINEAR'
 
-###########################################################################
-#Orden con algoritmo de burburja
-def sort(arry, n):
-    var1 = 0
-    k = 0
-    while k < n:
-        j = n-2
-        while  j >= k:
-            if (arry[j] > arry[j+1]):
-                var1 = arry[j+1]
-                arry[j + 1] = arry[j]
-                arry[j] = var1
-            j -= 1
-        k+= 1
-             
-
-def delete_all():
-    bpy.ops.object.select_all(action = 'TOGGLE')
-    bpy.ops.object.select_all(action = 'TOGGLE')
-    bpy.ops.object.delete(use_global = False)
-    
-def createElementCube(name, loc, r ,d, rot):
-    cubeobject (
-                       location = loc,
-                       rotation=rot )                 
-    bpy.ops.transform.resize(value = (d*0.5,10, 20)) #for cube
-    bpy.ops.transform.translate(value=(d/2,0,0)) #Tranlacion
-    ob = bpy.context.object
-    ob.name = "E" + name 
-    return ob
-
-def createElementNode(name, loc):
-    sphereobject (
-                       location = loc,
-                       size = 1.2)                 
-    ob = bpy.context.object
-    ob.name = "N" + name 
-    return ob
-
-def setMaterial(ob, mat):
-    me = ob.data
-    me.materials.append(mat)
-
-def makeMaterial(name, diffuse, specular, alpha):
-    mat = bpy.data.materials.new(name)
-    mat.diffuse_color = diffuse
-    mat.diffuse_shader = 'LAMBERT' 
-    mat.diffuse_intensity = 1.0 
-    mat.specular_color = specular
-    mat.specular_shader = 'COOKTORR'
-    mat.specular_intensity = 0.5
-    mat.alpha = alpha
-    mat.ambient = 1
-    return mat
+            time += 30  
+        time = 0
+        offset = offset + numberOfDeformableElements
+        offset1 = offset1 + numberOfElementsInPath 
+  
 ######################################################################################
-# gather list of items of interest.
-candidate_list = [item.name for item in bpy.data.objects if item.type == "MESH"]
+# clear everything for now
+scene = bpy.context.scene
+scene.camera = None  
+for obj in scene.objects:  
+    scene.objects.unlink(obj)
+####################################################################
+lamp_data = bpy.data.lamps.new(name="lampa", type='SUN')  
+lamp_object = bpy.data.objects.new(name="Lampicka", object_data=lamp_data)  
+scene.objects.link(lamp_object)  
+lamp_object.location = (300, 150, -200)
+lamp_object.rotation_euler = (pi,0,0)
 
-# select them only.
-for object_name in candidate_list:
-  bpy.data.objects[object_name].select = True  
+# and now set the camera
+cam_data = bpy.data.cameras.new(name="cam")  
+cam_ob = bpy.data.objects.new(name="Kamerka", object_data=cam_data)  
+scene.objects.link(cam_ob)  
+cam_ob.location = (576, 150, -1500)  
+cam_ob.rotation_euler = (pi,0,0) 
+cam_ob.scale = (20, 20, 20)  
+cam = bpy.data.cameras[cam_data.name]  
+cam.lens = 20
+cam.type = 'PERSP'
+cam.lens_unit = 'MILLIMETERS'
+cam.shift_x = 0.15
+cam.shift_y = 0.1
+cam.clip_start = 209
+cam.clip_end = 900
+cam_data.clip_start = 24
+cam_data.clip_end = 1500
 
-# remove all selected.
-bpy.ops.object.delete()
 
-bpy.ops.object.select_by_type(type = 'MESH')
-bpy.ops.object.delete(use_global=False)
-for item in bpy.data.meshes:
-    item.user_clear() # make it have zero users 
-    bpy.data.meshes.remove(item)
 
+#Delete everything
+myHeader.initialize()
 #Call the main function
 main()
+#Start animation
+#bpy.ops.screen.animation_play(reverse=False, sync=False) 
+
+ 
+
 
 
 
