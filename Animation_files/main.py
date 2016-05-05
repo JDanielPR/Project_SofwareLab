@@ -118,7 +118,7 @@ def main():
             colores.setMaterial(bpy.context.object, gray)
  
         
-    print(scales)   
+    #print(scales)   
     # create background
     '''
     bpy.ops.mesh.primitive_plane_add(location=(1000,0,-4))  
@@ -177,7 +177,7 @@ def main():
         count = 0
         h -= 1
        
-    print(totalElements)    
+    #print(totalElements)    
     h = numberOfPaths
     count = 0
     for i in range(numberOfPaths):
@@ -190,9 +190,9 @@ def main():
         count = 0
         h -= 1
         
-    print(deformableElements)
-    print(arraynumberOfDeformableElementsPerPath)
-    print(arraynumberOfElementsPerPath)    
+    #print(deformableElements)
+    #print(arraynumberOfDeformableElementsPerPath)
+    #print(arraynumberOfElementsPerPath)    
     # Find the element which is the closest to the wall
     for i in range(numberOfNodes):
         coordinatesX.append((nodes[i][0]))
@@ -202,7 +202,7 @@ def main():
     # Set animation start and stop
     scn = bpy.context.scene
     scn.frame_start = 0
-    scn.frame_end = 120
+    scn.frame_end = 90
     
     # Set keyframes for Position XYZ value at Frame 1 and 10 (to hold position) for every cubes
     for cube in cubeSet:
@@ -213,7 +213,7 @@ def main():
     for sphere in sphereSet:
         sphere.keyframe_insert('location', frame=1)
         sphere.keyframe_insert('location', frame=10) 
-        
+       
     #Set keyframes for Position XYZ value at Frame 1 and 10 (to hold position) for every cubes
     for conections in nodesSet:
         conections.keyframe_insert('location', frame=1)
@@ -251,13 +251,18 @@ def main():
                     
     offset  = 0
     offset1 = 0
-  
+    offset2 = 0
+    print(arraynumberOfDeformableElementsPerPath)
+    print(arraynumberOfElementsPerPath)
+    print(deformableElements)
+
     #P a t h
     for g in range(numberOfPaths):
         numberOfDeformableElements = arraynumberOfDeformableElementsPerPath[numberOfPaths-g-1][0]
         numberOfElementsInPath = arraynumberOfElementsPerPath[numberOfPaths-g-1][0]
-        print(numberOfDeformableElements)
-        print(numberOfElementsInPath )
+        
+        #print(numberOfDeformableElements)
+        #print(numberOfElementsInPath )
         
         for i in range(numberOfDeformableElements):  
             k = deformableElements[i + offset][1]
@@ -265,12 +270,13 @@ def main():
             sphere = sphereSet[k]
             conections = nodesSet[k]
             pos  = cube.location[0]
+            print(k)
         
             # Translate the element
             bpy.context.scene.frame_current = tiempos[k][0]#(30  + time)
             cube.keyframe_insert('location', frame=tiempos[k][0])#(30 + time))
             bpy.context.scene.frame_current = tiempos[k][1]#(60 + time)
-            cube.location[0] = pos - (1-scales[k])* my_elements[k].calcLength()/2
+            cube.location[0] =  pos - (1-scales[k])* my_elements[k].calcLength()/2
             cube.keyframe_insert('location', frame = tiempos[k][1])#(60  + time))
             fcurves = cube.animation_data.action.fcurves
             for fcurve in fcurves:
@@ -292,7 +298,7 @@ def main():
             bpy.context.scene.frame_current = tiempos[k][0]#(30  + time)
             conections.keyframe_insert('location', frame = tiempos[k][0])#(30 + time))
             bpy.context.scene.frame_current = tiempos[k][1]#(60 + time)
-            conections.location[0] = pos - my_elements[k].calcLength()/2
+            conections.location[0] = pos - my_elements[k].calcLength()/2 
             conections.keyframe_insert('location', frame = tiempos[k][1])#(60 + time))
             fcurves = conections.animation_data.action.fcurves
             for fcurve in fcurves:
@@ -320,6 +326,7 @@ def main():
                     sphereSet[p].keyframe_insert('location', frame = tiempos[k][0])#(30 + time))
                     nodesSet[p].keyframe_insert('location', frame = tiempos[k][0])#(30 + time))
                     bpy.context.scene.frame_current = (60 + time)
+                    
                     cubeSet[p].location[0] = vec - (1-scales[k])*my_elements[k].calcLength() 
                     cubeSet[p].keyframe_insert('location', frame = tiempos[k][1])#(60 + time)) 
                     sphereSet[p].location[0] = vec - (1-scales[k])* my_elements[k].calcLength() 
@@ -355,7 +362,7 @@ lamp_object.rotation_euler = (pi,0,0)
 cam_data = bpy.data.cameras.new(name="cam")  
 cam_ob = bpy.data.objects.new(name="Kamerka", object_data=cam_data)  
 scene.objects.link(cam_ob)  
-cam_ob.location = (576, 150, -1500)  
+cam_ob.location = (576, 170, -1500)  
 cam_ob.rotation_euler = (pi,0,0) 
 cam_ob.scale = (20, 20, 20)  
 cam = bpy.data.cameras[cam_data.name]  
@@ -376,7 +383,7 @@ myHeader.initialize()
 #Call the main function
 main()
 #Start animation
-#bpy.ops.screen.animation_play(reverse=False, sync=False) 
+bpy.ops.screen.animation_play(reverse=False, sync=False) 
 
  
 
