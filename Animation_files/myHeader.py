@@ -34,7 +34,7 @@ def initialize():
         
 def leerTxt():
     print ("Herzlich willkommen")
-    file = open("C:\FAPSA18\JDPR\TUM\Second_Semester\Sofware_Lab\BMW\Animation_files\Example3.txt", "r") 
+    file = open("C:\FAPSA18\JDPR\TUM\Second_Semester\Sofware_Lab\BMW\Animation_files\Example5.txt", "r") 
     
     numberNodes = 0
     numberTubes = 0
@@ -51,11 +51,11 @@ def leerTxt():
     for i in range(0 , numberNodes + numberTubes):
         if i < numberNodes:
             nodes.append([])
-            for j in range(6*(i+1)-6,6*(i+1)):
+            for j in range(8*(i+1)-8,8*(i+1)):
                 nodes[i].append(float(arreglo[j]))
         else:
             tubes.append([])
-            for j in range(6*(i+1)-6,6*(i+1)):
+            for j in range(8*(i+1)-8,8*(i+1)):
                 tubes[i - numberNodes].append(float(arreglo[j]))
 
     return (nodes, tubes , numberNodes, numberTubes,numberPaths)
@@ -77,14 +77,16 @@ class Node():
         return self.cz
         
 class Element():
-    def __init__(self , num  , nodeA , nodeB  , startingLoadpath , endingLoadpath, numberOfElementInLoadpath, elementType):
+    def __init__(self , num  , nodeA , nodeB  , startingLoadpath , deformation, numberOfElementInLoadpath, elementType, time1, time2):
         self.num = num
         self.nodeA = nodeA
         self.nodeB = nodeB
         self.startingLoadpath = startingLoadpath
-        self.endingLoadpath = endingLoadpath
+        self.deformation = deformation
         self.numberOfElementInLoadpath = numberOfElementInLoadpath
         self.elementType = elementType
+        self.time1 = time1
+        self.time2 = time2
         
     def get_num(self):
         return self.num
@@ -94,15 +96,18 @@ class Element():
         return self.nodeB.get_num()
     def get_startingLoadpath (self):
         return self.startingLoadpath 
-    def get_endingLoadpath(self):
-        return self.endingLoadpath
+    def get_deformation(self):
+        return self.deformation
     def get_numberOfElementInLoadpath(self):
         return self.numberOfElementInLoadpath
     def get_elementType(self):
         return self.elementType
     def calcLength(self):
         return math.sqrt((self.nodeA.get_x() - self.nodeB.get_x()) ** 2 + (self.nodeA.get_y() - self.nodeB.get_y()) ** 2)
-    
+    def get_time1(self):
+        return self.time1
+    def get_time2(self):
+        return self.time2
    
 ###########################################################################
 #Orden con algoritmo de burburja
@@ -143,7 +148,7 @@ def createElementCube(name, loc, d, rot):
                        rotation=rot ) 
     bpy.context.object.dimensions = 100, 100, d          
     ob = bpy.context.object
-    ob.name = "E" + name 
+    ob.name = "M" + name 
     return ob
 
 def createElementNode(name, loc, d):
@@ -153,4 +158,14 @@ def createElementNode(name, loc, d):
     ob = bpy.context.object
     ob.name = "N" + name 
     return ob
+
+def createConection(name, loc, l, d, rot):
+    cubeobject (
+                       location = loc,
+                       rotation=rot ) 
+    bpy.context.object.dimensions = 100, l , d          
+    ob = bpy.context.object
+    ob.name = "C" + name 
+    return ob
+
     
