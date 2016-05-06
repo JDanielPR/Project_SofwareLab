@@ -5,13 +5,6 @@ Created on 08/04/2016
 '''
 import bpy
 
-#Define colors
-def initcolors(r,g,b):
-    global color
-    color= bpy.data.materials.new("color")
-    color.diffuse_color = (r/255.0, g/255.0 , b/255.0) # r , g , b
-    return color
-
 def setMaterial(ob, mat):
     me = ob.data
     me.materials.append(mat)

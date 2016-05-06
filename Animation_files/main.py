@@ -13,7 +13,8 @@ from math import pi
 
 import myHeader
 import colores
-import draw_member
+
+
 
 #Define the main function
 def main():
@@ -24,7 +25,8 @@ def main():
 
     red = colores.makeMaterial('Red', (1,0,0), (1,1,1), 1)
     blue = colores.makeMaterial('BlueSemi', (0,0,1), (0.5,0.5,0), 0.5)
-    gray= colores.makeMaterial('BlueSemi', (1,1,1), (2.5,1.5,1), 0.5)
+    black = colores.makeMaterial('Black', (0,0,0), (2.5,1.5,1), 0.5)
+    white = colores.makeMaterial('White', (1,1,1), (2.5,1.5,1), 0.5)
     
     #Wall
     bpy.ops.mesh.primitive_cube_add(location = (-500,0,0), rotation=(0,0,math.radians(90)))
@@ -32,7 +34,7 @@ def main():
     w.name = "Wall"
     bpy.ops.transform.resize(value = (500,2000, 20)) #for cube
     bpy.ops.object.shade_smooth() 
-    colores.setMaterial(bpy.context.object, gray)
+    colores.setMaterial(bpy.context.object, white)
     
     (nodes,tubes, numberOfNodes, numberOfMembers, numberOfPaths) = myHeader.leerTxt()   
     my_nodes = []  #Define nodes list
@@ -101,21 +103,21 @@ def main():
         
         if my_elements[i].get_elementType() == 0:
             getactiveobject = bpy.context.selected_objects[0]
-            getactiveobject.active_material = colores.initcolors(0.0, 0.0, 0.0)
+            colores.setMaterial(bpy.context.object, black)
             bpy.ops.object.shade_smooth() 
             
             nodesSet.append(myHeader.createConection(str(i), (xj, yj, -100), 0, 0, (0, math.radians(90), 0)))
             bpy.ops.object.shade_smooth() 
-            colores.setMaterial(bpy.context.object, gray)
+            colores.setMaterial(bpy.context.object, black)
             
         else:
             getactiveobject = bpy.context.selected_objects[0]
-            getactiveobject.active_material = colores.initcolors(255.0, 255.0, 255.0)
+            colores.setMaterial(bpy.context.object, white)
             bpy.ops.object.shade_smooth() 
             
             nodesSet.append(myHeader.createConection(str(i), (xi, yi, -100), 150, 20, (0, math.radians(90), 0)))
             bpy.ops.object.shade_smooth() 
-            colores.setMaterial(bpy.context.object, gray)
+            colores.setMaterial(bpy.context.object, white)
  
         
     #print(scales)   
@@ -345,7 +347,12 @@ def main():
         
   
 ######################################################################################
-
+bpy.ops.object.select_by_type(type='MESH')
+bpy.ops.object.delete()
+bpy.ops.object.select_by_type(type='LAMP')
+bpy.ops.object.delete()
+bpy.ops.object.select_by_type(type='CAMERA')
+bpy.ops.object.delete()
 # clear everything for now
 scene = bpy.context.scene
 scene.camera = None  
@@ -377,16 +384,9 @@ cam_data.clip_start = 24
 cam_data.clip_end = 1500
 
 
-
 #Delete everything
-myHeader.initialize()
+#myHeader.initialize()
 #Call the main function
 main()
 #Start animation
-bpy.ops.screen.animation_play(reverse=False, sync=False) 
-
- 
-
-
-
-
+#bpy.ops.screen.animation_play(reverse=False, sync=False) 
