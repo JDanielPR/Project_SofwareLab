@@ -92,37 +92,45 @@ proper .xml file"""
     # create all the connectionpaths
     # collect all the connections in the following list
     connections = [ ]
+
+    # create all the missing nodes, save them in a list such as
+    # [[implicitly_defined_lp_id, node_object], [ , ], ...]
+    free_nodes = [ ]
     for level in root.iter('level'):
         for component in level.iter('component'):
             if 'X' in component.find('name').text:
+                # found a connection, check if its nodes already exist:
+                    # the first node already exists for sure, since the loadpath
+                    # object has been created and the first node was added in
+                    # its node_list
 
-                # get or create node1 and node2
-                x1 = float(component.find('x1').text)
-                x2 = float(component.find('x2').text)
+                    # the second node EITHER belongs to another loadpath (and
+                    # therefore it already exist) OR has to be created
+
+                # get the loadpath id of the second node
+                comp_name = component.find('name').text
+                loadpath_id = comp_name.lstrip('X')
+                second_lp_id = int(loadpath_id[1])
+
+                # check if the loadpath already exists
+                for path in new_structure.path_list:
+                    if type(path) is lp.Loadpath
+                    and path.id == second_lp_id:
+                        # loadpath of the second node found
+                        loadpath_obj = path
                 try:
-                    [[node1, node2]] = [[node1, node2]
-                                        for loadpath in new_structure.path_list
-                                        for node1 in loadpath.node_list
-                                        for node2 in loadpath.node_list
-                                        if node1.x_position == x1
-                                        if node2.x_position == x2]
-                except:
-                    [node1] = [node1
-                               for loadpath in new_structure.path_list
-                               if node1.x_position == x1]
-                    node2 = nd.Node(x2)
+                    if loadpath_obj:
+                        # the second node belongs to a loadpath and already
+                        # exists
+                        pass
 
-                # create a connection with the nodes
-                connection_obj = c.Component(
-                    component.find('name').text,
-                    node1,
-                    node2,
-                    float(component.find('defoLength').text),
-                    float(component.find('defoRatio').text))
+                except NameError:
+                    # the second node has to be created
+                    pass
 
-                # add connection_obj in the temporary list
-                connections.append(connection_obj)
-                
+    # create all the connetion and save them in ...
+    # split them in connectionpaths
+    
     # divide the temporary list in connectionpaths
     while connections:
         connection_obj = connections.pop()
