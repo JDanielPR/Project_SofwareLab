@@ -145,4 +145,20 @@ proper .xml file"""
 #############################################################
     return new_structure
 
+if __name__ == "__main__":
+    struct = read_xml()
+    for path in struct.path_list:
+        if type(path) is lp.Loadpath:
+            if not path.component_list:
+                print("Loadpath", path.id, "is empty")
+            else:
+                print("Loadpath", path.id, "has these components:")
+                for comp in path.component_list:
+                    comp.print_info("\t")
+
+        elif type(path) is cp.Connectionpath:
+            print("A connectionpath has been created with these components:")
+            for comp in path.component_list:
+                comp.print_info("\t")
+
 
