@@ -13,9 +13,7 @@ for path in struct.path_list:
     # each solution is a tuple object, which contains objects of type
     # component.Component
 
-    print("solution of path",path.id,":")
-    for index, solution in enumerate(path.solution_list):
-        path.print_solution(index)
-    print("")
+    print("solution of path", path.id, ":")
+    print(path.path_solution_string(), "\n")
 
 # combine the path solution to get the structure solution 
