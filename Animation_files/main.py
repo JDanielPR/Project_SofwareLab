@@ -10,129 +10,114 @@ import random
 from bpy import context
 from mathutils import Vector
 from math import pi
-
 import myHeader
 import colores
+import mathutils
 
-
-
-#Define the main function
+# Define main function
 def main():
     
-    imp.reload(colores)  #Carga librerias
-    imp.reload(myHeader) #Carga librerias
-    myHeader.delete_all()         #Clean everything
+    imp.reload(myHeader)   #Load library
+    myHeader.delete_all()  #Clean everything
 
-    red = colores.makeMaterial('Red', (1,0,0), (1,1,1), 1)
-    blue = colores.makeMaterial('BlueSemi', (0,0,1), (0.5,0.5,0), 0.5)
-    black = colores.makeMaterial('Black', (0,0,0), (2.5,1.5,1), 0.5)
-    white = colores.makeMaterial('White', (1,1,1), (2.5,1.5,1), 0.5)
+    # Define the list of nodes and member
+    (nodes,members, numberOfNodes, numberOfMembers, numberOfPaths) = myHeader.leerTxt()   
+    my_nodes = []     #Define nodes list
+    my_elements = []  #Define memberslist
     
-    #Wall
-    bpy.ops.mesh.primitive_cube_add(location = (-500,0,0), rotation=(0,0,math.radians(90)))
+    # Definition of variables
+    cursor = context.scene.cursor_location            #Set the cursor location
+    start_pos = (0,0,0)                               #Define the first position
+    generalMemberList = []                            #Contains all members of the structure
+    coordinatesInX = []                               #List of all coordinates in x
+    totalPathLength = []                              #List of the lengths per path
+    coverableLengthPerPath = []                       #List of the maximum length that a load path can deform
+    finalPathLength = []                              #List of the maximum length that a load path can reach
+    horizontalMemberListPerPath = []                  #List of objects Members that are in horizontal position
+    inclinedMemberListPerPath = []                    #List of objects Memebers that are in inclined position
+    DistancesFromTheFistNodeToTheHeadOfEachPath = []
+    coordinateOfTheVeryFirstNode = 0
+    finalLengthOfTheLongestPath = 0
+    
+    # Create all node objects
+    for i in range(numberOfNodes):  
+        # Node(numberOfNode, X, Y ,Z) 
+        my_nodes.append(myHeader.Node(i+1, nodes[i][0],nodes[i][1],nodes[i][2], nodes[i][3]))
+        coordinatesInX.append(nodes[i][0])
+    coordinateOfTheVeryFirstNode = min(coordinatesInX)
+    
+    # Create all member objects
+    for i in range(numberOfMembers-1):
+        # Element(numberOfmember, nodeA, nodeB ,startingLoadpath , finalLoadpath, elementType, deformation, velocity, time1, time2,orderOfDeformation)
+        my_elements.append(myHeader.Element( i+1 ,my_nodes[int(members[i][0])-1],my_nodes[int(members[i][1])-1],members[i][2],members[i][3],members[i][4],members[i][5],members[i][6],members[i][7],members[i][8],members[i][9]))     
+
+    # Clasify member according to the path
+    l = 0
+    k = 0
+    for i in range(numberOfPaths+1):
+        horizontalMemberListPerPath.append([])
+        for j in range(len(my_elements)):
+            if my_elements[j].get_startingLoadpath() == my_elements[j].get_finalLoadpath():
+                if my_elements[j].get_startingLoadpath() == i + 1:
+                    horizontalMemberListPerPath[i].append(my_elements[j])
+                    # Define length per path
+                    l = my_elements[j].calcLength() + l
+                    if my_elements[j].get_elementType() == 0 or my_elements[j].get_elementType() == 2:
+                        k = my_elements[j].calcLength() + k
+        totalPathLength.append(l)
+        coverableLengthPerPath.append(k)
+        l = 0
+        k = 0
+    
+    # Define a list with the final length of each path
+    for i in range(numberOfPaths + 1):
+        finalPathLength.append(totalPathLength[i] - coverableLengthPerPath[i])
+    
+    finalLengthOfTheLongestPath = max(finalPathLength)
+    print(finalPathLength)
+    print(finalLengthOfTheLongestPath)
+    
+    # Define the list of inclined members per Path
+    for j in range(len(my_elements)):
+            if my_elements[j].get_startingLoadpath() != my_elements[j].get_finalLoadpath():
+                inclinedMemberListPerPath.append(my_elements[j])
+                
+    # Create wall
+    bpy.ops.mesh.primitive_cube_add(location = (coordinateOfTheVeryFirstNode - 1000,0,0), rotation=(0,0,math.radians(90)))
+    bpy.context.object.dimensions = 3000, 1000, 100
+    bpy.ops.object.shade_smooth() 
     w = bpy.context.object
     w.name = "Wall"
-    bpy.ops.transform.resize(value = (500,2000, 20)) #for cube
-    bpy.ops.object.shade_smooth() 
-    colores.setMaterial(bpy.context.object, white)
-    
-    (nodes,tubes, numberOfNodes, numberOfMembers, numberOfPaths) = myHeader.leerTxt()   
-    my_nodes = []  #Define nodes list
-    my_elements = []  #Define elements list
-    
-    for i in range(numberOfNodes):
-        my_nodes.append(myHeader.Node(i+1, nodes[i][0],nodes[i][1],nodes[i][2]))
-    for i in range(numberOfMembers):
-        my_elements.append(myHeader.Element( i+1 ,my_nodes[int(tubes[i][0])-1],my_nodes[int(tubes[i][1])-1],tubes[i][2],tubes[i][3],tubes[i][4],tubes[i][5],tubes[i][6],tubes[i][7]))
 
-    #Define variables
-    cursor = context.scene.cursor_location  #Set the cursor location
-    start_pos = (0,0,0)  #Define the first position
-
-    x = 0.0
-    y = 0.0
-    z = 0.0
-    c = 0.0
-    
-    cubeSet = []
-    sphereSet = []
-    nodesSet = []
-    tiempos = []
-    scales = []
-
-    for i in range(numberOfMembers):
-        inx1 = my_elements[i].get_A() - 1
-        iny1 = my_elements[i].get_A() - 1
-        inx2 = my_elements[i].get_B() - 1
-        iny2 = my_elements[i].get_B() - 1
-        
-        xi = (my_nodes[inx1].get_x()) 
-        yi = (my_nodes[iny1].get_y()) 
-        xj = (my_nodes[inx2].get_x()) 
-        yj = (my_nodes[iny2].get_y()) 
-        #Define angles
-        a1 = 0
-        a2 = math.radians(90)
-        a3 = 0
-        # Define coordinates
-        x = xi + (xj - xi) / 2
-        y = yi
-        z = 0.0
-        
-        #if my_elements[i].get_time1() != 0:
-        t1 = my_elements[i].get_time1()
-        t2 = my_elements[i].get_time2()
-        tiempos.append([t1, t2])
-        
-        es = my_elements[i].get_deformation()
-        scales.append(es)
-
-        if my_elements[i].get_elementType() == 1:
-            sphereSet.append(myHeader.createElementNode(str(i), (x, y, -100),50))
-            bpy.ops.object.shade_smooth() 
-            colores.setMaterial(bpy.context.object, red)
-        else:
-            sphereSet.append(myHeader.createElementNode(str(i), (x, y, -100),0))
-            bpy.ops.object.shade_smooth() 
-            colores.setMaterial(bpy.context.object, red)
-      
-        myHeader.createElementCube(str(i), (x, y, z), my_elements[i].calcLength(),(a1, a2, a3))
-        selectedObject = bpy.context.selected_objects
-        mesh = selectedObject[0]
-        cubeSet.append(selectedObject[0])
-        
-        if my_elements[i].get_elementType() == 0:
-            getactiveobject = bpy.context.selected_objects[0]
-            colores.setMaterial(bpy.context.object, black)
-            bpy.ops.object.shade_smooth() 
-            
-            nodesSet.append(myHeader.createConection(str(i), (xj, yj, -100), 0, 0, (0, math.radians(90), 0)))
-            bpy.ops.object.shade_smooth() 
-            colores.setMaterial(bpy.context.object, black)
-            
-        else:
-            getactiveobject = bpy.context.selected_objects[0]
-            colores.setMaterial(bpy.context.object, white)
-            bpy.ops.object.shade_smooth() 
-            
-            nodesSet.append(myHeader.createConection(str(i), (xi, yi, -100), 150, 20, (0, math.radians(90), 0)))
-            bpy.ops.object.shade_smooth() 
-            colores.setMaterial(bpy.context.object, white)
- 
-        
-    #print(scales)   
-    # create background
-    '''
-    bpy.ops.mesh.primitive_plane_add(location=(1000,0,-4))  
-    plane = bpy.context.object  
-    plane.dimensions = (3000,3000,0)
-    bpy.ops.object.shade_smooth() 
-    colores.setMaterial(bpy.context.object, blue)'''
-
-    ####################################################################
+    # Select wall
     bpy.context.scene.objects.active = bpy.data.objects["Wall"]
     bpy.data.objects['Wall'].select = True  
     bpy.ops.object.select_all(action = 'TOGGLE')
+    
+    # Set animation start and stop
+    scn = bpy.context.scene
+    scn.frame_start = 0
+    scn.frame_end = 30
+    ####################################################################
+    # Set keyframes for Position XYZ value at Frame 1 and 10 (to hold position) for every cubes
+    for i in range(len(my_elements)):
+        cube = my_elements[i].get_member()
+        cube.keyframe_insert('location', frame=1)
+        cube.keyframe_insert('location', frame=10)     
+    #print(my_elements[9].get_member().location[0] )
+    #Move all the elements at the initial position  
+    for i in range(len(my_elements)):
+        cube = my_elements[i].get_member()
+        bpy.context.scene.frame_current = 30
+        cube.location[0] -= 500
+        cube.keyframe_insert('location', frame = 30)
+        fcurves = cube.animation_data.action.fcurves
+        for fcurve in fcurves:
+            for kf in fcurve.keyframe_points:
+                kf.interpolation = 'LINEAR' 
+    #################################################################### 
+    #print(my_elements[9].get_member().location[0] )
+    '''
     ####################################################################
     #Path                
     # Clasify our elements 
@@ -147,7 +132,7 @@ def main():
     arraynumberOfDeformableElementsPerPath  = list()
     arraynumberOfElementsPerPath  = list()
     path = []
-    
+    #print(tiempos)
     for i in range(numberOfMembers):
         pathNumber = int(my_elements[i].get_startingLoadpath())
         positionInPath = int(my_elements[i].get_numberOfElementInLoadpath())
@@ -204,7 +189,7 @@ def main():
     # Set animation start and stop
     scn = bpy.context.scene
     scn.frame_start = 0
-    scn.frame_end = 90
+    scn.frame_end = 120
     
     # Set keyframes for Position XYZ value at Frame 1 and 10 (to hold position) for every cubes
     for cube in cubeSet:
@@ -257,7 +242,7 @@ def main():
     print(arraynumberOfDeformableElementsPerPath)
     print(arraynumberOfElementsPerPath)
     print(deformableElements)
-
+    
     #P a t h
     for g in range(numberOfPaths):
         numberOfDeformableElements = arraynumberOfDeformableElementsPerPath[numberOfPaths-g-1][0]
@@ -344,8 +329,8 @@ def main():
         time = 0
         offset = offset + numberOfDeformableElements
         offset1 = offset1 + numberOfElementsInPath 
-        
-  
+    '''
+'''
 ######################################################################################
 bpy.ops.object.select_by_type(type='MESH')
 bpy.ops.object.delete()
@@ -358,6 +343,7 @@ scene = bpy.context.scene
 scene.camera = None  
 for obj in scene.objects:  
     scene.objects.unlink(obj)
+
 ####################################################################
 lamp_data = bpy.data.lamps.new(name="lampa", type='SUN')  
 lamp_object = bpy.data.objects.new(name="Lampicka", object_data=lamp_data)  
@@ -382,11 +368,14 @@ cam.clip_start = 209
 cam.clip_end = 900
 cam_data.clip_start = 24
 cam_data.clip_end = 1500
+'''
 
 
 #Delete everything
-#myHeader.initialize()
+myHeader.initialize()
 #Call the main function
 main()
 #Start animation
 #bpy.ops.screen.animation_play(reverse=False, sync=False) 
+# draw node
+# draw node
