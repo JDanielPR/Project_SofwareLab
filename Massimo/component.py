@@ -5,7 +5,7 @@ class Component:
                  node1, node2,
                  deformable_length, deformable_ratio):
         # string type
-        self.name = name
+        self.name = name.strip() # the strip method removes all the whitespaces
         
         # node object at the left end of the component
         self.left_node = node1
@@ -61,3 +61,13 @@ current_x of the right node."""
         """It moves the component to the left."""
         self.left_node.move(delta_x)
         self.right_node.move(delta_x)
+
+
+    def print_info(self, indentation="", end="\n"):
+        """It prints all the information of the component"""
+        print(indentation, self.name, ":", sep="")
+        print(indentation, "\tleft node at", self.left_node.x_position)
+        print(indentation, "\tright node at", self.right_node.x_position)
+        print(indentation, "\toverall length of", self.length)
+        print(indentation, "\tdeformable length of", self.deformable_length)
+        print(indentation, "\trigid length of", self.rigid_length, end)

@@ -36,12 +36,14 @@ proper .xml file"""
             x_position = float(component.find('x1').text)
 
             # check if the loadpath already contains a node corresponding to x1
+            already_contained = False
             for node in loadpath_obj.node_list:
                 if x_position == node.x_position:
+                    already_contained = True
                     break
-                else:
-                    # if not add it
-                    loadpath_obj.node_list.append(nd.Node(x_position))
+            if not already_contained:
+                # if not add it
+                loadpath_obj.node_list.append(nd.Node(x_position))
 
             # for every component, that is not a connection
             if not 'X' in component.find('name').text:
@@ -51,14 +53,15 @@ proper .xml file"""
                 # and again
                 # check if the loadpath already contains a node corresponding to
                 # x2
+                already_contained = False
                 for node in loadpath_obj.node_list:
                     if x_position == node.x_position:
+                        already_contained = True
                         break
-                    else:
-                        # if not add it
-                        loadpath_obj.node_list.append(nd.Node(x_position))
-
-        print(node.x_position for node in loadpath_obj.node_list)
+                if not already_contained:
+                    # if not add it
+                    loadpath_obj.node_list.append(nd.Node(x_position))
+                    
         #############################################################
         # add members to each loadpath
         for component in level.iter('component'):
@@ -109,6 +112,7 @@ proper .xml file"""
                 except:
                     [node1] = [node1
                                for loadpath in new_structure.path_list
+                               for node1 in loadpath.node_list
                                if node1.x_position == x1]
                     node2 = nd.Node(x2)
 
@@ -134,7 +138,7 @@ proper .xml file"""
         connectionpath_obj.component_list.append(connection_obj)
 
         # look for other connection that belong to the same connectionpath
-        for connection_obj in connectionpath_obj:
+        for connection_obj in connectionpath_obj.component_list:
             for connection in connections:
                 if connection_obj.right_node == connection.left_node:
                     connectionpath_obj.component_list.append(connection)
@@ -147,18 +151,22 @@ proper .xml file"""
 
 if __name__ == "__main__":
     struct = read_xml()
-    for path in struct.path_list:
-        if type(path) is lp.Loadpath:
-            if not path.component_list:
-                print("Loadpath", path.id, "is empty")
-            else:
-                print("Loadpath", path.id, "has these components:")
+    if True:
+        struct.path_list[2].solve()
+        struct.path_list[2].print_solution()
+    else:
+        for path in struct.path_list:
+            if type(path) is lp.Loadpath:
+                if not path.component_list:
+                    print("Loadpath", path.id, "is empty")
+                else:
+                    print("Loadpath", path.id, "has these components:")
+                    for comp in path.component_list:
+                        comp.print_info("\t")
+
+            elif type(path) is cp.Connectionpath:
+                print("A connectionpath has been created with these components:")
                 for comp in path.component_list:
                     comp.print_info("\t")
-
-        elif type(path) is cp.Connectionpath:
-            print("A connectionpath has been created with these components:")
-            for comp in path.component_list:
-                comp.print_info("\t")
 
 
