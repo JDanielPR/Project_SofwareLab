@@ -100,7 +100,7 @@ if __name__ == "__main__":
     struct = read_xml()
     if True:
         struct.path_list[2].solve()
-        struct.path_list[2].print_solution()
+        struct.path_list[2].print_solution_list()
     else:
         for path in struct.path_list:
             if type(path) is lp.Loadpath:
