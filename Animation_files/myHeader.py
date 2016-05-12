@@ -34,7 +34,7 @@ def initialize():
         
 def leerTxt():
     print ("Herzlich willkommen")
-    file = open("C:\FAPSA18\JDPR\TUM\Second_Semester\Sofware_Lab\BMW\Animation_files\Example5.txt", "r") 
+    file = open("C:\FAPSA18\JDPR\TUM\Second_Semester\Sofware_Lab\BMW\Animation_files\Example7.txt", "r") 
     
     numberNodes = 0
     numberTubes = 0
