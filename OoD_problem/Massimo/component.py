@@ -58,6 +58,9 @@ current_x of the right node."""
         self.left_node.move(delta_x)
         self.right_node.move(delta_x)
 
+    def __repr__(self):
+        return self.name
+
     def print_info(self, indentation="", end="\n"):
         """It prints all the information of the component"""
         print(indentation, self.name, ":", sep="")
