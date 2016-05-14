@@ -15,5 +15,12 @@ class Path:
             string += "\n"
         string += str(self.solution_list[-1])
         return string
+
+    def sort_components(self):
+        self.component_list.sort(key = lambda c : c.left_node.x_position)
+
+    
+
+
             
 
