@@ -33,16 +33,28 @@ class Structure:
         self.solution_list = list(product(*list_of_path_solution_list))
 
     def __repr__(self):
-        
-        # loop over all the elements
-        for i,x in enumerate(self.solution_list, 1):
-            string = ""
-            # add number of solution right justified
-            string += str(i).rjust(10) + ". "
-            # add solution
-            string += str(x)
 
-            print(string)
-        
-        return string
-               
+        # print number of solutions
+        number_of_sol = len(self.solution_list)
+        number_of_sol_string = '{:,}'.format(number_of_sol)
+        print("Found %s solutions for the given structure."
+              % number_of_sol_string)
+
+        # ask the user
+        while True:
+            user_input = input("Do you want to see all of them? y/n\t")
+            if user_input == "y" or user_input == "Y":        
+                # loop over all the elements
+                for i,x in enumerate(self.solution_list, 1):
+                    string = ""
+                    # add number of solution right justified
+                    string += str(i).rjust(10) + ". "
+                    # add solution
+                    string += str(x)
+
+                    print(string)
+                break
+            
+            elif user_input == "n" or user_input == "N":
+                break
+        return ""               
