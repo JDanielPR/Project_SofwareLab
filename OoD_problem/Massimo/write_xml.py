@@ -54,11 +54,23 @@ def ask_for_new_component(level, lp_i):
                              input_defoLength)
             cp_i += 1
             
+def prettify(path):
+    xml = minidom.parse(path)
+    prettyxml_str = xml.toprettyxml()
+    output_file = open(path, 'w' )
+    output_file.write(prettyxml_str)
+    output_file.close()
+
+def new_xml():
+    root = Element('root')
+    ask_for_new_level(root)
+    tree = ElementTree(root)
+    path = "xml_files/" + input("Insert file name: ") + ".xml"
+    tree.write(path)
+    prettify(path)
+            
 
 
-root = Element('root')
-ask_for_new_level(root)
-tree = ElementTree(root)
-tree.write("output.xml")
 
-        
+
+    
