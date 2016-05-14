@@ -33,21 +33,16 @@ class Structure:
         self.solution_list = list(product(*list_of_path_solution_list))
 
     def __repr__(self):
-        # initialise a string
-        string = ""
         
-        # loop over all the elements, but the last one
-        for i,x in enumerate(self.solution_list[:-1], 1):
+        # loop over all the elements
+        for i,x in enumerate(self.solution_list, 1):
+            string = ""
             # add number of solution right justified
             string += str(i).rjust(10) + ". "
             # add solution
             string += str(x)
-            # add new line
-            string += "\n"
 
-        # add also the last one, without a new line afterwards
-        string += str(i + 1).rjust(10) + ". "
-        string += str(self.solution_list[-1])
+            print(string)
         
         return string
                
