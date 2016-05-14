@@ -1,0 +1,9 @@
+1 Finger1,1
+1 Finger2,1
+1 Finger3,1
+1 Finger4,1
+10 Finger1,.5
+20 Finger2,.5
+30 Finger3,.5
+40 Finger4,.5
+50 Finger1,1
