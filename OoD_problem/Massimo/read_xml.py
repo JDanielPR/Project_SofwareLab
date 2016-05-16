@@ -3,7 +3,8 @@ import xml.etree.ElementTree as et
 import structure
 import loadpath as lp
 import connectionpath as cp
-import component as c
+#import component as c
+import member as m
 import node as nd
 
 def read_xml(path = '/Users/massimosferza/LRZ Sync+Share/TUM/TUM SoSe16/Courses/Software Lab/Git_repository/no-block-example.xml'):
@@ -78,7 +79,7 @@ proper .xml file"""
                         node2 = node
 
                 # create a member
-                member_obj = c.Component(
+                member_obj = m.Member(
                     component.find('name').text,
                     node1,
                     node2,
@@ -94,6 +95,11 @@ proper .xml file"""
 #############################################################
     # neglect all the connectionpaths
 #############################################################
+    # sort all the components by left node position
+    # look for neighbours
+    for path in new_structure.path_list:
+        path.sort_components()
+        path.compute_neighbours()
     return new_structure
 
 if __name__ == "__main__":
@@ -105,4 +111,16 @@ if __name__ == "__main__":
             print("Loadpath", path.id, "has these components:")
             for comp in path.component_list:
                 comp.print_info("\t")
+
+    print("Now let's move a node")
+
+    struct.path_list[2].component_list[1].deform(50)
+    
+    for path in struct.path_list:
+        if not path.component_list:
+            print("Loadpath", path.id, "is empty")
+        else:
+            print("Loadpath", path.id, "has these components:")
+            for comp in path.component_list:
+                comp.print_current_info("\t")
 

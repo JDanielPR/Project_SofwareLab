@@ -1,9 +1,14 @@
 import node
+import node_observer as obs
+
 from math import fabs
-class Component:
+class Component(obs.NodeObserver):
     def __init__(self, name,
                  node1, node2,
                  deformable_length, deformable_ratio):
+        #call base class constructor
+        obs.NodeObserver.__init__(self, node1, node2)
+
         # string type
         self.name = name.strip() # the strip method removes all the whitespaces
         
@@ -23,7 +28,7 @@ class Component:
         self.deformable_ratio = deformable_ratio
 
         # current deformable length
-        self.current_deformable_length = deformable_length 
+        self.current_deformable_length = deformable_length
 
     def compute_length(self):
         """It computes the length of the component, as the difference
@@ -34,29 +39,6 @@ in x-position between the nodes"""
         """It computes the rigid length of the component, as the difference
 between length and deformable length"""
         return self.length - self.deformable_length
-
-    def deform(self, partial_deformation = False):
-        """It deforms the component by changing current_deformable_length and
-current_x of the right node."""
-        if partial_deformation:
-            # deform partially the component, after checking if the deformation
-            # makes sense
-            if partial_deformation < self.current_deformable_length:
-                self.right_node.move(partial_deformation)
-                self.current_deformable_length -= partial_deformation
-            else:
-                print("Something wrong is passing: deforming ",
-                      self.name, "of", partial_deformation)
-        else:
-            # get the remaining deformable length and deform the component
-            # completely, moving the right node to the right
-            self.right_node.move(self.current_deformable_length)
-            self.current_deformable_length = 0
-
-    def move(self, delta_x):
-        """It moves the component to the left."""
-        self.left_node.move(delta_x)
-        self.right_node.move(delta_x)
 
     def __repr__(self):
         return self.name
@@ -69,3 +51,43 @@ current_x of the right node."""
         print(indentation, "\toverall length of", self.length)
         print(indentation, "\tdeformable length of", self.deformable_length)
         print(indentation, "\trigid length of", self.rigid_length, end)
+
+    def print_current_info(self, indentation="", end="\n"):
+        """It prints all the information of the component"""
+        print(indentation, self.name, ":", sep="")
+        print(indentation, "\tleft node at", self.left_node.current_x)
+        print(indentation, "\tright node at", self.right_node.current_x)
+        print(indentation, "\toverall length of", self.length)
+        print(indentation, "\tdeformable length of", self.current_deformable_length)
+        print(indentation, "\trigid length of", self.rigid_length, end)
+
+
+    def update(self):
+        """Updates the current_deformable_length"""
+        x2 = self.right_node.current_x
+        x1 = self.left_node.current_x
+        current_length = x2 - x1
+        previous_deformable_length = self.current_deformable_length
+        self.current_deformable_length = current_length - self.rigid_length
+##        if previous_deformable_length < self.current_deformable_length:
+##            print(self, "says: I became longer!!!")
+##        elif self.current_deformable_length < previous_deformable_length:
+##            print(self, "says: I became shorter!!!")
+
+    def deform(self, deformation):
+        """It deforms the component by moving the right node to the left."""
+        print(self, "has been deformed")
+        self.right_node.move_of(deformation)
+        try:
+            self.right_neighbour.move(deformation)
+        except:
+            pass
+
+    def move(self, deformation):
+        print(self, "has been moved to the left")
+        self.right_node.move_of(deformation)
+        try:
+            self.right_neighbour.move(deformation)
+        except:
+            pass
+        

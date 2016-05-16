@@ -19,7 +19,8 @@ class Path:
     def sort_components(self):
         self.component_list.sort(key = lambda c : c.left_node.x_position)
 
-    
+    def compute_neighbours(self):
+        pass
 
 
             
