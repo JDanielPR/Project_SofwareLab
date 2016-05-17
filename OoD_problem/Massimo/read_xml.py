@@ -5,6 +5,7 @@ import loadpath as lp
 import connectionpath as cp
 #import component as c
 import member as m
+import connection as con
 import node as nd
 
 def read_xml(path = '/Users/massimosferza/LRZ Sync+Share/TUM/TUM SoSe16/Courses/Software Lab/Git_repository/no-block-example.xml'):
@@ -47,7 +48,7 @@ proper .xml file"""
                 loadpath_obj.node_list.append(nd.Node(x_position))
 
             # for every component, that is not a connection
-            if not 'X' in component.find('name').text:
+            if not is_a_connection(component):
                 # get also x2
                 x_position = float(component.find('x2').text)
 
@@ -67,7 +68,7 @@ proper .xml file"""
         # add members to each loadpath
         for component in level.iter('component'):
             # for every component, that is not a connection
-            if not 'X' in component.find('name').text:
+            if not is_a_connection(component):
 
                 # get the previously created nodes
                 x1 = float(component.find('x1').text)
@@ -93,7 +94,81 @@ proper .xml file"""
         new_structure.path_list.append(loadpath_obj)
 
 #############################################################
-    # neglect all the connectionpaths
+    # create all the connectionpaths
+    for level in root.iter('level'):
+        for component in level.iter('component'):
+            if is_a_connection(component):
+                # found a connection
+                # since the structure is simply connected
+                # the nodes already exist in some loadpath node_list
+
+                # get the id of the first and of the second loadpath,
+                first_lp_id = int(level.find('id').text)
+                second_lp_id = int(component.find('end_level').text)
+                
+                # get x1 and x2
+                x1 = float(component.find('x1').text)
+                x2 = float(component.find('x2').text)
+                
+                # get node 1 and node 2
+                # initialize node1 and node2
+                node1, node2 = None, None
+                # loop over loadpaths and find the one with first_lp_id
+                for path in new_structure.path_list:
+                    if type(path) is lp.Loadpath:
+                        if path.id == first_lp_id:
+                            # found first loadpath
+                            # loop over the nodes and find the one with x1 pos
+                            for node in path.node_list:
+                                if node.x_position == x1:
+                                    # found first node
+                                    node1 = node
+                            # check if the node was found
+                            if not node1:
+                                # no matching node found
+                                # invalid input file
+                                name = component.find('name').text.strip()
+                                raise Exception(
+                                    "Invalid .xml: %s is not properly defined"
+                                    %name)
+                            
+                        elif path.id == second_lp_id:
+                            # found second loadpath
+                            # loop over the nodes and find the one with x2 pos
+                            for node in path.node_list:
+                                if node.x_position == x2:
+                                    # found second node
+                                    node2 = node
+                            # check if the node was found
+                            if not node2:
+                                # no matching node found
+                                # invalid input file
+                                name = component.find('name').text.strip()
+                                raise Exception(
+                                    "Invalid .xml: %s is not properly defined"
+                                    %name)
+                # check existance of node1 and node2
+                if not node1 or not node2:
+                    name = component.find('name').text.strip()
+                    raise Exception("Invalid .xml: %s is not properly defined"
+                                    %name)
+                # create a connection
+                connection_obj = con.Connection(
+                    component.find('name').text,
+                    node1,
+                    node2,
+                    float(component.find('defoLength').text),
+                    float(component.find('defoRatio').text))
+
+                # create a connectionpath
+                connectionpath_obj = cp.Connectionpath()
+                
+                # add connection_obj to connectionpath_obj
+                connectionpath_obj.component_list.append(connection_obj)
+
+                # add the connectionpath to the structure
+                new_structure.path_list.append(connectionpath_obj)
+
 #############################################################
     # sort all the components by left node position
     # look for neighbours
@@ -102,25 +177,29 @@ proper .xml file"""
         path.compute_neighbours()
     return new_structure
 
+def is_a_connection(component):
+    if component.find('end_level') is None:
+        # it is not a connection
+        return False
+    else:
+        # it is a connection
+        return True
+
+def print_read_data(structure):
+    for path in structure.path_list:
+        if type(path) is lp.Loadpath:
+            if not path.component_list:
+                print("Loadpath", path.id, "is empty")
+            else:
+                print("Loadpath", path.id, "has these components:")
+                for comp in path.component_list:
+                    comp.print_current_info("\t")
+        elif type(path) is cp.Connectionpath:
+            print("Found a connectionpath with this component:")
+            path.component_list[0].print_current_info("\t")
+            
 if __name__ == "__main__":
-    struct = read_xml()
-    for path in struct.path_list:
-        if not path.component_list:
-            print("Loadpath", path.id, "is empty")
-        else:
-            print("Loadpath", path.id, "has these components:")
-            for comp in path.component_list:
-                comp.print_info("\t")
+    struct = read_xml("xml_files/2_2_c1.xml")
+    print_read_data(struct)
 
-    print("Now let's move a node")
-
-    struct.path_list[2].component_list[1].deform(50)
-    
-    for path in struct.path_list:
-        if not path.component_list:
-            print("Loadpath", path.id, "is empty")
-        else:
-            print("Loadpath", path.id, "has these components:")
-            for comp in path.component_list:
-                comp.print_current_info("\t")
 
