@@ -1,5 +1,3 @@
-import member as mem
-
 class nextstep():
   
   def __int__(self,etree):
@@ -7,10 +5,9 @@ class nextstep():
 
   def treetailoring(self):
     for i in len(elementtree):
-      for j in range(len(elementtree[i])):
-        if elementtree[i][j] == False:
+      for j in range(len(i)):
+        if i[j] == False:
           elementtree.pop(i)
-          
 
   def carryon(self):
 
@@ -32,9 +29,5 @@ class nextstep():
         if i[j].calLength() <= (i[j].length-i[j].dlength):
           i[j].changestate(False)
         print(i[j].state)
-
-      ns1 = nextstep.nextstep(self.elementtree)
-      ns1.treetailoring()
-      ns1.caryon()
 
     

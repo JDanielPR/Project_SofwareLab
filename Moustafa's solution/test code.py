@@ -48,10 +48,10 @@ for i in lpgroup:
       i[j].changestate(False)
     print(i[j].state)
 
-  
-
-  
-
+  ns1 = ns.nextstep(lpgroup)
+  ns1.treetailoring()
+  ns1.carryon()
+      
   counter += 1
   
   if breaker == 1:
