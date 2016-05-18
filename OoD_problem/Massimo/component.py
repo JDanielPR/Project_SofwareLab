@@ -67,12 +67,8 @@ between length and deformable length"""
         x2 = self.right_node.current_x
         x1 = self.left_node.current_x
         current_length = x2 - x1
-        previous_deformable_length = self.current_deformable_length
         self.current_deformable_length = current_length - self.rigid_length
-##        if previous_deformable_length < self.current_deformable_length:
-##            print(self, "says: I became longer!!!")
-##        elif self.current_deformable_length < previous_deformable_length:
-##            print(self, "says: I became shorter!!!")
+
 
     def deform(self, deformation):
         """It deforms the component by moving the right node to the left."""
@@ -90,4 +86,8 @@ between length and deformable length"""
             self.right_neighbour.move(deformation)
         except:
             pass
+
+    def restore(self):
+        self.left_node.restore()
+        self.right_node.restore()
         
