@@ -1,14 +1,19 @@
 from itertools import product
+import loadpath as lp
+import connectionpath as cp
+import structure_solution as ss
 
 class Structure:
     def __init__(self):
         self.path_list = [ ]
         self.solution_list = None
+#        self.solution_list = [ ]
 
     def solve(self):
-        # solve each path independently
+        # solve each path independently (just loadpaths)
         for path in self.path_list:
-            path.solve()
+            if type(path) is lp.Loadpath:
+                path.solve()
             
         # create a list containing the path solution_list of each path
             # to be more clear:
@@ -26,19 +31,55 @@ class Structure:
             #   belongs to a different path
             #         e.g. [[path1 solution], [path2 solution], ...]
             #           or [[other path1 solution], [other path2 solution], ...]
-        list_of_path_solution_list = [x.solution_list for x in self.path_list]
+        list_of_path_solution_list = [path.solution_list for path
+                                      in self.path_list
+                                      if type(path) is lp.Loadpath]
 
         # save, as structure solution_list, the product set of each
         # path_solution_list
-        self.solution_list = list(product(*list_of_path_solution_list))
+#        self.solution_list = list(product(*list_of_path_solution_list))
 
-    def __repr__(self):
+#        for solution in product(*list_of_path_solution_list):
+#            self.solution_list.append(ss.StructureSolution(solution))
 
-        # print number of solutions
-        number_of_sol = len(self.solution_list)
-        number_of_sol_string = '{:,}'.format(number_of_sol)
-        print("Found %s solutions for the given structure."
-              % number_of_sol_string)
+##        all_solutions = (ss.StructureSolution(solution, self) for solution
+##                         in product(*list_of_path_solution_list))
+##        for sol in all_solutions:
+##            sol.test()
+        all_solutions = (ss.StructureSolution(solution, self) for solution
+                         in product(*list_of_path_solution_list))
+        self.solution_list = list((sol for sol in all_solutions
+                                   if sol.test()))
+
+##        self.solution_list = filter(ss.StructureSolution.test,
+##                                    all_solutions)
+        # test the given solutions
+##        for solution in self.solution_list:
+##            valid = test(solution) # implement this
+##            if not valid:
+##                self.solution_list.remove(solution)
+
+    def restore(self):
+        for path in self.path_list:
+            path.restore()
+
+
+    def print_solution(self):
+        # ask the user
+        while True:
+            # print number of solutions
+            user_input = input("Do you want to know the number of solutions, \
+that have been found? y/n\
+\n\n\t### it will take around 2 seconds every 1,000,000 solutions ###\n\n")
+            if user_input == "y" or user_input == "Y":
+                self.solution_list = list(self.solution_list)
+                number_of_sol = len(self.solution_list)
+                number_of_sol_string = '{:,}'.format(number_of_sol)
+                print("Found %s solutions for the given structure."
+                      % number_of_sol_string)
+                break
+            elif user_input == "n" or user_input == "N":
+                break
 
         # ask the user
         while True:
@@ -58,3 +99,17 @@ class Structure:
             elif user_input == "n" or user_input == "N":
                 break
         return ""               
+
+    def print_read_data(self):
+        for path in self.path_list:
+            if type(path) is lp.Loadpath:
+                if not path.component_list:
+                    print("Loadpath", path.id, "is empty")
+                else:
+                    print("Loadpath", path.id, "has these components:")
+                    for comp in path.component_list:
+                        comp.print_current_info("\t")
+            elif type(path) is cp.Connectionpath:
+                print("Found a connectionpath with this component:")
+                path.component_list[0].print_current_info("\t")
+                
