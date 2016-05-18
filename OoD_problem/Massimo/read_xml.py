@@ -185,21 +185,8 @@ def is_a_connection(component):
         # it is a connection
         return True
 
-def print_read_data(structure):
-    for path in structure.path_list:
-        if type(path) is lp.Loadpath:
-            if not path.component_list:
-                print("Loadpath", path.id, "is empty")
-            else:
-                print("Loadpath", path.id, "has these components:")
-                for comp in path.component_list:
-                    comp.print_current_info("\t")
-        elif type(path) is cp.Connectionpath:
-            print("Found a connectionpath with this component:")
-            path.component_list[0].print_current_info("\t")
-            
 if __name__ == "__main__":
     struct = read_xml("xml_files/2_2_c1.xml")
-    print_read_data(struct)
+    struct.print_read_data()
 
 
