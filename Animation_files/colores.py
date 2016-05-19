@@ -20,5 +20,3 @@ def makeMaterial(name, diffuse, specular, alpha):
     mat.alpha = alpha
     mat.ambient = 1
     return mat
-
-    
