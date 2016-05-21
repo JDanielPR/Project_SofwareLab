@@ -2,6 +2,8 @@ import Node
 import myHeader
 import imp
 import colores
+import math
+import bpy   #Module for blender
 
 imp.reload(colores)    #Load library
 imp.reload(Node)       #Load library
@@ -34,39 +36,49 @@ class Element():
         z = 0.0
         # Create element
         if self.elementType != 2:
-            self.member = createMember(str(self.num), (x, y, z), self.calcLength(),(a1, a2, a3),self.get_elementType())
+            self.member = myHeader.createMember(str(self.num), (x, y, z), self.calcLength(),(a1, a2, a3),self.get_elementType())
             selectedObject = bpy.context.selected_objects
             # Clasify two list, one for rigid elements and the other for deformable elements
             if self.get_elementType() == 1:   
-                colores.setMaterial(bpy.context.object, black)
+                colores.setMaterial(bpy.context.object, myHeader.black)
             else:  
-                colores.setMaterial(bpy.context.object, white)   
+                colores.setMaterial(bpy.context.object, myHeader.white)   
             bpy.ops.object.shade_smooth() 
         else:
-            self.member = createGap(str(self.num), (x, y, z), self.calcLength(),(a1, a2, a3),self.get_elementType())
+            self.member = myHeader.createGap(str(self.num), (x, y, z), self.calcLength(),(a1, a2, a3),self.get_elementType())
         
     def get_num(self):
         return self.num
+		
     def get_A(self):
         return self.nodeA.get_num()
+		
     def get_B(self):
         return self.nodeB.get_num()
+		
     def get_startingLoadpath (self):
         return self.startingLoadpath
+		
     def get_finalLoadpath (self):
         return self.finalLoadpath 
+		
     def get_elementType(self):
         return self.elementType
+		
     def get_deformation(self):
         return self.deformation
+		
     def get_numberOfElementInLoadpath(self):
         return self.numberOfElementInLoadpath
+		
     def get_member(self):
         return self.member
+		
     def get_orderOfDeformation(self):
         return self.orderOfDeformation 
+		
     def set_orderOfDeformation(self, orderOfDeformation ):
         self.orderOfDeformation = orderOfDeformation 
+		
     def calcLength(self):
         return math.sqrt((self.nodeA.get_x() - self.nodeB.get_x()) ** 2 + (self.nodeA.get_y() - self.nodeB.get_y()) ** 2)   
-######################################################################################
