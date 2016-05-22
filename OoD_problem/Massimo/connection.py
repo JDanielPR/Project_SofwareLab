@@ -7,9 +7,16 @@ class Connection(c.Component):
         c.Component.__init__(self, name,
                              node1, node2,
                              deformable_length, deformable_ratio)
-        self.previous_deformable_length = deformable_length
+        
+    def say_hi_to(self, infos_collector, node):
+        if node == self.left_node:
+            infos_collector.left_node_connection_list.append(self)
+            
+        elif node == self.right_node:
+            infos_collector.right_node_connection_list.append(self)
 
-    def restore(self):
-        self.left_node.restore()
-        self.right_node.restore()
-        self.previous_deformable_length = self.current_deformable_length
+        else:
+            raise Exception(
+                "In connection.py: say_hi_to(): this should never happen")
+                            
+

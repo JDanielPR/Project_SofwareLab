@@ -27,5 +27,7 @@ If the current x is 150 and delta_x is 50, then the current x becomes 100."""
         self.current_x -= delta_x
         self.notify()
 
-    def move_to(self, new_x_position):
-        pass
+    def virtual_move(self, infos_collector):
+        for component in self.observer_list:
+            # register all the components to infos_collector
+            component.say_hi_to(infos_collector, self)

@@ -1,16 +1,19 @@
 import connectionpath as cp
-
+import deformation_step as ds
 class StructureSolution:
     def __init__(self, path_solution_list, structure):
         # a list of path solutions e.g.:
         # [[e10, e12, e14, e13], [e23, e21, e22]]
         self.global_order_of_deformation = path_solution_list
+        self.deformation_step = ds.DeformationStep()
         self.structure = structure
 
     def __repr__(self):
         return str(self.global_order_of_deformation)
 
     def test(self):
+        """Tests the validity of the structure solution: True or False."""
+        
         string = ''.join('#' for i in range(79))
         print('\n\n',string,sep='')
         print('testing', self)
@@ -19,49 +22,122 @@ class StructureSolution:
 
         # restore undeformed struture
         self.structure.restore()
-        
+
         while True:
-##            self.structure.print_read_data()
-            try:
-                # create a list of the first components that are still
-                # deformable
-                components_to_deform = [
-                    next(component for component
-                         in path_solution.order_of_deformation
-                         if component.current_deformable_length > 0)
-                    for path_solution
-                    in self.global_order_of_deformation]
+            components_to_deform = [ ]
+            for path_solution in self.global_order_of_deformation:
+                try:
+                    #get next deformable element
+                    print("Path solution:",path_solution)
+                    
+                    member = next(x for x
+                                  in path_solution.order_of_deformation
+                                  if x.current_deformable_length > 0)
+                except StopIteration:
+                    return True
 
-##                print('i found this')
-##                print(components_to_deform)
-
-                min_deformable_length = min(component.current_deformable_length
-                                            for component
-                                            in components_to_deform)
-##                print('the min defo lenght is', min_deformable_length)
-            except StopIteration:
-##                print("stop iteration")
-                break
-
-            # perform deformation step
+                components_to_deform.append(member)
+            
+            # test solution with components_to_deform found
+            print(components_to_deform)
+            # get the deformation length of the next step
+            # and test the validity of the next deformation step
+            self.deformation_step.re_init()
             for component in components_to_deform:
-                component.deform(min_deformable_length)
+                component.virtual_deform(self.deformation_step)
+            if self.deformation_step.test():
+                # the deformation step is valid
+                for component in components_to_deform:
+                    print("Deformation step of",
+                          self.deformation_step.max_deformation)
+                    component.deform(self.deformation_step.max_deformation)
+            else:
+                # the deformation step isn't valid
+                return False
 
-            # look for connections that became longer
-            for path in self.structure.path_list:
-                if type(path) is cp.Connectionpath:
-                    for connection in path.component_list:
-                        if connection.previous_deformable_length < \
-                           connection.current_deformable_length:
-                            # if at least one is found
-##                            print(connection, 'became longer')
-##                            print('returning False')
-                            return False
-                        else:
-                            # else re-initialize the attribute
-                            # previous_deformable_length
-##                            print(connection, 'did NOT became longer')
-                            connection.previous_deformable_length = \
-                                connection.current_deformable_length
-##        print('returning True')
-        return True   
+def deformable_members_generator(path_solution):
+    for component in path_solution:
+        if component.current_deformable_length >0:
+            yield component
+
+###############################################################################
+##  how to find components_to_deform?
+##
+##  components_to_deform is a list containing all the components that will
+##  be deformed in the next deformation step.
+##
+##  solution 1:
+
+####    path_sol_list = [deformable_members_generator(path_solution.
+####                                                  order_of_deformation)
+####                     for path_solution in self.global_order_of_deformation]
+####
+####    for components_to_deform in (zip(*path_sol_list)):            
+
+##      this way the components to deform are called only once.      
+##      e.g.:
+##            
+##      o---I----o-II--o-III-o            oo-II--o-III-o
+##                                ----->
+##      o------I-------o--II-o            o------o--II-o
+##            
+##      The first element of each loadpath is called.
+##      Then the first element of the second loadpath should be called, since 
+##      it's not completely deformed. Instead the second element of each
+##      loadpath is called:
+##            
+##      oo-II--o-III-o            ooo-III-o
+##                       ----->            
+##      o------o--II-o            o------oo
+##
+##      Then the third element of each loadpath would be called, but the second 
+##      loadpath doesn't have a third element, so nothing is called and the
+##      structure remains undeformed.
+##      This solution doesn't make sense!!!
+##
+##  solution 2:
+            
+####        while True:
+####            components_to_deform = [ ]
+####            for path_solution in self.global_order_of_deformation:
+####                try:
+####                    #get next deformable element
+####                    print("Path solution:",path_solution)
+####                    
+####                    member = next(x for x
+####                                  in path_solution.order_of_deformation
+####                                  if x.current_deformable_length > 0)
+####                except StopIteration:
+####                    return True
+####
+####                components_to_deform.append(member)
+####            
+####            # test solution with components_to_deform found            
+
+##      This way the first still deformable component is called.
+##      In this case the solution of the previous example is as expected:
+##
+##      o---I----o-II--o-III-o          oo-II--o-III-o          ooo-III-o
+##                              ----->                  ----->
+##      o------I-------o--II-o          o------o--II-o          o-o--II-o
+##
+##                ooo-IIIo          oooo
+##        ----->            ----->
+##                oo--II-o          oo-o
+##
+##      But in this case:
+##
+##        o---I---o-II-o
+##               /          <--- rigid connection
+##        o-II--o---I--o
+##
+##      - the first two elements of each loadpath are called
+##      - the maximum deformation allowed is computed, which is zero, since the
+##          connection is rigid
+##      - the two elements get deformed by a zero displacement of their right
+##          node
+##
+##      for the next deformation step, the first two deformable elements of
+##      each loadpath are the same as before: the program runs into an infinite
+##      loop!!!
+##

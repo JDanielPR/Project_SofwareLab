@@ -87,6 +87,38 @@ between length and deformable length"""
         except:
             pass
 
+    def virtual_deform(self, infos_collector):
+        # check if infos_collector has a max_deformation
+        # if not
+        if not infos_collector.max_deformation:
+            infos_collector.max_deformation = self.current_deformable_length
+        # if it already has a max_deformation
+        else:
+            # check if it is bigger than the current deformable length of this
+            # component
+            if infos_collector.max_deformation > self.current_deformable_length:
+                # if so, update max_deformation with the smaller value
+                infos_collector.max_deformation = self.current_deformable_length
+
+        # communicate the virtual deformation to all the observers of the node
+        self.right_node.virtual_move(infos_collector)
+        try:
+            self.right_neighbour.virtual_move(infos_collector)
+        except:
+            pass
+
+    def virtual_move(self, infos_collector):
+        # communicate the virtual deformation to all the observers of the node
+        self.right_node.virtual_move(infos_collector)
+        try:
+            self.right_neighbour.virtual_move(infos_collector)
+        except:
+            pass
+
+    def say_hi_to(self, infos_collector, node):
+        # if it's a member there is nothing to do
+        pass                       
+
     def restore(self):
         self.left_node.restore()
         self.right_node.restore()
