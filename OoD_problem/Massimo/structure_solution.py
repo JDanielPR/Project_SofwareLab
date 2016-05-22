@@ -45,7 +45,16 @@ class StructureSolution:
             self.deformation_step.re_init()
             for component in components_to_deform:
                 component.virtual_deform(self.deformation_step)
+            
             if self.deformation_step.test():
+                # at this point self.deformation_step has collected all the
+                # infos
+
+                # if the max_deformation allowed is 0 discard the deformation
+                # step
+                if self.deformation_step.max_deformation == 0:
+                    return False                
+
                 # the deformation step is valid
                 for component in components_to_deform:
                     print("Deformation step of",
