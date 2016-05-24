@@ -7,7 +7,10 @@ deformation step."""
         right_node_connection_list = [ ]
 
     def test(self):
-        """Returns a True if the deformation step is valid, else False."""
+        """Returns a True if the deformation step is valid, else False.
+Also it updates the value of max_deformation if a connection imposes a
+constraint """
+
 # when moving a connection there might be 3 cases:
 #               <--/        |   <--/         |        /
 #                 /  case 1 |     /   case2  |       /    case 3

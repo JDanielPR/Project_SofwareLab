@@ -14,9 +14,10 @@ class StructureSolution:
     def test(self):
         """Tests the validity of the structure solution: True or False."""
         
-        string = ''.join('#' for i in range(79))
-        print('\n\n',string,sep='')
-        print('testing', self)
+##        string = ''.join('#' for i in range(79))
+##        print('\n\n',string,sep='')
+##        print('testing', self)
+        
         # efficiency will come next...
         # now let's try to get a working function
 
@@ -28,7 +29,7 @@ class StructureSolution:
             for path_solution in self.global_order_of_deformation:
                 try:
                     #get next deformable element
-                    print("Path solution:",path_solution)
+##                    print("Path solution:",path_solution)
                     
                     member = next(x for x
                                   in path_solution.order_of_deformation
@@ -39,7 +40,7 @@ class StructureSolution:
                 components_to_deform.append(member)
             
             # test solution with components_to_deform found
-            print(components_to_deform)
+##            print(components_to_deform)
             # get the deformation length of the next step
             # and test the validity of the next deformation step
             self.deformation_step.re_init()
@@ -50,6 +51,8 @@ class StructureSolution:
                 # at this point self.deformation_step has collected all the
                 # infos
 
+###############################################################################
+                # WRONG ASSUMPTION, JUST TO AVOID INFINITE LOOPS
                 # if the max_deformation allowed is 0 discard the deformation
                 # step
                 if self.deformation_step.max_deformation == 0:
@@ -57,8 +60,8 @@ class StructureSolution:
 
                 # the deformation step is valid
                 for component in components_to_deform:
-                    print("Deformation step of",
-                          self.deformation_step.max_deformation)
+##                    print("Deformation step of",
+##                          self.deformation_step.max_deformation)
                     component.deform(self.deformation_step.max_deformation)
             else:
                 # the deformation step isn't valid

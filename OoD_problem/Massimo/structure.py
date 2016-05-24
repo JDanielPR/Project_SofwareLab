@@ -48,8 +48,8 @@ class Structure:
 ##            sol.test()
         all_solutions = (ss.StructureSolution(solution, self) for solution
                          in product(*list_of_path_solution_list))
-        self.solution_list = list((sol for sol in all_solutions
-                                   if sol.test()))
+        self.solution_list = (sol for sol in all_solutions
+                              if sol.test())
 
 ##        self.solution_list = filter(ss.StructureSolution.test,
 ##                                    all_solutions)
@@ -70,7 +70,7 @@ class Structure:
             # print number of solutions
             user_input = input("Do you want to know the number of solutions, \
 that have been found? y/n\
-\n\n\t### it will take around 2 seconds every 1,000,000 solutions ###\n\n")
+\n\n\t### it will take around 1 second every 1,000 solutions ###\n\n")
             if user_input == "y" or user_input == "Y":
                 self.solution_list = list(self.solution_list)
                 number_of_sol = len(self.solution_list)

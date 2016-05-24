@@ -72,7 +72,7 @@ between length and deformable length"""
 
     def deform(self, deformation):
         """It deforms the component by moving the right node to the left."""
-        print(self, "has been deformed")
+##        print(self, "has been deformed")
         self.right_node.move_of(deformation)
         try:
             self.right_neighbour.move(deformation)
@@ -80,7 +80,7 @@ between length and deformable length"""
             pass
 
     def move(self, deformation):
-        print(self, "has been moved to the left")
+##        print(self, "has been moved to the left")
         self.right_node.move_of(deformation)
         try:
             self.right_neighbour.move(deformation)

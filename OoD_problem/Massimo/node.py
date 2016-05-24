@@ -11,10 +11,6 @@ class Node(subj.NodeSubject):
         self.current_x = x
         # the current_x is used to simulate deformation, without affecting the
         # inital condition
-
-        # list of the members connected to the left and to the right of the node
-        self.left = [ ]
-        self.right = [ ]
         
     def restore(self):
         """It restores the initial x position of the node."""
