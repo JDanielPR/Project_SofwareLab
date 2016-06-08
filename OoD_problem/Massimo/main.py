@@ -1,7 +1,7 @@
 from read_xml import read_xml
 from time import clock
 # create a structure reading the input data
-struct = read_xml("xml_files/5_5_5.xml")
+struct = read_xml("xml_files/2_3y.xml")
 
 t1 = clock()
 
