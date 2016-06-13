@@ -8,22 +8,30 @@ class member():
     self.name = nome
     self.leftmember = lm
     self.state = True
+    self.rigidlength = (self.length)*(1-z)
+    self.deformPossibility = True
     
   def calLength(self):
     return abs(self.leftnode - self.rightnode)
 
   def deform(self,x):
     self.leftnode += x
+    self.changedlength(x)
     if self.leftmember != None:
-      self.transmotion(x)
+      self.leftmember.transmotion(x)
+
+  def changedlength(self, d):
+    change = d
+    self.dlength -= change
 
   def transmotion(self,x):
-    self.leftmember.movemember(x)
-
-  def movemember(x):
-    self.leftmember.leftnode += x
-    self.leftmember.rightnode += x
-    self.leftmember.transmotion(x)
+    if self.leftmember != None: 
+      self.leftmember.leftnode += x
+      self.leftmember.rightnode += x
+      self.leftmember.transmotion(x)
 
   def changestate(self,switch):
     self.state = switch
+
+  def canDeform(self, state):
+    self.deformPossibility = state
