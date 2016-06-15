@@ -12,12 +12,12 @@ class nextstep():
   def __init__(self, etree, history, pstep):
 
     #input tree for this object to start from
-    self.elementtree = etree
+    self.elementTree = etree
 
-    logger.debug("steped into another level has {} possibilities".format(len(self.elementtree)))
+    logger.debug("steped into another level has {} possibilities".format(len(self.elementTree)))
                                                                     
     #list of trees results from the motion undertaken by each tuple of the input tree for this object
-    self.nstepsgroup = []
+    self.nStepsGroup = []
 
     #(START)stores the previously performed steps that led to the current tree of possibilities
     if history == None:
@@ -35,7 +35,7 @@ class nextstep():
     
     
   #responsible function for performing the procedure of elemination of the impossible happining sequences "tuples"
-  def treetailoring(self, localtree):
+  def treeTailoring(self, localtree):
 
     #(START)tailoring process
     domain = len(localtree)
@@ -66,17 +66,17 @@ class nextstep():
     counter = 0
 
     #loop over all the branches of the passed OoD tree 
-    for i in self.elementtree:
+    for i in self.elementTree:
       
       #create a copy of the input tree to reserve it against any changes
-      localtree = copy.deepcopy(self.elementtree)
+      localtree = copy.deepcopy(self.elementTree)
       
     
       #(START)determining the motion to be carried out perform it 
       deformotion = 1111111
       for j in i:
-        if j.dlength < deformotion:
-          deformotion = j.dlength
+        if j.dLength < deformotion:
+          deformotion = j.dLength
       deformotion = round(deformotion,1)
       #(END)determining the motion to be carried out perform i
       
@@ -99,8 +99,8 @@ class nextstep():
           j.deform(deformotion)
           logger.info("member {} has deformed by {}".format(j.name, deformotion))
 
-          if j.calLength() == j.rigidlength:
-            j.changestate(False)
+          if j.calLength() == j.rigidLength:
+            j.changeState(False)
             logger.info("a member has changed its state")
             j.canDeform(False)
             for k in localtree: #Switch all of the members along the loadpath containing member j on again
@@ -121,10 +121,10 @@ class nextstep():
 
       #(START)add a new member to the list that contains all of the next steps resulting from the input step to this object
       if decidor == len(i):
-        b = self.treetailoring(localtree)
+        b = self.treeTailoring(localtree)
         if len(b) != 0:
           logger.debug("a new level of trees is created")
-          self.nstepsgroup.append(nextstep(b,self.path,i))
+          self.nStepsGroup.append(nextstep(b,self.path,i))
       #(END)end of the process of crearing a new tree of the current branch
 
       #(START)SHOWING a found OoD
