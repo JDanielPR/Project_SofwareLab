@@ -78,6 +78,7 @@ class nextstep():
         if j.dLength < deformotion:
           deformotion = j.dLength
       deformotion = round(deformotion,1)
+      logger.info("deformation to be carried out it {}".format(deformotion))
       #(END)determining the motion to be carried out perform i
       
 
@@ -86,11 +87,13 @@ class nextstep():
       for j in localtree[counter]:
         if j.deformPossibility == True:
           decidor = decidor +1
+          logger.info("decidor has incremented by 1")
+      logger.info("decidor value now is {}".format(decidor))
       #(END)determine whether the current branch is valid to lead the deformation
         
 
       #(START)if amount of deformation is not zero, AND the decidor agreed on deforming, then DEFORM!
-      if deformotion != 0 and decidor == len(i):
+      if deformotion != 0.0 and decidor == len(i):
         
         count = 0
         
@@ -98,6 +101,8 @@ class nextstep():
 
           j.deform(deformotion)
           logger.info("member {} has deformed by {}".format(j.name, deformotion))
+
+          logger.info("current element length is {}, and rigid length is {}".format(j.calLength() ,j.rigidLength))
 
           if j.calLength() == j.rigidLength:
             j.changeState(False)

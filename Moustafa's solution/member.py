@@ -1,3 +1,6 @@
+import logging
+memberLogging = logging.getLogger('nextstep')
+
 class member():
 
   def __init__(self,x,y,z,nome,lm):
@@ -24,9 +27,13 @@ class member():
     self.dLength -= change
 
   def transmotion(self,x):
-    if self.leftMember != None: 
-      self.leftMember.leftNode.changePosition(x)
+    memberLogging.debug("a motion has been transfered to an adjacent member")
+    memberLogging.debug("the leftNode of the adjacent member has been moved by {}".format(x))
+    self.leftNode.changePosition(x)
+    if self.leftMember != None:  
       self.leftMember.transmotion(x)
+    else:
+      memberLogging.debug("WHAT THE FUCK!!!!!")
 
   def changeState(self,switch):
     self.state = switch
