@@ -36,9 +36,18 @@ def gapsInsertor(listOfLoadpaths):
       gapsName = 'gap'+str(counter)+str(0)  #gap(loadpath_index)(member_index)
       i.listOfMembers.insert(0,member(0,firstStrcturalMember,1,gapsName,None,False))
       
-      for j in i:
+      for j in i:  #turn ON the gap that lies in the front and OFF for the rest of members
         if j.name != gapsName:
           j.changeState(False)
+
+    else:  #if the current loadpath doesn't have a gap at the front
+      for j in i:  #this loop will search for gaps in between, and it will turn them ON
+        if j.structural == False:
+          j.state = True
+          for k in i:  #this loop will trun all of the other members OFF 
+            if k.name != j.name:
+              k.state = False
+          break
           
     counter += 1
 
