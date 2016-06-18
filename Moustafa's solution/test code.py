@@ -2,9 +2,12 @@ import member as mem
 import loadpath as lp
 import nextstep as ns
 import node as n
+import structure as struct
 import itertools
 
 #creating node objects
+#ALL THESE STEPS ARE GOING TO BE CREATED IN THE FUNCTION "readXML" AND STORED 
+#WITHIN A "structure" CLASS
 n11 = n.node(0)
 n12 = n.node(4)
 n13 = n.node(8)
@@ -17,7 +20,9 @@ n31 = n.node(0)
 n32 = n.node(6)
 n33 = n.node(10)
 
-#creating member objects (THIS CAN BE DONE AUTOMATICALLY)
+#creating member objects
+#ALL THESE STEPS ARE GOING TO BE CREATED IN THE FUNCTION "readXML" AND STORED 
+#WITHIN A "structure" CLASS
 m1 = mem.member(n11,n12,0.50,'L1E1',None)
 m2 = mem.member(n12,n13,0.75,'L1E2',m1)
 m5 = mem.member(n13,n14,0.25,'L1E3',m2)
@@ -27,7 +32,9 @@ m6 = mem.member(n23,n24,0.50,'L2E3',m4)
 m7 = mem.member(n31,n32,0.50,'L3E1',None)
 m8 = mem.member(n32,n33,0.50,'L3E2',m7)
 
-#organizing member objects in a single array (THIS CAN BE DONE AUTOMATICALLY)
+#organizing member objects in a single array
+#ALL THESE STEPS ARE GOING TO BE CREATED IN THE FUNCTION "readXML" AND STORED 
+#WITHIN A "structure" CLASS
 lp1 = lp.loadpath(1)
 lp2 = lp.loadpath(2)
 lp3 = lp.loadpath(3)
@@ -41,31 +48,24 @@ lp2.addMember(m6)
 lp3.addMember(m7)
 lp3.addMember(m8)
 
-loadpath = [[m1,m2,m5],[m3,m4,m6],[m7,m8]]
+#creation of the structure in a single entity
+#ALL THESE STEPS ARE GOING TO BE CREATED IN THE FUNCTION "readXML" AND STORED 
+#WITHIN A "structure" CLASS
+givenStructure = struct.structure(None)
 
-for i in loadpath:
+givenStructure.listLoadpaths.append(lp1.listOfMembers)
+givenStructure.listLoadpaths.append(lp2.listOfMembers)
+givenStructure.listLoadpaths.append(lp3.listOfMembers)
+
+#visualization of the given strucutre (NICHT WICHTIG)
+for i in givenStructure.listLoadpaths:
   for j in i:
     print(j.calLength())
     print(j.leftNode.position,"",j.rightNode.position)
 
-#create the tree of possibilities 
-lpgroup = list(itertools.product(*loadpath))
+#solve the givenStructure
+givenStructure.solve()
 
-#prints the motion possibilities
-for i in lpgroup:
-  for j in i:
-    print(j.name)
-print('\n')
-
-nstep = ns.nextstep(lpgroup,None,None)
-
-##ANOTHER STRUCTURE FOR THE TEST OF MEMBERS WITH GAPS
-#m1 = mem.member(0,3,1.00,'GAP1',None)
-#m2 = mem.member(3,7,0.75,'L1E1',m1)
-#m3 = mem.member(7,11,0.25,'GAP2',m2)
-#m4 = mem.member(11,13,0.50,'L1E3',m3)
-
-#m5
 
 
 

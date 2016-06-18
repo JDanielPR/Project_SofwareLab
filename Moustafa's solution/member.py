@@ -3,7 +3,7 @@ memberLogging = logging.getLogger('nextstep')
 
 class member():
 
-  def __init__(self,x,y,z,nome,lm):
+  def __init__(self, x, y, z, nome='default', lm, effectiveness=True):
     self.leftNode = x
     self.rightNode = y
     self.dLength = (self.calLength())*z
@@ -13,6 +13,9 @@ class member():
     self.state = True
     self.rigidLength = (self.length)*(1-z)
     self.deformPossibility = True
+
+    #new attribute introduced to account for gaps
+    self.structural = effectiveness  #this will change to "False" if the member was a gap
     
   def calLength(self):
     return abs(self.leftNode.position - self.rightNode.position)
@@ -32,8 +35,6 @@ class member():
     self.leftNode.changePosition(x)
     if self.leftMember != None:  
       self.leftMember.transmotion(x)
-    else:
-      memberLogging.debug("WHAT THE FUCK!!!!!")
 
   def changeState(self,switch):
     self.state = switch

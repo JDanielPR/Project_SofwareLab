@@ -3,8 +3,8 @@ import member
 class loadpath():
 
   def __init__(self, n):
-    self.LoadpathNumber = n
-    self.ListOfMembers = []
+    self.loadpathNumber = n
+    self.listOfMembers = []
 
   def addMember(self, mem):
-    self.ListOfMembers.append(mem)
+    self.listOfMembers.append(mem)
