@@ -2,6 +2,7 @@ import member
 import loadpath
 import copy
 import logging
+import gapsHandeling
 
 logger = logging.getLogger('nextstep')
 logging.basicConfig(level=logging.DEBUG)
@@ -59,6 +60,8 @@ class nextstep():
         
     return(localtree)
 
+  
+
   #resposible function for perfoming the procedure of stepping
   def carryon(self):
 
@@ -95,7 +98,7 @@ class nextstep():
       #(START)if amount of deformation is not zero, AND the decidor agreed on deforming, then DEFORM!
       if deformotion != 0.0 and decidor == len(i):
         
-        count = 0
+        count = 0  #determines the loadpath the following member belongs to
         
         for j in localtree[counter]:
 
@@ -105,12 +108,15 @@ class nextstep():
           logger.info("current element length is {}, and rigid length is {}".format(j.calLength() ,j.rigidLength))
 
           if j.calLength() == j.rigidLength:
-            j.changeState(False)
-            logger.info("a member has changed its state")
-            j.canDeform(False)
-            for k in localtree: #Switch all of the members along the loadpath containing member j on again
-              if k[count].name != j.name:
-                k[count].canDeform(True)
+            if j.structural == True:
+              j.changeState(False)
+              logger.info("a member has changed its state")
+              j.canDeform(False)
+              for k in localtree: #Switch all of the members along the loadpath containing member j on again
+                if k[count].name != j.name:
+                  k[count].canDeform(True)
+            else:  #here we know that this member was a gap
+              localtree = gapsHandeling.treatThisGap(j, localtree,count)
             
           else:
             j.canDeform(True) #member j will keep leading the deformation in its own loadpath

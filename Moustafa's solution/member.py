@@ -3,7 +3,7 @@ memberLogging = logging.getLogger('nextstep')
 
 class member():
 
-  def __init__(self, x, y, z, nome='default', lm, effectiveness=True):
+  def __init__(self, x, y, z, nome, lm, effectiveness=True,gapIndx = None):
     self.leftNode = x
     self.rightNode = y
     self.dLength = (self.calLength())*z
@@ -16,6 +16,7 @@ class member():
 
     #new attribute introduced to account for gaps
     self.structural = effectiveness  #this will change to "False" if the member was a gap
+    self.gapIndex = gapIndx  #index (position) of the gap with respect to the rest of the gaps within the loadpath
     
   def calLength(self):
     return abs(self.leftNode.position - self.rightNode.position)
@@ -41,3 +42,6 @@ class member():
 
   def canDeform(self, state):
     self.deformPossibility = state
+
+  def addAdjacentMember(self, adjMem):
+    self.leftMember = adjMem

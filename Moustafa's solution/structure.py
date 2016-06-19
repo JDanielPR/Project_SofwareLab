@@ -1,21 +1,38 @@
 import nextstep as ns
-import itertools 
+import itertools
+import gapsHandeling
 
 class structure():
 
-  def __init__(self, crossMemberObject):
+  def __init__(self, listLPsObject):
 
-    self.listLoadpaths = []
-    self.listCrossMembers = crossMemberObject
+    self.listLoadpaths = listLPsObject
 
   def solve(self):
+
+    structureArray = []
+
+    gapsHandeling.gapsInsertor(self.listLoadpaths)
     
-    lpgroup = list(itertools.product(*(self.listLoadpaths)))
+    for i in self.listLoadpaths .listOfLoadpaths:
+      structureArray.append(i.listOfMembers)
+
+    #visualization of the given structure
+    counter = 0
+    for i in structureArray:
+      print('Loadpath #',counter)
+      for j in i:
+        print(j.name)
+      print('-----')
+      counter += 1
+      
+    lpgroup = list(itertools.product(*(structureArray)))
 
     #prints the motion possibilities
     for i in lpgroup:
       for j in i:
         print(j.name)
         print('\n')
+      print('-------')
     
     nstep = ns.nextstep(lpgroup,None,None)
