@@ -1,4 +1,4 @@
-class Node():
+class BlenderTags():
     def __init__(self , nodeNumber = 0 , xCoordinate = 0.0 , yCoordinate = 0.0):
         self.nodeNumber = nodeNumber 
         self.xCoordinate = xCoordinate

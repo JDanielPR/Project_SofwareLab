@@ -2,14 +2,12 @@ import imp
 import math
 import bpy   #Module for blender
 import Element
-import colores
 import Node
-import myHeader
+import Puntos
 
-imp.reload(colores)    #Load library
-imp.reload(Node)       #Load library
-imp.reload(myHeader)   #Load library
+imp.reload(Node)              #Load library
 imp.reload(Element)
+imp.reload(Puntos)
 
 class Structure():
     def __init__(self,my_nodes,my_elements, numberOfNodes, numberOfElements, numberOfPaths):
@@ -37,7 +35,8 @@ class Structure():
         self.listOfTheNumberOfDeformableMemberAndGaps = []
         self.listOfTheTimesOfEachPathWillStartDeforming = []
         self.nonDeformableLengthPerPath = []
-        self.totalPathLength = []                              #List of the lengths per path
+        self.totalPathLength = []   
+        self.inclinedMemberList = []                           #List of the lengths per path
         self.coordinateOfTheVeryFirstNode = 0
         self.coordinateOfTheVeryLastNode = 0
         self.locationOfTheFirstPath = 0
@@ -48,6 +47,11 @@ class Structure():
         self.valueOfTheFurthestNodeThatBelongsToADeformableMember = 0
         self.valueOfTheNearestNodeThatBelongsToADeformableMember = 0
         self.timeOfTheAnimation = 0
+        self.listaDeNodos = []
+        
+        self.positionoFNodes1= []
+        self.positionoFNodes2= []
+        self.positionoFNodes3= []
 
         # Sort the list of nodes according to the number of node
         my_nodes.sort()
@@ -57,6 +61,7 @@ class Structure():
             self.my_nodes.append(Node.Node(my_nodes[i][0], my_nodes[i][1], my_nodes[i][2]))
             self.coordinatesInX.append(my_nodes[i][1])
             self.coordinatesInY.append(my_nodes[i][2])
+            #self.listaDeNodos.append(Puntos.Puntos(my_nodes[i][0], my_nodes[i][1], my_nodes[i][2]))
 	    
         # Create all element objects
         for i in range(self.numberOfElements):
@@ -83,12 +88,16 @@ class Structure():
         self.get_pathNumberOfTheLongestFinalPath()
         self.get_animation()
 
-        '''
+        
         # Define the list of inclined members per Path
         for j in range(len(my_elements)):
-            if my_elements[j].get_startingLoadpath() != my_elements[j].get_finalLoadpath():
-                inclinedMemberListPerPath.append(my_elements[j])
-        '''
+            if self.my_elements[j].get_levelOfNodeA() != self.my_elements[j].get_levelOfNodeB():
+                self.inclinedMemberListPerPath.append(my_elements[j])
+        
+        #print(self.inclinedMemberListPerPath)
+        #print(self.listOfTheOrderInWhichTheMembersOfEachPathWillStartDeforming)
+        #print(self.positionoFNodes1)
+        #print(self.positionoFNodes2)
     ############################################################################
     def get_numberOfNodes(self): 
         return self.numberOfNodes
@@ -120,11 +129,11 @@ class Structure():
             countGaps = 0
             self.listOfGapsPerPath.append([])
             for j in range(self.numberOfElements):
-                if self.my_elements[j].get_startingLoadpath() == self.my_elements[j].get_finalLoadpath():
-                    if self.my_elements[j].get_startingLoadpath() == i + 1:
+                if self.my_elements[j].get_levelOfNodeA() == self.my_elements[j].get_levelOfNodeB():
+                    if self.my_elements[j].get_levelOfNodeA() == i + 1:
                         if self.my_elements[j].get_elementType() == 2:
                             countGaps = countGaps + 1
-                            self.listOfGapsPerPath[i].append([self.my_nodes[int(self.my_elements[j].get_A()-1)].get_x(), self.my_elements[j].get_num() ])          
+                            self.listOfGapsPerPath[i].append([self.my_nodes[int(self.my_elements[j].get_nodeA()-1)].get_xCoordinate(), self.my_elements[j].get_numberOfElement() ])          
             self.listOfTheNumberOfGapsPerPath.append(countGaps)
      
         # Sort the gaps according to the distance to the wall
@@ -145,20 +154,20 @@ class Structure():
             self.listOfTheOrderInWhichTheMembersOfEachPathWillStartDeforming.append([])
             numberMaxOfGaps = self.listOfTheNumberOfGapsPerPath[i]
             for j in range(self.numberOfElements):
-                if self.my_elements[j].get_startingLoadpath() == self.my_elements[j].get_finalLoadpath():
-                    if self.my_elements[j].get_startingLoadpath() == i + 1:
-                        self.horizontalMemberListPerPath[i].append([self.my_nodes[int(self.my_elements[j].get_A() )-1].get_x() , self.my_elements[j].get_num(), localNumerationPerPath ])
+                if self.my_elements[j].get_levelOfNodeA() == self.my_elements[j].get_levelOfNodeB():
+                    if self.my_elements[j].get_levelOfNodeA() == i + 1:
+                        self.horizontalMemberListPerPath[i].append([self.my_nodes[int(self.my_elements[j].get_nodeA() )-1].get_xCoordinate() , self.my_elements[j].get_numberOfElement(), localNumerationPerPath ])
                         countElements = countElements + 1
                         # Define length per path
-                        l = self.my_elements[j].calcLength() + l
+                        l = self.my_elements[j].computeLength() + l
                         if self.my_elements[j].get_elementType() == 0 or self.my_elements[j].get_elementType() == 2:
-                            k = self.my_elements[j].calcLength()*(self.my_elements[j].get_deformation()/100)+ k
+                            k = self.my_elements[j].computeLength()*(self.my_elements[j].get_deformationPercentage()/100)+ k
                             self.horizontalDeformableMemberListPerPath[i].append(self.my_elements[j])
                             countDeformableElementsAndGaps = countDeformableElementsAndGaps + 1
                             if self.my_elements[j].get_elementType() == 0:
-                                self.listOfTheOrderInWhichTheMembersOfEachPathWillStartDeforming[i].append([self.my_elements[j].get_orderOfDeformation() + numberMaxOfGaps ,self.my_elements[j].get_num(),self.my_elements[j].calcLength()*(self.my_elements[j].get_deformation()/100)/10, self.my_elements[j].calcLength()*(self.my_elements[j].get_deformation()/100), self.my_elements[j].calcLength() ,self.my_elements[j].get_deformation()])              
+                                self.listOfTheOrderInWhichTheMembersOfEachPathWillStartDeforming[i].append([self.my_elements[j].get_orderOfDeformation() + numberMaxOfGaps ,self.my_elements[j].get_numberOfElement(),self.my_elements[j].computeLength()*(self.my_elements[j].get_deformationPercentage()/100)/10, self.my_elements[j].computeLength()*(self.my_elements[j].get_deformationPercentage()/100), self.my_elements[j].computeLength() ,self.my_elements[j].get_deformationPercentage()])              
                             else:
-                                self.listOfTheOrderInWhichTheMembersOfEachPathWillStartDeforming[i].append([self.my_elements[j].get_orderOfDeformation() , self.my_elements[j].get_num(),self.my_elements[j].calcLength()*(self.my_elements[j].get_deformation()/100)/10, self.my_elements[j].calcLength()*(self.my_elements[j].get_deformation()/100), self.my_elements[j].calcLength() ,self.my_elements[j].get_deformation()])   
+                                self.listOfTheOrderInWhichTheMembersOfEachPathWillStartDeforming[i].append([self.my_elements[j].get_orderOfDeformation() , self.my_elements[j].get_numberOfElement(),self.my_elements[j].computeLength()*(self.my_elements[j].get_deformationPercentage()/100)/10, self.my_elements[j].computeLength()*(self.my_elements[j].get_deformationPercentage()/100), self.my_elements[j].computeLength() ,self.my_elements[j].get_deformationPercentage()])  
             self.listOfTheNumberOfDeformableMemberAndGaps.append(countDeformableElementsAndGaps)
             self.listOfTheNumberOfMembersInEachPath.append(countElements)
             self.totalPathLength.append(l)          # Total length of the path
@@ -168,12 +177,21 @@ class Structure():
             countElements = 0
             countDeformableElementsAndGaps = 0
             localNumerationPerPath = 0
+        
+        
         # Once knowing the members of each path we proceed to clasify accornding to the position in the path
         for i in range(self.numberOfPaths):
             self.horizontalMemberListPerPath[i].sort()
             self.listOfTheOrderInWhichTheMembersOfEachPathWillStartDeforming[i].sort() 
-            self.nonDeformableLengthPerPath.append(self.totalPathLength[i] - self.coverableLengthPerPath[i])           
-    
+            self.nonDeformableLengthPerPath.append(self.totalPathLength[i] - self.coverableLengthPerPath[i])  
+            
+        for j in range(self.numberOfElements):
+            if self.my_elements[j].get_levelOfNodeA() != self.my_elements[j].get_levelOfNodeB():
+                self.inclinedMemberList.append([self.my_elements[j].get_numberOfElement(),self.my_elements[j].computeLength()])           
+        
+        
+        
+        
     def get_listOfValuesOfTheNearestNodeOfEachPath(self):
          for i in range(self.numberOfPaths):
             if len(self.horizontalMemberListPerPath[i]) > 0:
@@ -207,8 +225,27 @@ class Structure():
         # Create a list with the distance per path from the very first node to the head nod eof each path
         for i in range(self.numberOfPaths):
             self.distancesFromTheFistNodeToTheHeadOfEachPath.append((abs(self.totalPathLength[i] - (self.coordinateOfTheVeryLastNode - self.coordinateOfTheVeryFirstNode )),i+1))
+        
+        counter = 0
+        for i in range(self.numberOfPaths):
+            self.positionoFNodes1.append([]) 
+            for j in range(self.numberOfNodes):
+                if self.my_nodes[j].get_yCoordinate() == counter:
+                    self.positionoFNodes1[i].append(self.my_nodes[j].get_xCoordinate())
+            counter=counter+300
+         
+        #print(self.listOfTheNumberOfDeformableMemberAndGaps)
+        for i in range(self.numberOfPaths):
+            self.positionoFNodes2.append([]) 
+            if self.listOfTheNumberOfDeformableMemberAndGaps[i] != 0:
+                for j in range(len(self.positionoFNodes1[i])):
+                    self.positionoFNodes2[i].append(self.positionoFNodes1[i][j]-500)
+            else:
+                self.positionoFNodes2[i].append(-500)
+                
+            
+            
 
-		
     def get_listOoD(self):
         #This loop define the final sequence with the corrected deformation
         oldLength = 0.0
@@ -253,15 +290,18 @@ class Structure():
         return self.timeOfTheAnimation
     
     def get_animation(self):
+         
         # Set keyframes for Position XYZ value at Frame 1 and 10 (to hold position) for every cubes
         for i in range(self.numberOfElements):
-            cube = self.my_elements[i].get_member()
+            cube = self.my_elements[i].get_blenderElement()
             cube.keyframe_insert('location', frame=1)
-            cube.keyframe_insert('location', frame=10)     
-    
+            cube.keyframe_insert('location', frame=10) 
+            
+
+
         #Move all the elements at the initial position  
         for i in range(self.numberOfElements):
-            cube = self.my_elements[i].get_member()
+            cube = self.my_elements[i].get_blenderElement()
             bpy.context.scene.frame_current = 50
             cube.location[0] -= 500
             cube.keyframe_insert('location', frame = 50)
@@ -269,16 +309,101 @@ class Structure():
             for fcurve in fcurves:
                 for kf in fcurve.keyframe_points:
                     kf.interpolation = 'LINEAR' 
+        ##########################################
+
+                    
+        #######################################3333
+        inicio = 50
+        final = 90
+        for i in range(len(self.inclinedMemberList)):
+            cube = self.my_elements[int(self.inclinedMemberList[i][0])-1].get_blenderElement() 
+            # Translate element  
+            bpy.context.scene.frame_current = inicio
+            cube.keyframe_insert('location', frame = inicio)
+            bpy.context.scene.frame_current = final
+            cube.location[0] = cube.location[0]  - 400
+            cube.keyframe_insert('location', frame = final)
+            fcurves = cube.animation_data.action.fcurves
+            for fcurve in fcurves:
+                for kf in fcurve.keyframe_points:
+                    kf.interpolation = 'LINEAR'
         
-        print(self.listOfTheOrderInWhichTheMembersOfEachPathWillStartDeforming)          
-        print(self.coverableLengthPerPath)
-        print(self.newCoverableLengthPerPath)
+        inicio = 90
+        final = 140
+        for i in range(len(self.inclinedMemberList)):
+            cube = self.my_elements[int(self.inclinedMemberList[i][0])-1].get_blenderElement() 
+            # Translate element  
+            bpy.context.scene.frame_current = inicio
+            cube.keyframe_insert('location', frame = inicio)
+            bpy.context.scene.frame_current = final
+            cube.location[0] = cube.location[0]  - 500
+            cube.keyframe_insert('location', frame = final)
+            fcurves = cube.animation_data.action.fcurves
+            for fcurve in fcurves:
+                for kf in fcurve.keyframe_points:
+                    kf.interpolation = 'LINEAR'
+        
+        inicio = 140
+        final = 170
+        for i in range(len(self.inclinedMemberList)):
+            cube = self.my_elements[int(self.inclinedMemberList[i][0])-1].get_blenderElement() 
+            bpy.context.scene.frame_current = inicio
+            cube.keyframe_insert('scale', frame = inicio)
+            bpy.context.scene.frame_current = final
+            cube.scale[2] *= ((600)/(self.inclinedMemberList[i][1]/100))/100
+            cube.keyframe_insert('scale', frame = final)
+            fcurves = cube.animation_data.action.fcurves
+            for fcurve in fcurves:
+                for kf in fcurve.keyframe_points:
+                     kf.interpolation = 'LINEAR'
+                     
+                 
+        inicio = 140
+        final = 170
+        for i in range(len(self.inclinedMemberList)):
+            cube = self.my_elements[int(self.inclinedMemberList[i][0])-1].get_blenderElement() 
+            bpy.context.scene.frame_current = inicio
+            cube.keyframe_insert('rotation_euler', frame = inicio)
+            cube.rotation_euler[2] =  math.atan(300/600)
+            bpy.context.scene.frame_current = final
+            cube.keyframe_insert('rotation_euler', frame = final)
+            fcurves = cube.animation_data.action.fcurves
+            for fcurve in fcurves:
+                for kf in fcurve.keyframe_points:
+                     kf.interpolation = 'LINEAR'
+                     
+        inicio = 140
+        final = 170
+        for i in range(len(self.inclinedMemberList)):
+            cube = self.my_elements[int(self.inclinedMemberList[i][0])-1].get_blenderElement() 
+            bpy.context.scene.frame_current = inicio
+            cube.keyframe_insert('location', frame = inicio)
+            cube.location[0] = cube.location[0]  - 150
+            bpy.context.scene.frame_current = final
+            cube.keyframe_insert('location', frame = final)
+            fcurves = cube.animation_data.action.fcurves
+            for fcurve in fcurves:
+                for kf in fcurve.keyframe_points:
+                     kf.interpolation = 'LINEAR'
+            #Change color
+            bpy.context.scene.frame_current = inicio
+            cube.keyframe_insert('color', frame = inicio)
+            bpy.context.scene.objects.active = cube #active the object that you want to set the object color
+            bpy.context.object.active_material.use_object_color = True #active the object color option
+            bpy.context.object.color = (0,1,0,0.5)#set the value of the object color
+            cube.keyframe_insert('color', frame = final)
+                                
+        print(self.listOfTheTimesOfEachPathWillStartDeforming)
+        ########################################################
+        #print(self.listOfTheOrderInWhichTheMembersOfEachPathWillStartDeforming)          
+        #print(self.coverableLengthPerPath)
+        #print(self.newCoverableLengthPerPath)
         # Move the elements of each path to the initial position    
         for i in range(self.numberOfPaths):
             time = self.listOfTheTimesOfEachPathWillStartDeforming[i] + 50
             for j in range(self.listOfTheNumberOfMembersInEachPath[i]):
                 if self.finalLengthOfTheLongestPath <= self.finalPathLength[i]:
-                    cube = self.my_elements[self.horizontalMemberListPerPath[i][j][1]-1].get_member()
+                    cube = self.my_elements[self.horizontalMemberListPerPath[i][j][1]-1].get_blenderElement()
                     bpy.context.scene.frame_current = time
                     cube.location[0] -= self.distancesFromTheFistNodeToTheHeadOfEachPath[i][0]
                     cube.keyframe_insert('location', frame = time)
@@ -286,9 +411,11 @@ class Structure():
                     for fcurve in fcurves:
                         for kf in fcurve.keyframe_points:
                             kf.interpolation = 'LINEAR' 
-                          
+                            
+ 
+
                 else:
-                    cube = self.my_elements[self.horizontalMemberListPerPath[i][j][1]-1].get_member()
+                    cube = self.my_elements[self.horizontalMemberListPerPath[i][j][1]-1].get_blenderElement()
                     bpy.context.scene.frame_current = 50 + self.newCoverableLengthPerPath[self.pathNumberOfTheLongestFinalPath-1]/10
                     cube.location[0] -= self.newCoverableLengthPerPath[self.pathNumberOfTheLongestFinalPath-1]
                     cube.keyframe_insert('location', frame = 50 + self.newCoverableLengthPerPath[self.pathNumberOfTheLongestFinalPath-1]/10)
@@ -296,14 +423,16 @@ class Structure():
                     for fcurve in fcurves:
                         for kf in fcurve.keyframe_points:
                             kf.interpolation = 'LINEAR'
-                            
+                    
+      
         
         for i in range(self.numberOfPaths):
             timeOffset = 50 + self.listOfTheTimesOfEachPathWillStartDeforming[i]
             for j in range(self.listOfTheNumberOfDeformableMemberAndGaps[i]):
                 if self.finalLengthOfTheLongestPath <= self.finalPathLength[i]:
-                    cube = self.my_elements[self.listOfTheOrderInWhichTheMembersOfEachPathWillStartDeforming[i][j][1]-1].get_member()
+                    cube = self.my_elements[self.listOfTheOrderInWhichTheMembersOfEachPathWillStartDeforming[i][j][1]-1].get_blenderElement()
                     positionOfNodeA = cube.location[0]
+                    #print(positionOfNodeA)
                     inicio = timeOffset
                     duration = self.listOfTheOrderInWhichTheMembersOfEachPathWillStartDeforming[i][j][2]
                     final = inicio + duration
@@ -329,14 +458,29 @@ class Structure():
                     for fcurve in fcurves:
                         for kf in fcurve.keyframe_points:
                             kf.interpolation = 'LINEAR'
-
+                            
+                    #Change color
+                    bpy.context.scene.frame_current = inicio
+                    cube.keyframe_insert('color', frame = inicio)
+                    if self.my_elements[self.listOfTheOrderInWhichTheMembersOfEachPathWillStartDeforming[i][j][1]-1].get_elementType() == 0:
+                        bpy.context.scene.objects.active = cube #active the object that you want to set the object color
+                        bpy.context.object.active_material.use_object_color = True #active the object color option
+                        bpy.context.object.color = (0,1,0,0.5)#set the value of the object color
+                    cube.keyframe_insert('color', frame = final)
+                    #fcurves = cube.animation_data.action.fcurves
+                    #for fcurve in fcurves:
+                        #for kf in fcurve.keyframe_points:
+                            #kf.interpolation = 'LINEAR'
+                    
+                    
                     timeOffset  = final 
+                    
                     for p in range(self.listOfTheNumberOfMembersInEachPath[i]): 
                         if self.horizontalMemberListPerPath[i][p][1] == self.listOfTheOrderInWhichTheMembersOfEachPathWillStartDeforming[i][j][1]:
                             for pp in range(self.listOfTheNumberOfMembersInEachPath[i]):
                                 if  self.horizontalMemberListPerPath[i][p][2] < pp +1:
                                     # Translation of the rest of the rest of the member of the path
-                                    elemento = self.my_elements[self.horizontalMemberListPerPath[i][pp][1]-1].get_member()
+                                    elemento = self.my_elements[self.horizontalMemberListPerPath[i][pp][1]-1].get_blenderElement()
                                     self.positionOfNodeAOfTheCurrentElement = elemento.location[0]
                                     bpy.context.scene.frame_current = inicio
                                     elemento.keyframe_insert('location', frame = inicio)
@@ -347,10 +491,10 @@ class Structure():
                                     for fcurve in fcurves:
                                         for kf in fcurve.keyframe_points:
                                             kf.interpolation = 'LINEAR'
+                                    
 
             timeOffset = 50
             
-
 
 		
 
