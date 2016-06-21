@@ -12,6 +12,9 @@ class Component:
         #
         self.solution_collector = None
 
+    def __repr__(self):
+        return 'isdh-' + self.name
+
     def save_deformation_step(self,
                               amount,
                               transformation):
@@ -36,17 +39,33 @@ solution_collector is defined"
             deformation_history = self.solution_collector.\
                                   deformation_history_list[-1]
 
-            # get the last DeformationStep of the component
-            last_deformation_step = deformation_history[self][-1]
-            # where deformation_history[self] is a list
+            # if there are DeformationStep in the object history
+            if deformation_history[self]:
+                # get the last DeformationStep of the component
+                last_deformation_step = deformation_history[self][-1]
+                # where deformation_history[self] is a list
 
+            # if deformation_history[self] is an empty list
+            else:
+                # the last DeformationStep doesn't exist
+                last_deformation_step = False
+
+##            print('save_deformation_step():')
             # check if either a new DeformationStep has to be created
             # or the previous one can be enhanced
-            if last_deformation_step.transformation == transformation and\
+##            if last_deformation_step:
+##                print(last_deformation_step.transformation)
+##                print(transformation)
+##                print(last_deformation_step.frame_end)
+##                print(initial_deformation_amount)
+            if last_deformation_step and\
+               last_deformation_step.transformation == transformation and\
                last_deformation_step.frame_end == initial_deformation_amount:
-                # the previous DeformationStep can be enhanced, since the
-                # transformation is the same and since the current deformation
-                # step comes right after the previous one
+                # the previous DeformationStep can be enhanced, since a
+                # previous DeformationStep exists and since the transformation
+                # is the same and since the current deformation step comes
+                # right after the previous one
+                print('enhancing DeformationStep')
 
                 # enhance DeformationStep
                 last_deformation_step.amount += amount

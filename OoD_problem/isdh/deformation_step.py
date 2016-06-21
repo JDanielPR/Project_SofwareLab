@@ -8,4 +8,6 @@ class DeformationStep:
 ##        # 'd': the element deforms
 ##        # 'm': the element moves
 ##        # 'b': the element breaks
-        
+
+    def __repr__(self):
+        return self.transformation + ': ' + str(self.amount)
