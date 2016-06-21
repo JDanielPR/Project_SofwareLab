@@ -7,6 +7,7 @@ class structure():
   def __init__(self, listLPsObject):
 
     self.listLoadpaths = listLPsObject
+    #self.listCrossMembers = listCrsMembs
 
   def solve(self):
 
