@@ -1,4 +1,4 @@
-import node_subject as subj
+from . import node_subject as subj
 class Node(subj.NodeSubject):
     def __init__(self, x):
         #call base class constructor

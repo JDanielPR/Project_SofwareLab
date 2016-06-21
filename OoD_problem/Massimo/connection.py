@@ -1,4 +1,4 @@
-import component as c
+from . import component as c
 
 class Connection(c.Component):
     def __init__(self, name,

@@ -1,5 +1,5 @@
 from itertools import permutations
-import path_solution as ps
+from . import path_solution as ps
 class Path:
     def __init__(self):
         self.component_list = [ ]
@@ -26,7 +26,12 @@ class Path:
     def sort_components(self):
         self.component_list.sort(key = lambda c : c.left_node.x_position)
 
+    def update_lp_level_of_isdh_components(self, lp_level):
+        for component in self.component_list:
+            component.isdh_component.lp_level = lp_level
+
     def compute_neighbours(self):
+        # overloaded in loadpath
         pass
 
 

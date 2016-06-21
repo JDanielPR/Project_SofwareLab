@@ -1,14 +1,14 @@
 # import modules
 import xml.etree.ElementTree as et
-import structure
-import loadpath as lp
-import connectionpath as cp
+from . import structure
+from . import loadpath as lp
+from . import connectionpath as cp
 #import component as c
-import member as m
-import connection as con
-import node as nd
+from . import member as m
+from . import connection as con
+from . import node as nd
 
-def read_xml(path = '/Users/massimosferza/LRZ Sync+Share/TUM/TUM SoSe16/Courses/Software Lab/Git_repository/no-block-example.xml'):
+def read_xml(path = '/Users/massimosferza/LRZ Sync+Share/TUM/TUM SoSe16/Courses/Software Lab/Git_repository/OoD_problem/Massimo/xml_files/2_2.xml'):
     """It creates a structure object for the OoD problem to solve, given a
 proper .xml file"""
 
@@ -172,9 +172,14 @@ proper .xml file"""
 #############################################################
     # sort all the components by left node position
     # look for neighbours
-    for path in new_structure.path_list:
+    for [n, path] in enumerate(new_structure.path_list):
         path.sort_components()
+        path.update_lp_level_of_isdh_components(n)
         path.compute_neighbours()
+
+    # register all the isdh.components to the SolutionCollector
+    new_structure.register_components()
+
     return new_structure
 
 def is_a_connection(component):

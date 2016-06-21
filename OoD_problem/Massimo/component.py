@@ -1,5 +1,7 @@
-import node
-import node_observer as obs
+from . import node
+from . import node_observer as obs
+from ..isdh import component as isdh 
+# from ..isdh import deformation_step
 
 from math import fabs
 class Component(obs.NodeObserver):
@@ -29,6 +31,15 @@ class Component(obs.NodeObserver):
 
         # current deformable length
         self.current_deformable_length = deformable_length
+
+        # isdh element
+        self.isdh_component = isdh.Component(
+            self.name,
+            self.left_node.x_position,
+            self.right_node.x_position,
+            self.deformable_length,
+            lp_level = 1
+            )
 
     def compute_length(self):
         """It computes the length of the component, as the difference
@@ -71,22 +82,43 @@ between length and deformable length"""
 
 
     def deform(self, deformation):
-        """It deforms the component by moving the right node to the left."""
-##        print(self, "has been deformed")
+        """It deforms the component by moving the right node to the left. \
+It also moves to the left the right neighbour."""
+        # move to the left the right node
         self.right_node.move_of(deformation)
+##        print(self,'has been deformed')
+
+        # save the operation
+        self.isdh_component.save_deformation_step(deformation, 'd')
+##        print('neighbour is', self.right_neighbour)
         try:
             self.right_neighbour.move(deformation)
-        except:
-            pass
+##        except:
+##            print('no neighbour found for', self)
+##            pass
+        except Exception as ex:
+            template = "An exception of type {0} occured. Arguments:\n{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+##            print(message)
 
     def move(self, deformation):
-##        print(self, "has been moved to the left")
+        """It moves the component by moving the right node to the left. \
+It also moves to the left the right neighbour."""
+        # move to the left the right node
         self.right_node.move_of(deformation)
+##        print(self,'has been moved')
+
+        # save the operation
+        self.isdh_component.save_deformation_step(deformation, 'm')
         try:
             self.right_neighbour.move(deformation)
-        except:
-            pass
-
+##        except:
+##            print('no neighbour found for', self)            
+##            pass
+        except Exception as ex:
+            template = "An exception of type {0} occured. Arguments:\n{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+##            print(message)
     def virtual_deform(self, infos_collector):
         # check if infos_collector has a max_deformation
         # if not

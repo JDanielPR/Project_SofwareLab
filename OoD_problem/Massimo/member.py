@@ -1,4 +1,4 @@
-import component as c
+from . import component as c
 class Member(c.Component):
     def __init__(self, name,
                  node1, node2,
@@ -13,5 +13,6 @@ class Member(c.Component):
         for member in member_list:
             if self.right_node == member.left_node:
                 self.right_neighbour = member
+##                print(member, 'saved as right neighbour of', self)
         
 
