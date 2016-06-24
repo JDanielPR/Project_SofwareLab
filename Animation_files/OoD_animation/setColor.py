@@ -9,7 +9,7 @@ def makeColor(name, diffuse, specular, alpha):
     color.diffuse_color = diffuse
     color.diffuse_shader = 'LAMBERT' 
     color.diffuse_intensity = 1.0 
-    color.specular_color = specular
+    #color.specular_color = specular
     color.specular_shader = 'COOKTORR'
     color.specular_intensity = 0.5
     color.alpha = alpha

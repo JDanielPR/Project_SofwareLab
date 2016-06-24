@@ -19,13 +19,13 @@ class Member:
     def computeLength(self): pass
 
 class horizontalMember(Member):
-    def __init__(self , nameOfMember, x1, x2, deformableLength):
+    def __init__(self , nameOfMember, x1, x2, deformableLength, level):
         
         self.nameOfMember = nameOfMember
         self.x1 = x1
         self.x2 = x2
         self.deformableLength =  deformableLength
-        self.level = int(nameOfMember[1])
+        self.level = level
         
         self.createDeformablePart(self.deformableLength, self.x2 - self.deformableLength/2)
         self.createNonDeformablePart(self.totalLength() - self.deformableLength, self.x1 + (self.totalLength() - self.deformableLength)/2)
@@ -35,15 +35,15 @@ class horizontalMember(Member):
         return math.fabs(self.x2 - self.x1) 
     
     def createDeformablePart(self ,lengthOfElement, xCoordinate):
-        self.oE1= BlenderMesh.BlenderElement(str(initialization.static_numberOfElement()), (xCoordinate, 300 * self.level, 0.0), lengthOfElement,(0, math.radians(90), 0),0)
+        self.oE1= BlenderMesh.BlenderElement(str(initialization.static_numberOfElement()), (xCoordinate, 50 * self.level, 0.0), lengthOfElement,(0, math.radians(90), 0),0)
         self.deformPart = self.oE1.get_geometricalObject()
         
     def createNonDeformablePart(self, lengthOfElement, xCoordinate):
-        self.oE2 = BlenderMesh.BlenderElement(str(initialization.static_numberOfElement()), (xCoordinate, 300 * self.level, 0.0), lengthOfElement,(0, math.radians(90), 0),1)
+        self.oE2 = BlenderMesh.BlenderElement(str(initialization.static_numberOfElement()), (xCoordinate, 50 * self.level, 0.0), lengthOfElement,(0, math.radians(90), 0),1)
         self.nonDeformPart = self.oE2.get_geometricalObject()
     
     def createTag(self):
-        self.oT = BlenderMesh.BlenderText(self.nameOfMember,(self.x1 + self.totalLength()/2 - 50, 300 * self.level + 50, 0),(0,0,0))
+        self.oT = BlenderMesh.BlenderText(self.nameOfMember,(self.x1 + self.totalLength()/2 - 15, 50 * self.level + 15, 0),(0,0,0))
         self.tag = self.oT.get_geometricalObject()
     
     def move(self, distance, initialFrame, finalFrame):
@@ -52,10 +52,11 @@ class horizontalMember(Member):
         setAnimation.setMovement(self.tag, initialFrame, finalFrame, distance)
 
     def deform(self, amount, initialFrame, finalFrame):
-        setAnimation.setMovement(self.deformPart, initialFrame, finalFrame, (amount/100) * self.deformableLength/2)
-        setAnimation.setDeformation(self.deformPart, initialFrame, finalFrame , amount)
+        setAnimation.setMovement(self.deformPart, initialFrame, finalFrame, amount/2)
+        setAnimation.setDeformation(self.deformPart, initialFrame, finalFrame , amount/self.deformableLength)
         setAnimation.setColor(self.deformPart, initialFrame, finalFrame)
         setAnimation.setMovement(self.tag, initialFrame, finalFrame, (amount/100) * self.deformableLength/2)
+        setAnimation.deleteTag(self.tag, finalFrame -1, finalFrame)
         
        
  

@@ -1,69 +1,48 @@
 import imp
 import Member
-import LoadPath
+import setRender
 
 imp.reload(Member)              #Load library
-imp.reload(LoadPath)
+imp.reload(setRender)
 
 class Structure():
-    def __init__(self, input):
-        self.input = input
-        self.numberOfMembers = len(input)
+    def __init__(self, i_s, solution):
         self.listOfHorizontalMembers = []
-        self.listOfInclinedMembers = []
-        self.listOfHorizontalLoadPaths = []
-        self.numberOfLoadPaths = 0
-        self.coordinateOfTheLeftBoundary = 0
-        self.coordinateOfTheLRightBoundary = 0
+        self.listOfFinalTimes = []
+        self.listOfX1= []
+        self.listOfX2= []
+        self.listOfLevels = []
+        
         
         # Clasify Members and create members
-        for i in range(self.numberOfMembers):
-            if input[i].name[0] == 'e':
-                self.listOfHorizontalMembers.append(Member.horizontalMember(self.input[i].name,self.input[i].x1 ,self.input[i].x2 ,self.input[i].deformableLength))
-            else:
-                self.listOfInclinedMembers.append(Member.horizontalMember(self.input[i].name,self.input[i].x1 ,self.input[i].x2 ,self.input[i].deformableLength))
+        for i in range(len(i_s)):
+                self.listOfHorizontalMembers.append(Member.horizontalMember(i_s[i].name,i_s[i].x1,i_s[i].x2 ,i_s[i].defo_length, i_s[i].lp_level))
+                self.listOfX1.append(i_s[i].x1)
+                self.listOfX2.append(i_s[i].x2)
+                self.listOfLevels.append(i_s[i].lp_level)
         
-        self.listOfHorizontalMembers[0].move(200, 10, 50)
-        self.listOfHorizontalMembers[0].deform(100, 50, 100)
-        
-        # Set number of Loadpaths
-        listOfTheNumberOfLoadPaths = []
-        for i in range(len(self.listOfHorizontalMembers)-1):
-            listOfTheNumberOfLoadPaths.append(int(self.input[i].name[1]))
-        self.numberOfLoadPaths = max(listOfTheNumberOfLoadPaths)   
-        #print(self.numberOfLoadPaths)
-        
-        # Create loadpaths
-        for i in range(self.numberOfLoadPaths):
-            self.listOfHorizontalLoadPaths.append(LoadPath.horizontalLoadPath(i+1))
-            for j in range(len(self.listOfHorizontalMembers)):
-                if int(self.listOfHorizontalMembers[j].nameOfMember[1]) == i+1:
-                    self.listOfHorizontalLoadPaths[i].addMember(self.listOfHorizontalMembers[j])
+        for i in range(len(self.listOfHorizontalMembers)):
+            self.listOfHorizontalMembers[i].move(50, 0, 50)
+            
+
+        for i in range(len(self.listOfHorizontalMembers)):
+            for j in range(len(solution[i_s[i]])):
+                if solution[i_s[i]][j].transformation == 'm':
+                    self.listOfHorizontalMembers[i].move(solution[i_s[i]][j].amount, solution[i_s[i]][j].frame_begin+50, solution[i_s[i]][j].frame_end+50)
+                    self.listOfFinalTimes.append(solution[i_s[i]][j].frame_end+50)
+                elif solution[i_s[i]][j].transformation == 'd':
+                    self.listOfHorizontalMembers[i].deform(solution[i_s[i]][j].amount, solution[i_s[i]][j].frame_begin+50, solution[i_s[i]][j].frame_end+50)
+                    self.listOfFinalTimes.append(solution[i_s[i]][j].frame_end+50)
                     
-        #for i in range(self.numberOfLoadPaths):
-            #self.listOfHorizontalLoadPaths.append([]) 
-            #for j in range(len(self.listOfHorizontalMembers)):
-                #if int(self.listOfHorizontalMembers[j].nameOfMember[1]) == i+1:
-                    #self.listOfHorizontalLoadPaths[i].append(self.listOfHorizontalMembers[j])
-        print(self.listOfHorizontalLoadPaths[0].getNumberOfMembers())  
-        print(self.listOfHorizontalLoadPaths[1].getNumberOfMembers())   
-        print(self.listOfHorizontalLoadPaths[2].getNumberOfMembers())   
-        print(self.listOfHorizontalLoadPaths[3].getNumberOfMembers())   
-        print(self.listOfHorizontalLoadPaths[4].getNumberOfMembers())    
+      
 
-        # Get the coordinate of the node which is more the left
-        listOfTheX1Coordinates = []
-        for i in range(len(self.listOfHorizontalMembers)-1):
-            listOfTheX1Coordinates.append(self.input[i].x1)
-        self.coordinateOfTheLeftBoundary = min(listOfTheX1Coordinates)   
-        #print(self.coordinateOfTheLeftBoundary)
-
-        # Get the coordinate of the node which is more the right 
-        listOfTheX2Coordinates = []
-        for i in range(len(self.listOfHorizontalMembers)-1):
-            listOfTheX2Coordinates.append(self.input[i].x2)
-        self.coordinateOfTheRightBoundary = max(listOfTheX2Coordinates)   
-        #print(self.coordinateOfTheRightBoundary)
-                
+        totalTime = max(self.listOfFinalTimes)
+        initialCoordinate = min(self.listOfX1)
+        finalCoordinate = max(self.listOfX2)
+        maxLevel = max(self.listOfLevels)
+        print(initialCoordinate)
+        print(finalCoordinate )
+        print(maxLevel)
+        setRender.Parameters(totalTime, initialCoordinate, finalCoordinate, maxLevel)
         
-
+        

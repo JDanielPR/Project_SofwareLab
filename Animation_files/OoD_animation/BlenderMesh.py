@@ -27,7 +27,7 @@ class BlenderElement(BlenderMesh):
         
     def get_geometricalObject(self):
         cubeobject (location = self.loc, rotation = self.rot ) 
-        bpy.context.object.dimensions = 50, 50, self.length          
+        bpy.context.object.dimensions = 1, 10, self.length       
         self.ob = bpy.context.object
         self.ob.name = "o" + self.name 
         if self.type == 0:  
@@ -47,6 +47,6 @@ class BlenderText(BlenderMesh):
         self.ob= bpy.context.object
         self.ob.name = self.name
         self.ob.data.body = self.name
-        self.ob.data.size = 70
+        self.ob.data.size = 15
         setColor.setMaterial(bpy.context.object, setColor.red) # Elements in white are deformable elements 
         return self.ob

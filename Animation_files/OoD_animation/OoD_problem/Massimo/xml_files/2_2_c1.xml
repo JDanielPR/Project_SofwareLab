@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<root>
+	<level>
+		<id>0</id>
+		<component>
+			<name>e00</name>
+			<x1>0</x1>
+			<x2>120</x2>
+			<defoLength>60</defoLength>
+			<defoRatio>0.5</defoRatio>
+		</component>
+		<component>
+			<name>e01</name>
+			<x1>120</x1>
+			<x2>200</x2>
+			<defoLength>50</defoLength>
+			<defoRatio>0.625</defoRatio>
+		</component>
+	</level>
+	<level>
+		<id>1</id>
+		<component>
+			<name>e10</name>
+			<x1>0</x1>
+			<x2>80</x2>
+			<defoLength>50</defoLength>
+			<defoRatio>0.625</defoRatio>
+		</component>
+		<component>
+			<name>e11</name>
+			<x1>80</x1>
+			<x2>200</x2>
+			<defoLength>80</defoLength>
+			<defoRatio>0.6666666666666666</defoRatio>
+		</component>
+		<component>
+			<name>X10</name>
+			<x1>80</x1>
+			<x2>120</x2>
+			<defoLength>30</defoLength>
+			<defoRatio>0.75</defoRatio>
+			<end_level>0</end_level>
+		</component>
+	</level>
+</root>

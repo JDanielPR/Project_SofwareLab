@@ -1,6 +1,5 @@
 import bpy
 import math
-from math import pi
   
 def setLamp(scene, x, y ,z):
     #scene = bpy.context.scene
@@ -11,5 +10,6 @@ def setLamp(scene, x, y ,z):
     lamp_data = bpy.data.lamps.new(name="lampa", type='SUN')  
     lamp_object = bpy.data.objects.new(name="Lampicka", object_data=lamp_data)  
     scene.objects.link(lamp_object)  
-    lamp_object.location = (x + 500,y,z)#(300, 150, -200)
-    lamp_object.rotation_euler = (pi,0,0)
+    lamp_object.location = (x,y,z)  
+    lamp_object.rotation_euler = (0,0,0)
+    lamp_data.use_specular =False
