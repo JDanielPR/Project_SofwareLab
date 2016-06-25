@@ -4,10 +4,10 @@ import gapsHandeling
 
 class structure():
 
-  def __init__(self, listLPsObject):
+  def __init__(self, listLPsObject, listCrsMembs = None):
 
     self.listLoadpaths = listLPsObject
-    #self.listCrossMembers = listCrsMembs
+    self.listCrossMembers = listCrsMembs
 
   def solve(self):
 
@@ -36,4 +36,4 @@ class structure():
         print('\n')
       print('-------')
     
-    nstep = ns.nextstep(lpgroup,None,None)
+    nstep = ns.nextstep(lpgroup,None,None,self.listCrossMembers)

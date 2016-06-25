@@ -3,6 +3,7 @@ import loadpath
 import copy
 import logging
 import gapsHandeling
+#import deformationCrossMembers
 
 logger = logging.getLogger('nextstep')
 logging.basicConfig(level=logging.DEBUG)
@@ -10,7 +11,7 @@ logging.basicConfig(level=logging.DEBUG)
 class nextstep():
 
   #initialization of the created object
-  def __init__(self, etree, history, pstep):
+  def __init__(self, etree, history, pstep, listCrssMembs):
 
     #input tree for this object to start from
     self.elementTree = etree
@@ -31,6 +32,8 @@ class nextstep():
     if pstep != None:
       self.path.append(pstep)
     #(END)append the step resulted this breanch of possibilities into "path"
+
+    self.listCrossMembers = listCrssMembs
 
     self.carryon()
     
@@ -71,8 +74,9 @@ class nextstep():
     #loop over all the branches of the passed OoD tree 
     for i in self.elementTree:
       
-      #create a copy of the input tree to reserve it against any changes
+      #create a copy of the input tree to reserve it against any changes AND a copy of the list of cross members passed
       localtree = copy.deepcopy(self.elementTree)
+      localCrossMembsList = copy.deepcopy(self.listCrossMembers)
       
     
       #(START)determining the motion to be carried out perform it 
@@ -82,6 +86,11 @@ class nextstep():
           deformotion = j.dLength
       deformotion = round(deformotion,1)
       logger.info("deformation to be carried out it {}".format(deformotion))
+
+      #deformLeadingNodes = getDeformLeadNodes(localtree[counter])
+      #deformotionCrossMembs = deformAmountCrossMembers(deformLeadingNodes , localCrossMembsList)
+
+      #deformation = min(deformotion , deformotionCrossMembs)
       #(END)determining the motion to be carried out perform i
       
 
@@ -135,7 +144,7 @@ class nextstep():
         b = self.treeTailoring(localtree)
         if len(b) != 0:
           logger.debug("a new level of trees is created")
-          self.nStepsGroup.append(nextstep(b,self.path,i))
+          self.nStepsGroup.append(nextstep(b,self.path,i,None))  ############CHANGE NONE VALUE WHEN IMPLEMENTING CROSS MEMBERS############
       #(END)end of the process of crearing a new tree of the current branch
 
       #(START)SHOWING a found OoD

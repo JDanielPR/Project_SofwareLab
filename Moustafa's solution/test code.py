@@ -42,11 +42,11 @@ n23 = n.node(8)
 #m7 = mem.member(n31,n32,0.50,'L3E1',None)
 #m8 = mem.member(n32,n33,0.50,'L3E2',m7)
 
-m1 = mem.member(n11,n12,1,'L1E1',None)
-m2 = mem.member(n12,n13,1,'L1E2',m1)
-m3 = mem.member(n14,n15,1,'L1E3',m2)
-m4 = mem.member(n21,n22,1,'L2E1',None)
-m5 = mem.member(n22,n23,1,'L2E2',m4)
+m1 = mem.member(n11,n12,1,'L1E1',None,1)
+m2 = mem.member(n12,n13,1,'L1E2',m1,1)
+m3 = mem.member(n14,n15,1,'L1E3',m2,1)
+m4 = mem.member(n21,n22,1,'L2E1',None,2)
+m5 = mem.member(n22,n23,1,'L2E2',m4,2)
 
 #organizing member objects in a single array
 #ALL THESE STEPS ARE GOING TO BE CREATED IN THE FUNCTION "readXML" AND STORED 

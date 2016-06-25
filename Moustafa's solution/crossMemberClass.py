@@ -8,8 +8,9 @@ class crossMember():
     self.originalHorizDiffOfNodes = self.firstNode.position - self.secondNode.position#this number is always Negative
 
     self.NoContNoElong = False  #if this is True, then the member should not have any relative motion between its two nodes
-    
 
+    self.failureCausingCrossMember = None
+    
   def changeNoContNoElong(self, newValue):
     self.NoContNoElong = newValue
 
@@ -26,6 +27,7 @@ class crossMember():
       diffCurrentAndOriginal = abs(self.originalHorizDiffOfNodes)  -abs(CurrentHorizDiffOfNodes)
       if diffCurrentAndOriginal > self.horizDefLength or CurrentHorizDiffOfNodes >= 0:
         returnValue = False
+        self.failureCausingCrossMember = self  #becuase this cross member has prevented the current deformartion step from progressing, it will be classified as a failure causing member
 
       if diffCurrentAndOriginal == self.horizDefLength:
         self.NoContNoElong = True
@@ -35,5 +37,8 @@ class crossMember():
     else:
       if abs(CurrentHorizDiffOfNodes) != self.horizDefLength:
         returnValue = False
+        self.failureCausingCrossMember = self  #becuase this cross member has prevented the current deformartion step from progressing, it will be classified as a failure causing member
         return returnValue
 
+  if returnValue == True:  #this condition is important as we want to remove this member from the ones that contribute to the failure of the followed OoD
+    self.failureCausingCrossMember = None
