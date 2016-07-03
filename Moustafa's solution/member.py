@@ -1,5 +1,5 @@
 import logging
-memberLogging = logging.getLogger('nextstep')
+logger = logging.getLogger('member')
 
 class member():
 
@@ -26,25 +26,29 @@ class member():
     return abs(self.leftNode.position - self.rightNode.position)
 
   def deform(self,x):
+    logger.debug("member {} has deformed with amount {}".format(self.name,x))
     self.leftNode.changePosition (x)
     self.changeDeformLength(x)
     if self.leftMember != None:
-      self.leftMember.transmotion(x)
+      logger.debug("a motion has been transfered from member {} to its adjacent member {}".format(self.name,self.leftMember.name))
+      self.transmotion(x)
 
   def changeDeformLength(self, change):
+    logger.debug("member {} has changed its deformable legnth by {}".format(self.name,change))
     self.dLength -= change
 
   def transmotion(self,x):
-    memberLogging.debug("a motion has been transfered to an adjacent member")
-    memberLogging.debug("the leftNode of the adjacent member has been moved by {}".format(x))
-    self.leftNode.changePosition(x)
-    if self.leftMember != None:  
+    self.leftMember.leftNode.changePosition(x)
+    logger.debug("a motion has been transfered from member {} to its adjacent member {}".format(self.name,self.leftMember.name))
+    if self.leftMember.leftMember != None:
       self.leftMember.transmotion(x)
 
   def changeState(self,switch):
+    logger.debug("member {} has changed its deformibility state to {}".format(self.name,switch))
     self.state = switch
 
   def canDeform(self, state):
+    logger.debug("member {} has changed its deformPossibility to {}".format(self.name,state))
     self.deformPossibility = state
 
   def addAdjacentMember(self, adjMem):

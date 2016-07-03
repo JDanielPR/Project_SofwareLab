@@ -3,7 +3,8 @@ import loadpath
 import copy
 import logging
 import gapsHandeling
-#import deformationCrossMembers
+import deformationCrossMembers 
+import deformingFunction
 
 logger = logging.getLogger('nextstep')
 logging.basicConfig(level=logging.DEBUG)
@@ -71,6 +72,9 @@ class nextstep():
     #this counter will be used to go over all the tuples in localtree(which is a copy of the passed elementtree to apply changes without affecting it)
     counter = 0
 
+    #counter for the times that the tree's branch has been skipped due to the violation of the assumptions related to cross members
+    crossMembFailureCounter = 0
+
     #loop over all the branches of the passed OoD tree 
     for i in self.elementTree:
       
@@ -85,12 +89,20 @@ class nextstep():
         if j.dLength < deformotion:
           deformotion = j.dLength
       deformotion = round(deformotion,1)
-      logger.info("deformation to be carried out it {}".format(deformotion))
+      
 
-      #deformLeadingNodes = getDeformLeadNodes(localtree[counter])
-      #deformotionCrossMembs = deformAmountCrossMembers(deformLeadingNodes , localCrossMembsList)
+      ledByNormalMember = True
 
-      #deformation = min(deformotion , deformotionCrossMembs)
+      deformLeadingNodes = deformationCrossMembers.getDeformLeadNodes(localtree[counter])
+      deformotionCrossMembs = deformationCrossMembers.deformAmountCrossMembers(deformLeadingNodes , localCrossMembsList)
+      if deformotionCrossMembs < deformotion:
+        ledByNormalMember = False  # flag whether the current deformation step is led by the deformable length of cross members or normal members
+        deformotion = deformotionCrossMembs
+
+      if deformotion == deformotionCrossMembs:
+        logger.info("deformation to be carried out it {}, and it was defined by a cross member".format(deformotion))
+      else:
+        logger.info("deformation to be carried out it {}, and it was defined by a normal member".format(deformotion))
       #(END)determining the motion to be carried out perform i
       
 
@@ -103,61 +115,47 @@ class nextstep():
       logger.info("decidor value now is {}".format(decidor))
       #(END)determine whether the current branch is valid to lead the deformation
         
-
+      #cross members related parameters to determine the validity of the current deformation step, and if so, how we can proceed
+      validToCrossMembers = 0 #an indicator to determine whether this branch of the localtree is valid to be taken. If it equals to the number of cross members, then this branch is valid
       #(START)if amount of deformation is not zero, AND the decidor agreed on deforming, then DEFORM!
-      if deformotion != 0.0 and decidor == len(i):
-        
-        count = 0  #determines the loadpath the following member belongs to
-        
-        for j in localtree[counter]:
-
-          j.deform(deformotion)
-          logger.info("member {} has deformed by {}".format(j.name, deformotion))
-
-          logger.info("current element length is {}, and rigid length is {}".format(j.calLength() ,j.rigidLength))
-
-          if j.calLength() == j.rigidLength:
-            if j.structural == True:
-              j.changeState(False)
-              logger.info("a member has changed its state")
-              j.canDeform(False)
-              for k in localtree: #Switch all of the members along the loadpath containing member j on again
-                if k[count].name != j.name:
-                  k[count].canDeform(True)
-            else:  #here we know that this member was a gap
-              localtree = gapsHandeling.treatThisGap(j, localtree,count)
-            
-          else:
-            j.canDeform(True) #member j will keep leading the deformation in its own loadpath
-            logger.warning("a member has not reached its max. deformation")
-            for k in localtree: #Switch all of the members along the loadpath containing member j off so they dont deform untill member j is done
-              if k[count].name != j.name:
-                k[count].canDeform(False)
-                logger.warning("an element has been swteched off from leading the deformation temporarily")
-                
-          count = count + 1
+      validToCrossMembers = deformingFunction.deforming(deformotion, decidor, localtree, counter, ledByNormalMember, localCrossMembsList, validToCrossMembers)
+      #increment the crossMembFailureCounter by one
+      if validToCrossMembers != len(localCrossMembsList):
+        crossMembFailureCounter += 1
       #(END)the deformation process
           
+      if validToCrossMembers == len(localCrossMembsList):  #this makes sure that we will continue if the cross members say so
+        logger.debug("cross members have allowed the current branch to continue")
+        #(START)add a new member to the list that contains all of the next steps resulting from the input step to this object
+        if decidor == len(i):
+          logger.debug("proceeding for tree tailoring")
+          b = self.treeTailoring(localtree)
+          if len(b) != 0:
+            logger.debug("a new level of trees is created")
+            self.nStepsGroup.append(nextstep(b,self.path,i,localCrossMembsList))  ############CHANGE NONE VALUE WHEN IMPLEMENTING CROSS MEMBERS############
+        #(END)end of the process of crearing a new tree of the current branch
 
-      #(START)add a new member to the list that contains all of the next steps resulting from the input step to this object
-      if decidor == len(i):
-        b = self.treeTailoring(localtree)
-        if len(b) != 0:
-          logger.debug("a new level of trees is created")
-          self.nStepsGroup.append(nextstep(b,self.path,i,None))  ############CHANGE NONE VALUE WHEN IMPLEMENTING CROSS MEMBERS############
-      #(END)end of the process of crearing a new tree of the current branch
+        #(START)SHOWING a found OoD
+          else:
+            logger.debug("treeTailoring function has returned a ZERO sized tree, and the solver has converged to an OoD!")
+            print('one OoD is:')
+            for x in self.path:
+              for y in x:
+                print(y.name)
+              print('...........')
+            for x in i:
+              print(x.name)
+            print('end of this found OoD!')   
+        #(END)SHOWING a found OoD
 
-      #(START)SHOWING a found OoD
-        else:
-          print('one OoD is:')
-          for x in self.path:
-            for y in x:
-              print(y.name)
-            print('...........')
-          for x in i:
-            print(x.name)
-          print('end of this found OoD!')   
-      #(END)SHOWING a found OoD
+      if validToCrossMembers != len(localCrossMembsList) and crossMembFailureCounter == len(localtree):
+        logger.debug("the solver has converged to an OoD, and the cross members have played a role in aborting")
+        print('one OoD is:')
+        for x in self.path:
+          for y in x:
+            print(y.name)
+          print('...........')
+        print('end of this found OoD!')
 
 
       counter = counter +1 #increment the counter by one to go to the next tuple

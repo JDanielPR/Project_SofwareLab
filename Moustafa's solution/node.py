@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger('node')
+
 class node():
     
     def __init__(self,point):
@@ -6,5 +10,6 @@ class node():
         self.connectingMembers = []
 
     def changePosition(self, x):
+        logger.debug("node at position {} and loadpath {} has changed its position by {}".format(self.position,self.loadpathLevel,x))
         self.position += x
         
