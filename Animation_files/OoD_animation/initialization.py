@@ -1,8 +1,8 @@
-import bpy   #Module for blender
-import os
+import bpy   # Module for blender
+import os    # Module for console
 
 def initialize():
-    os.system('cls') 
+    os.system('cls') # Clean console
     # gather list of items of interest.
     candidate_list = [item.name for item in bpy.data.objects if item.type == "MESH"]
 
@@ -22,19 +22,15 @@ def initialize():
     scene = bpy.context.scene
     for obj in scene.objects:
         scene.objects.unlink(obj)
-   
-def delete_all():
+        
     bpy.ops.object.select_all(action = 'TOGGLE')
     bpy.ops.object.select_all(action = 'TOGGLE')
     bpy.ops.object.delete(use_global = False)
-    
-# This class define the static variable useful to name all the elements
+
+# This function define the static variable useful to name all the elements
 x=0
 def static_numberOfElement() :
    global x
    x=x+1
    return x
-    
-
-
     

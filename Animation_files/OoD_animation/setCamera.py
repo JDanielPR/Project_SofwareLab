@@ -1,6 +1,5 @@
 import bpy
 import math
-from math import pi
 
 def setCamera(scene, x, y, z, lents):
     #scene = bpy.context.scene
