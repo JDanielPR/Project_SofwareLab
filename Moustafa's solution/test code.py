@@ -92,61 +92,62 @@ import time
 
 #solve the givenStructure
 #givenStructure.solve()
-
+'''
 
 ##test structure with cross member
 #NODES
-#n1 = n.node(0)
-#n2 = n.node(4)
-#n3 = n.node(8)
-#n4 = n.node(12)
-#n5 = n.node(16)
-#n6 = n.node(20)
+n1 = n.node(0)
+n2 = n.node(4)
+n3 = n.node(8)
+n4 = n.node(12)
+n5 = n.node(16)
+n6 = n.node(20)
 
-#n7 = n.node(0)
-#n8 = n.node(4)
-#n9 = n.node(8)
-#n10 = n.node(12)
-#n11 = n.node(16)
-#n12 = n.node(20)
+n7 = n.node(0)
+n8 = n.node(4)
+n9 = n.node(8)
+n10 = n.node(12)
+n11 = n.node(16)
+n12 = n.node(20)
 
 #MEMBERS
-#m1 = mem.member(n1,n2,0.75,'e1',None,1)
-#m2 = mem.member(n2,n3,0.75,'e2',None,1)
-#m3 = mem.member(n3,n4,0.75,'e3',m2,1)
-#m4 = mem.member(n4,n5,0.75,'e4',m3,1)
-#m5 = mem.member(n5,n6,0.75,'e5',m4,1)
+m1 = mem.member(n1,n2,0.75,'e1',None,0)
+m2 = mem.member(n2,n3,0.75,'e2',m1,0)
+m3 = mem.member(n3,n4,0.75,'e3',m2,0)
+m4 = mem.member(n4,n5,0.75,'e4',m3,0)
+m5 = mem.member(n5,n6,0.75,'e5',m4,0)
 
-#m6 = mem.member(n7,n8,0.75,'e6',None,2)
-#m7 = mem.member(n8,n9,0.75,'e7',None,2)
-#m8 = mem.member(n9,n10,0.75,'e8',m7,2)
-#m9 = mem.member(n10,n11,0.75,'e9',m8,2)
-#m10 = mem.member(n11,n12,0.75,'e10',m9,2)
+m6 = mem.member(n7,n8,0.75,'e6',None,1)
+m7 = mem.member(n8,n9,0.75,'e7',m6,1)
+m8 = mem.member(n9,n10,0.75,'e8',m7,1)
+m9 = mem.member(n10,n11,0.75,'e9',m8,1)
+m10 = mem.member(n11,n12,0.75,'e10',m9,1)
 
 #LOADPATHS
-#lp1 = lp.loadpath(1)
-#lp2 = lp.loadpath(2)
+lp1 = lp.loadpath(1)
+lp2 = lp.loadpath(2)
 
-#lp1.addMember(m1)
-#lp1.addMember(m2)
-#lp1.addMember(m3)
-#lp1.addMember(m4)
-#lp1.addMember(m5)
-#lp2.addMember(m6)
-#lp2.addMember(m7)
-#lp2.addMember(m8)
-#lp2.addMember(m9)
-#lp2.addMember(m10)
+lp1.addMember(m1)
+lp1.addMember(m2)
+lp1.addMember(m3)
+lp1.addMember(m4)
+lp1.addMember(m5)
+lp2.addMember(m6)
+lp2.addMember(m7)
+lp2.addMember(m8)
+lp2.addMember(m9)
+lp2.addMember(m10)
 
-#listLPs = listOfLoadpaths.listOfLoadpaths()
-#listLPs.addLoadpath(lp1)
-#listLPs.addLoadpath(lp2)
+listLPs = listOfLoadpaths.listOfLoadpaths()
+listLPs.addLoadpath(lp1)
+listLPs.addLoadpath(lp2)
 
 #CROSS MEMBERS
-#cross1 = cross.crossMember(n3,n10,2)
+cross1 = cross.crossMember(n3,n10,2)
 
-#crossList = [cross1]
+crossList = [cross1]
 
+'''
 #MASSIMO's BENCHMARK TEST
 #nodes
 n1 = n.node(0)
@@ -156,10 +157,10 @@ n4 = n.node(0)
 n5 = n.node(2)
 n6 = n.node(6)
 #members
-m1 = mem.member(n1,n2,0.75,'e1',None,1)
-m2 = mem.member(n2,n3,0.0,'e2',m1,1)
-m3 = mem.member(n4,n5,0.0,'e3',None,2)
-m4 = mem.member(n5,n6,0.75,'e4',m3,2)
+m1 = mem.member(n1,n2,0.75,'e1',None,0)
+m2 = mem.member(n2,n3,0.0,'e2',m1,0)
+m3 = mem.member(n4,n5,0.0,'e3',None,1)
+m4 = mem.member(n5,n6,0.75,'e4',m3,1)
 #loadpaths
 lp1 = lp.loadpath(1)
 lp2 = lp.loadpath(2)
@@ -174,7 +175,9 @@ listLPs.addLoadpath(lp2)
 #cross member
 cross1 = cross.crossMember(n2,n5,0)
 crossList = [cross1]
-
+givenStructure = struct.structure(listLPs,crossList)
+givenStructure.solve()
+'''
 
 #STRUCTURE
 givenStructure = struct.structure(listLPs,crossList)
@@ -189,3 +192,4 @@ timeStart = time.time()
 givenStructure.solve()
 
 print("The time taken to solve this structure is ",(time.time() - timeStart))
+'''

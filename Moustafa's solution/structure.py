@@ -1,6 +1,7 @@
 import nextstep as ns
 import itertools
 import gapsHandeling
+import otherFunctions
 
 class structure():
 
@@ -12,8 +13,10 @@ class structure():
   def solve(self):
 
     structureArray = []
-
+    #this like addes gaps in between the normal members
     gapsHandeling.gapsInsertor(self.listLoadpaths)
+    #this line addes indeces to the members (normal and gaps) according to their position with respect to the barreir in their correponding loadpaths
+    otherFunctions.indexor(self.listLoadpaths) 
     
     for i in self.listLoadpaths .listOfLoadpaths:
       structureArray.append(i.listOfMembers)
@@ -36,4 +39,4 @@ class structure():
         print('\n')
       print('-------')
     
-    nstep = ns.nextstep(lpgroup,None,None,self.listCrossMembers)
+    nstep = ns.nextstep(lpgroup,None,None,self.listCrossMembers, self.listLoadpaths)

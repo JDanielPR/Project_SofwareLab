@@ -83,40 +83,26 @@ def gapsInsertor(listLPs):
 
 #finction that turns the gap that has completely closed OFF, and turns the next one ON (if found)
 #;in addition, it turns all of the other members OFF
-def treatThisGap(currentGap, localtree, count):
+def treatThisGap(currentGap, listLPs):
 
   currentGap.changeState(False)  #change the state of the current gap to False for elimination
-  currentGap.canDeform(False)
+  currentGap.canDeform(False) #this can cant deform temporarly any more
 
   isThereNextGap = False
 
   nextGapIndex = currentGap.gapIndex + 1  #index of the next gap (if available)
-  
-  for i in localtree:  #turn the next Gap ON and all of the other gaps OFF (temporarily)
-    if i[count].structural == False:
-      if i[count].gapIndex == nextGapIndex:
-        i[count].canDeform(True)
+
+  for memb in listLPs[memb.leftNode.loadpathIndex]:
+    if memb.structural == False:
+      if memb.gapindex == nextGapIndex:
+        memb.canDeform(True)
         isThereNextGap = True
       else:
-        i[count].canDeform(False)
+        memb.canDeform(False)
 
   if isThereNextGap == False:
-    for i in localtree:  #if no more gaps are there after the currentGap, then perform this
-      if i[count].name != currentGap.name:
-        i[count].canDeform(True)
+    for memb in listLPs[memb.leftNode.loadpathIndex]:  #if no more gaps are there after the currentGap, then perform this
+      if memb.index != currentGap.index:
+        memb.canDeform(True)
 
-  return localtree
-  
-
-  
-
-
-    
-    
-  
-
-
-
-
-  
-        
+  return localtree        

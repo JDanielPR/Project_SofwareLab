@@ -1,6 +1,7 @@
 import logging
-
 logger = logging.getLogger('crossMemberClassLogger')
+
+import otherFunctions as others
 
 class crossMember():
 
@@ -15,11 +16,17 @@ class crossMember():
     self.validToResume = 1
     self.failureCausingCrossMember = None
 
+    #History definition of the crossMember
+    self.history = []
+
 
 #this function checks the configuration of the crossMember after the carried out branch of elementTree
 #if this cofiguration violates our assumptions, then it will return False, otherwise True
   def checkNewCrossMembConfig(self):
-
+    
+    #store the state of the cross member
+    others.storeCrossMembersConfig([self])
+    
     logger.debug("a cross member is being examined against a deformation step")
 
     self.validToResume = 1
