@@ -60,7 +60,7 @@ def gapsInsertor(listLPs):
 
     else:  #if the current loadpath doesn't have a gap at the front
       for j in i.listOfMembers:  #this loop will search for gaps in between, and it will turn the first of them ON
-        if j.structural == False:
+        if j.structural is False:
           j.deformPossibility = True
           for k in i.listOfMembers:  #this loop will turn all of the other members OFF 
             if k.name != j.name:
@@ -74,7 +74,7 @@ def gapsInsertor(listLPs):
   counter = 0
   for i in listLPs.listOfLoadpaths:
     for j in i.listOfMembers:
-      if j.structural == False:
+      if j.structural is False:
         j.gapIndex = counter
         counter += 1
     counter = 0
@@ -93,14 +93,14 @@ def treatThisGap(currentGap, listLPs):
   nextGapIndex = currentGap.gapIndex + 1  #index of the next gap (if available)
 
   for memb in listLPs[memb.leftNode.loadpathIndex]:
-    if memb.structural == False:
-      if memb.gapindex == nextGapIndex:
+    if memb.structural is False:
+      if memb.gapindex is nextGapIndex:
         memb.canDeform(True)
         isThereNextGap = True
       else:
         memb.canDeform(False)
 
-  if isThereNextGap == False:
+  if isThereNextGap is False:
     for memb in listLPs[memb.leftNode.loadpathIndex]:  #if no more gaps are there after the currentGap, then perform this
       if memb.index != currentGap.index:
         memb.canDeform(True)

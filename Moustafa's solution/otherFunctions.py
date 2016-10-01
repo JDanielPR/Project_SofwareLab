@@ -4,8 +4,12 @@ import logging
 
 logger = logging.getLogger('otherFunctions')
 
-#This function assigns indeces to the members with respect to their position in their corres-
-#ponding loadpaths
+'''
+FILE DESCRIBTION:
+This file groups all of the functions that are used some where in the implementation of the OoD solver
+'''
+
+#This function assigns indexes to the members with respect to their position in their corresponding loadpaths
 def indexor(listLPs):
   for i in listLPs.listOfLoadpaths:
     x = 0
@@ -13,6 +17,7 @@ def indexor(listLPs):
       j.index = x
       x += 1
 
+#This function restores the previous state to a list of members at the same loadpath
 def restoreMembersConfig(listMembers):
   for member in listMembers:
     x = len(member.history)

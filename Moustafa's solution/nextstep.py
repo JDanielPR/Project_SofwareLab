@@ -12,30 +12,29 @@ logging.basicConfig(level=logging.DEBUG)
 class nextstep():
 
   #initialization of the created object
-  def __init__(self, etree, history, pstep, listCrssMembs, listLPs):
+  def __init__(self, possibilitiesTree, history, previousStep, listCrossMembers, listLoadpaths,counter):
 
     #input tree for this object to start from
-    self.elementTree = etree
+    self.elementTree = possibilitiesTree
 
     logger.debug("steped into another level has {} possibilities".format(len(self.elementTree)))
                                                                     
-    #list of trees results from the motion undertaken by each tuple of the input tree for this object
-    self.nStepsGroup = []
+    #list of all possibilities trees resulting from the motion undertaken by each tuple of the input tree for this object
+    self.resultingPossiblitiesTree = []
 
-    #(START)stores the previously performed steps that led to the current tree of possibilities
+    #stores the previously performed steps that led to the current tree of possibilities
     if history is None:
-      self.path = []
+      self.solutionPath = []
     else:
-      self.path = history
-    #(END)stores the previously performed steps that led to the current tree of possibilities
+      self.solutionPath = history
 
-    #(START)append the step resulted this branch of possibilities into "path"
-    if pstep is not None:
-      self.path.append(pstep)
-    #(END)append the step resulted this branch of possibilities into "path"
+    #append the step resulted this tree of possibilities into "path"
+    if previousStep is not None:
+      self.solutionPath.append(previousStep)
 
-    self.listCrossMembers = listCrssMembs
-    self.listLoadpaths = listLPs
+    self.listCrossMembers = listCrossMembers
+    self.listLoadpaths = listLoadpaths
+    self.solutionCounter = counter
 
     self.carryon()  
 
@@ -46,7 +45,7 @@ class nextstep():
 
     #counter for the times that the tree's branch has been skipped due to the violation of the assumptions related to cross members
     crossMembFailureCounter = 0
-    #counter that counts the number of times the deformation did not take place due to the presence of OFF members
+    #counter that counts the number of times the deformation did not take place due to the presence of OFF members in the selected tuple
     numberOffMemberTerminations = 0
 
     availableTuplesToDeform = len(self.elementTree)
@@ -127,8 +126,8 @@ class nextstep():
                 x += 1
             if x == len(self.listLoadpaths.listOfLoadpaths):
               logger.debug("a new level of trees is created")
-              self.nStepsGroup.append(nextstep(self.elementTree,self.path,i,self.listCrossMembers,self.listLoadpaths))
-              self.path.remove(self.path[len(self.path)-1])
+              self.resultingPossiblitiesTree.append(nextstep(self.elementTree,self.solutionPath,i,self.listCrossMembers,self.listLoadpaths,self.solutionCounter))
+              self.solutionPath.remove(self.solutionPath[len(self.solutionPath)-1])
 
 
 
@@ -140,13 +139,14 @@ class nextstep():
         if availableTuplesToDeform == 1 and validToCrossMembers is True:
            logger.debug("Non of the possibilities has members able to deform again, so the solver has converged to an OoD!")
            print('one OoD is:')
-           for x in self.path:
+           for x in self.solutionPath:
                for y in x:
                   print(y.name)
                print('...........')
            for memb in self.elementTree[counter]:
                print(memb.name)
            print('end of this found OoD!')
+           self.solutionCounter.increase()
 
 
         #retrieve the members and the cross members to their state before this already performed deformation step
@@ -161,8 +161,9 @@ class nextstep():
           logger.debug("the solver has converged to an OoD, and the cross members have played a role in aborting")
           print("numberOffMemberTerminations is:", numberOffMemberTerminations)
           print('one OoD is:')
-          for x in self.path:
+          for x in self.solutionPath:
               for y in x:
                   print(y.name)
               print('...........')
           print('end of this found OoD!')
+          self.solutionCounter.increase()

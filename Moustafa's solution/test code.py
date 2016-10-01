@@ -6,6 +6,7 @@ import structure as struct
 import itertools
 import listOfLoadpaths
 import crossMemberClass as cross
+import counterClass
 
 import time
 
@@ -92,7 +93,7 @@ import time
 
 #solve the givenStructure
 #givenStructure.solve()
-'''
+
 
 ##test structure with cross member
 #NODES
@@ -144,8 +145,9 @@ listLPs.addLoadpath(lp2)
 
 #CROSS MEMBERS
 cross1 = cross.crossMember(n3,n10,2)
+cross2 = cross.crossMember(n4,n11,2)
 
-crossList = [cross1]
+crossList = [cross1,cross2]
 
 '''
 #MASSIMO's BENCHMARK TEST
@@ -177,10 +179,12 @@ cross1 = cross.crossMember(n2,n5,0)
 crossList = [cross1]
 givenStructure = struct.structure(listLPs,crossList)
 givenStructure.solve()
+input()
 '''
 
 #STRUCTURE
-givenStructure = struct.structure(listLPs,crossList)
+counter = counterClass.counter(0)
+givenStructure = struct.structure(listLPs,counter,crossList)
 
 for i in givenStructure.listLoadpaths.listOfLoadpaths:
   for j in i.listOfMembers:
@@ -192,4 +196,6 @@ timeStart = time.time()
 givenStructure.solve()
 
 print("The time taken to solve this structure is ",(time.time() - timeStart))
-'''
+print("Number of solutions is",counter.x)
+input()
+
