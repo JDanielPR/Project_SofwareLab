@@ -8,7 +8,7 @@ class member():
     self.memberIndex = 0
     self.leftNode = x
     self.rightNode = y
-    self.dLength = (self.calLength())*z
+#    self.dLength = (self.calLength())*z
     self.length = self.calLength()
     self.name = nome
     self.leftMember = lm
@@ -36,14 +36,14 @@ class member():
     
     logger.debug("member {} has deformed with amount {}".format(self.name,x))
     self.leftNode.changePosition (x)
-    self.changeDeformLength(x)
+#    self.changeDeformLength(x)
     if self.leftMember != None:
       logger.debug("a motion has been transfered from member {} to its adjacent member {}".format(self.name,self.leftMember.name))
       self.transmotion(x)
 
-  def changeDeformLength(self, change):
-    logger.debug("member {} has changed its deformable legnth by {}".format(self.name,change))
-    self.dLength -= change
+#  def changeDeformLength(self, change):
+#    logger.debug("member {} has changed its deformable legnth by {}".format(self.name,change))
+#    self.dLength -= change
 
   def transmotion(self,x):
     #storing the current configuration before deforming the left member

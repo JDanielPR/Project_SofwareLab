@@ -94,7 +94,7 @@ import time
 #solve the givenStructure
 #givenStructure.solve()
 
-
+'''
 ##test structure with cross member
 #NODES
 n1 = n.node(0)
@@ -177,7 +177,8 @@ listLPs.addLoadpath(lp2)
 #cross member
 cross1 = cross.crossMember(n2,n5,0)
 crossList = [cross1]
-givenStructure = struct.structure(listLPs,crossList)
+counter = counterClass.counter(0)
+givenStructure = struct.structure(listLPs,counter,crossList)
 givenStructure.solve()
 input()
 '''
@@ -199,3 +200,4 @@ print("The time taken to solve this structure is ",(time.time() - timeStart))
 print("Number of solutions is",counter.x)
 input()
 
+'''

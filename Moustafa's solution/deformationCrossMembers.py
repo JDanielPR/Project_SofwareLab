@@ -21,8 +21,16 @@ def deformAmountCrossMembers(deformLeadNodesList , crossMembersList):
   crossMembersDeformLength = 100000 #some big value
 
   if crossMembersList != None:
+    decidor = 0
+    affectedCrossComponents = []
     for i in crossMembersList:
-    
+      for deformingNode in deformLeadNodesList:
+        if i.firstNode == deformingNode or i.secondNode == deformingNode:
+          decidor += 1
+      if decidor == 1:
+        affectedCrossComponents.append(i)
+
+    for i in affectedCrossComponents:
       decidorValueRight = 0
       decidorValueLeft = 0
     

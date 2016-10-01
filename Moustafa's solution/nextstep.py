@@ -76,8 +76,8 @@ class nextstep():
         #Calculation of the motion to be carried out from the deformable length of normal members (not cross)
         deformotion = 1111111
         for j in self.elementTree[counter]:
-          if j.dLength < deformotion:
-            deformotion = j.dLength
+          if (j.length-j.rigidLength) < deformotion:
+            deformotion = j.length-j.rigidLength
         deformotion = round(deformotion,1)
         #Turn this flag on, which indicates that the motion is carried out by normal members (for now!)
         ledByNormalMember = True

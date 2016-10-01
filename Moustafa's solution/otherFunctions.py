@@ -23,7 +23,7 @@ def restoreMembersConfig(listMembers):
     x = len(member.history)
     logger.debug("Member {} is restoring their previous states".format(member.name))
     member.leftNode.position = member.history[x-1].leftNodePosition
-    member.dLength = member.history[x-1].dLength
+#    member.dLength = member.history[x-1].dLength
     member.state = member.history[x-1].state
     member.deformPossibility = member.history[x-1].deformPossibility
     print("Now, member",member.name,"has state ",member.state)
@@ -33,7 +33,7 @@ def restoreMembersConfig(listMembers):
       x = len(leftMemb.history)
       logger.debug("Member {} is restoring its previous states".format(leftMemb.name)) 
       leftMemb.leftNode.position = leftMemb.history[x-1].leftNodePosition
-      leftMemb.dLength = leftMemb.history[x-1].dLength
+#      leftMemb.dLength = leftMemb.history[x-1].dLength
       leftMemb.state = leftMemb.history[x-1].state
       leftMemb.deformPossibility = leftMemb.history[x-1].deformPossibility
       print("Now, member",leftMemb.name,"has state ",leftMemb.state)
@@ -43,7 +43,7 @@ def restoreMembersConfig(listMembers):
 def storeMembersConfig(listMembers):
   for member in listMembers:
     logger.debug("parameters of the member {} are being stored as a history".format(member.name))
-    historyElement = historyMember.historyMember(member.leftNode.position , member.dLength , member.state , member.deformPossibility)
+    historyElement = historyMember.historyMember(member.leftNode.position , member.state , member.deformPossibility)
     member.history.append(historyElement)
     print("member",member.name," history is")
     for i in member.history:
