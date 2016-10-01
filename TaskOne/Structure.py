@@ -1,0 +1,35 @@
+import nextstep
+import itertools
+import gapsHandeling
+import otherFunctions
+
+'''
+Structure class groups all of the nodes, components, crossComponents, and gaps all together in a single entity
+'''
+
+class Structure():
+
+  def __init__(self, listLoadpaths, listCrossComponents = None):
+
+    self.listLoadpaths = listLoadpaths
+    self.listCrossComponents = listCrossComponents
+
+  def solve(self):
+
+    #this line adds gaps in between the normal members
+    gapsHandeling.gapsInsertor(self.listLoadpaths)
+
+    #this line adds indexes to the members (normal and gaps) according to their position with respect to the barrier in their corresponding loadpaths
+    otherFunctions.indexor(self.listLoadpaths) 
+
+    #add all of the loadpaths to a list called "structure array" for the sake of the possibilitiesTree generation
+    structureArray = []
+    for loadpath in self.listLoadpaths:
+      structureArray.append(loadpath.listOfMembers)
+
+    #generate the possibilitiesTree
+    possibilitiesTree = list(itertools.product(*structureArray)) #Example, possibiliesTree = [(e1,e3),(e1,e4),(e2,e3),(e2,e4)] for 2 loadapths with 2 members in each
+
+    #initiate the solution sequence of the strcuture starting from the created possiblitiesTree
+    initializationStep = nextstep.nextstep(possibilitiesTree, None, None, self.listCrossMembers, self.listLoadpaths)
+
