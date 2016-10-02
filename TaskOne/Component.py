@@ -5,55 +5,82 @@ logger = logging.getLogger('component')
 logging.basicConfig(level=logging.DEBUG)
 
 class Component():
-
-  def __init__(self, leftNode, rightNode, rigidLength, componentsName, rightComponent, loadpathLevel, effectiveness=True,gapIndex = None):
-    self.memberIndex = 0
+'''
+Component class contains all of the information
+related to both structural and gap components
+and the methods that act upon these attributes
+'''
+  def __init__(self,
+               leftNode, rightNode,
+               rigidLength,
+               componentsName,
+               loadpathLevel,
+               rightComponent = None,
+               isStructural=True,
+               gapIndex = None):
+    
+    self.name = componentsName
     self.leftNode = leftNode
     self.rightNode = rightNode
+    self.length = self.calc_length()
     self.rigidLength = rigidLength
-    self.length = self.calLength()
-    self.name = componentsName
-    self.rightComponent = rightComponent
-    #Component's state defines the ability of the component to deform, so when the component reaches its deformation limit, its state changes to False
-    self.state = True
-    #This attribute changes to False when a component is not allowed to deform due to the presence of another component along the same loadpath that has not finished its deformation
-    self.deformPossibility = True
+    self.perminantlyBlockedDefromation = True 
+    self.temporarilyBlockedDeformation = True 
+    self.isStructural = isStructural  
+    self.gapIndex = gapIndex  
+    self.history = [ ]
+    self.componentIndex = 0 
+    self.rightComponent = None
 
-    #assigning the loadpathLevel to the nodes
-    self.leftNode.loadpathLevel = loadpathLevel
-    self.rightNode.loadpathLevel = loadpathLevel
-
-    #Attribute introduced to account for gaps
-    self.isStructural = effectiveness  #self.structural = True if the component was  a structural element and self.structural = False if the component was a gap
-    self.gapIndex = gapIndx  #index (position) of the gap with respect to the rest of the gaps within the loadpath (ex. 1,2,3,...)
-
-    #History list where all of the previous states of the component are going to be saved
-    self.history = []
-    
-  def calLength(self):
+  def calc_length(self):
     return abs(self.leftNode.position - self.rightNode.position)
 
   def deform(self,deformationStep):
-    #storing the current configuration before defroming the member
-    others.storeMembersConfig([self])
-    logger.debug("component {} has deformed with amount {}".format(self.name,deformationStep))
-    self.rightNode.changePosition (x)
+    '''
+    (Function deforms component and transfers motion to next)
+    This function stores first the states of the component before
+    defromation.Then it deforms the component, and finally
+    transfers this movement to its right member if it exists
+    by calling the function propagate()
+    '''
+    # storing the current configuration before defroming the member
+    others.storeMembersConfig(self)
+    logger.debug("component {} has deformed with amount {}"
+                 .format(self.name,deformationStep))
+    self.rightNode.changePosition(x)
     if self.rightComponent != None:
-      logger.debug("a motion has been transfered from component {} to its adjacent component {}".format(self.name,self.rightComponent.name))
+      logger.debug("a motion transfered from component {} to component {}"
+                   .format(self.name,self.rightComponent.name))
       self.propagate(x)
 
   def propagate(self,deformationStep):
-    #storing the current configuration before deforming the left member
-    others.storeMembersConfig([self.rightComponent])
+    '''
+    (Function moves next component then transfers motion to next)
+    This function first stores the states of the adjacent component
+    on the right, then it transfers the motion to it. At the end, it
+    transfers again the same motion to the adjacent component
+    if it exists
+    '''
+    # storing the current configuration before deforming the left member
+    others.storeMembersConfig(self.rightComponent)
     self.rightComponent.rightNode.changePosition(x)
-    logger.debug("a motion has been transfered from member {} to its adjacent member {}".format(self.name,self.leftMember.name))
+    logger.debug("a motion has been transfered from member {} to
+                 its adjacent \member {}".format(self.name, self.leftMember.name))
     if self.rightComponent.rightComponent != None:
       self.rightComponent.propagate(deforationStep)
 
-  def changeState(self,newState):
-    logger.debug("member {} has changed its state from {} to {}".format(self.name, self.state, newState))
-    self.state = newState
+  def change_perminantlyBlockedDefromation(self,newValue):
+  '''
+  (Function changes the attribute perminantlyBlockedDefromation)
+  '''
+    logger.debug("component {} changed erminantlyBlockedDefromation from {} to {}"
+                 .format(self.name, self.perminantlyBlockedDefromation, newValue))
+    self.erminantlyBlockedDefromation = newValue
 
-  def canDeform(self, newDeformPossibility):
-    logger.debug("member {} has changed its deformPossibility from {} to {}".format(self.name, self.deformPossibility, newDeformPossibility))
-    self.deformPossibility = newDeformPossibility
+  def change_temporarilyBlockedDeformation(self, newValue):
+  '''
+  (Function changes the attribute temporarilyBlockedDeformation)
+  '''
+    logger.debug("component {} changed temporarilyBlockedDeformation from {} to {}"
+                 .format(self.name, self.temporarilyBlockedDeformation,newValue))
+    self.temporarilyBlockedDeformation = newValue
