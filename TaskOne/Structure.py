@@ -8,6 +8,7 @@ class Structure():
 Structure class groups all of the nodes, components, crossComponents, and gaps all together in a single entity
 '''
   def __init__(self, listLoadpaths, listCrossComponents = None):
+
     self.listLoadpaths = listLoadpaths
     self.listCrossComponents = listCrossComponents
 
