@@ -22,7 +22,7 @@ class CrossComponent():
     self.deformableLength = deformableLength
     self.originalDiffOfNodes = self.leftNode.position - self.rightNode.position
     self.noContNoElong = False 
-    self.validToResume = 1
+    self.deformationStepIsValid = 1
     self.failureCausingCrossComponent = None
 
     #list where the history of the states of the cross component are stored
@@ -43,13 +43,13 @@ class CrossComponent():
 step")
 
     self.deformationStepIsValid = 1 #1 means True; 0 means False
-
+    deformableLength = self.rigitNode.position - self.leftNode.position - self.rigidLength
     currentDiffOfNodes = self.leftNode.position - self.rightNode.position
     
     if self.noContNoElong == False:
       differenceCurrentAndOriginal = abs(self.originalDiffOfNodes) - \
                                      abs(currentDiffOfNodes)
-      if differenceCurrentAndOriginal > self.deformableLength or \
+      if differenceCurrentAndOriginal > deformableLength or \
          currentDiffOfNodes >= 0: # the second part of the if statement
                                   # condition refers to the fact that we may
                                   # have a flip over 
@@ -59,13 +59,13 @@ step")
 step has violated an assumption of flipping over or defoming more than \
 allowed")
 
-      if differenceCurrentAndOriginal == self.deformableLength:
+      if differenceCurrentAndOriginal == deformableLength:
         self.NoContNoElong = True
         logger.debug("a cross component has reached its deformation limit and \
 is no longer allowed to deform")
 
     else:
-      if abs(currentDiffOfNodes) != self.deformableLength:
+      if abs(currentDiffOfNodes) != deformableLength:
         logger.debug("a cross component has indicated that this deformation \
 step has violated an assumption of moving after finishing deforming")
         self.deformationStepIsValid = 0
