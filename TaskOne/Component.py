@@ -37,7 +37,7 @@ and the methods that act upon these attributes
 
   def deform(self,deformationStep):
     '''
-    (Function deforms component and transfers motion to next)
+    Function deforms component and transfers motion to next.
     This function stores first the states of the component before
     defromation.Then it deforms the component, and finally
     transfers this movement to its right member if it exists
@@ -55,7 +55,7 @@ and the methods that act upon these attributes
 
   def propagate(self,deformationStep):
     '''
-    (Function moves next component then transfers motion to next)
+    Function moves next component then transfers motion to next.
     This function first stores the states of the adjacent component
     on the right, then it transfers the motion to it. At the end, it
     transfers again the same motion to the adjacent component
@@ -71,7 +71,7 @@ and the methods that act upon these attributes
 
   def change_perminantlyBlockedDefromation(self,newValue):
   '''
-  (Function changes the attribute perminantlyBlockedDefromation)
+  Function changes the attribute perminantlyBlockedDefromation.
   '''
     logger.debug("component {} changed erminantlyBlockedDefromation from {} to {}"
                  .format(self.name, self.perminantlyBlockedDefromation, newValue))
@@ -79,7 +79,7 @@ and the methods that act upon these attributes
 
   def change_temporarilyBlockedDeformation(self, newValue):
   '''
-  (Function changes the attribute temporarilyBlockedDeformation)
+  Function changes the attribute temporarilyBlockedDeformation.
   '''
     logger.debug("component {} changed temporarilyBlockedDeformation from {} to {}"
                  .format(self.name, self.temporarilyBlockedDeformation,newValue))

@@ -14,7 +14,7 @@ crossComponents, and gaps all together in a single entity
 
   def solve(self):
     '''
-    (Function polishes and solves the given structure from xml.)
+    Function polishes and solves the given structure from xml.
     '''
 
     #this line adds gaps in between the normal members

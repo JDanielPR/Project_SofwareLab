@@ -1,24 +1,33 @@
 import member
 
 class Loadpath():
-  
-  # Constructor of the class "loadpath"
+'''
+Class contains it index ,all of the components within the loadpath
+, and counts number of components not able to defrom
+anymore.
+'''
   def __init__(self, n):
-    self.loadpathNumber = n # Index of the loadpath
-    self.listOfComponents = [ ] # List contains all the components contained \
-                                # by this loadpath
-    self.noOfComponents= 0 # Attributes that counts the number of components\
-                            # contained by this loadpath that have reached \
-                            # their deformation limit
+    self.loadpathNumber = n 
+    self.listOfComponents = [ ] 
+    self.noOfComponents= 0 
 
-  # Adding a new member to the loadpath
   def add_member(self, component):
+    '''
+    Function addes components to the list of components
+    '''
     self.listOfComponents.append(component)
 
-  # Method that modifies the attribute "noOfComponents"
-  def increase_no_of_components(self): 
+  def increase_no_of_components(self):
+    '''
+    Function increases number of components not able to deform
+    permenantly by one
+    '''
     self.noOfComponents += 1
   def decrease_no_of_components(self):
+    '''
+    Function decreases number of components not able to defrom
+    permenantly by one
+    '''
     self.noOfComponents -= 1
 
   
