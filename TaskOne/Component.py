@@ -24,7 +24,7 @@ class Component():
     self.rightNode.loadpathLevel = loadpathLevel
 
     #Attribute introduced to account for gaps
-    self.structural = effectiveness  #self.structural = True if the component was  a structural element and self.structural = False if the component was a gap
+    self.isStructural = effectiveness  #self.structural = True if the component was  a structural element and self.structural = False if the component was a gap
     self.gapIndex = gapIndx  #index (position) of the gap with respect to the rest of the gaps within the loadpath (ex. 1,2,3,...)
 
     #History list where all of the previous states of the component are going to be saved

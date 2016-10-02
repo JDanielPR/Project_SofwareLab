@@ -3,12 +3,10 @@ import itertools
 import gapsHandeling
 import otherFunctions
 
+class Structure():
 '''
 Structure class groups all of the nodes, components, crossComponents, and gaps all together in a single entity
 '''
-
-class Structure():
-
   def __init__(self, listLoadpaths, listCrossComponents = None):
 
     self.listLoadpaths = listLoadpaths
