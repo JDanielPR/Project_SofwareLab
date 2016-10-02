@@ -10,7 +10,6 @@ Structure class groups all of the nodes, components, crossComponents, and gaps a
 class Structure():
 
   def __init__(self, listLoadpaths, listCrossComponents = None):
-
     self.listLoadpaths = listLoadpaths
     self.listCrossComponents = listCrossComponents
 
