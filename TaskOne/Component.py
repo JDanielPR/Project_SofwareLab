@@ -35,7 +35,7 @@ and the methods that act upon these attributes
   def calc_length(self):
     return abs(self.leftNode.position - self.rightNode.position)
 
-  def deform(self,deformationStep):
+  def deform(self, deformationStep):
     '''
     Function deforms component and transfers motion to next.
     This function stores first the states of the component before
@@ -47,13 +47,13 @@ and the methods that act upon these attributes
     others.storeMembersConfig(self)
     logger.debug("component {} has deformed with amount {}"
                  .format(self.name,deformationStep))
-    self.rightNode.changePosition(x)
+    self.rightNode.change_position(x)
     if self.rightComponent != None:
       logger.debug("a motion transfered from component {} to component {}"
                    .format(self.name,self.rightComponent.name))
       self.propagate(x)
 
-  def propagate(self,deformationStep):
+  def propagate(self, deformationStep):
     '''
     Function moves next component then transfers motion to next.
     This function first stores the states of the adjacent component
@@ -63,24 +63,24 @@ and the methods that act upon these attributes
     '''
     # storing the current configuration before deforming the left member
     others.storeMembersConfig(self.rightComponent)
-    self.rightComponent.rightNode.changePosition(x)
-    logger.debug("a motion has been transfered from member {} to
+    self.rightComponent.rightNode.change_position(x)
+    logger.debug("a motion has been transfered from member {} to \
                  its adjacent \member {}".format(self.name, self.leftMember.name))
     if self.rightComponent.rightComponent != None:
       self.rightComponent.propagate(deforationStep)
 
-  def change_perminantlyBlockedDefromation(self,newValue):
+  def change_perminantlyBlockedDefromation(self, newValue):
   '''
   Function changes the attribute perminantlyBlockedDefromation.
   '''
-    logger.debug("component {} changed erminantlyBlockedDefromation from {} to {}"
-                 .format(self.name, self.perminantlyBlockedDefromation, newValue))
+    logger.debug("component {} changed erminantlyBlockedDefromation from {} \
+to {}".format(self.name, self.perminantlyBlockedDefromation, newValue))
     self.erminantlyBlockedDefromation = newValue
 
   def change_temporarilyBlockedDeformation(self, newValue):
   '''
   Function changes the attribute temporarilyBlockedDeformation.
   '''
-    logger.debug("component {} changed temporarilyBlockedDeformation from {} to {}"
-                 .format(self.name, self.temporarilyBlockedDeformation,newValue))
+    logger.debug("component {} changed temporarilyBlockedDeformation from {} \
+to {}".format(self.name, self.temporarilyBlockedDeformation,newValue))
     self.temporarilyBlockedDeformation = newValue

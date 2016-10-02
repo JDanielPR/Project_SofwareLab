@@ -33,7 +33,7 @@ class CrossComponent():
 # assumptions, then it will return False, otherwise True
   def check_new_cross_component_config(self):
     '''
-    (Function checks whether a defromation step is valid to the cross component)
+    Function checks whether a defromation step is valid to the cross component
     '''
     
     #store the state of the cross member
