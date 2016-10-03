@@ -9,10 +9,9 @@ class Node():
     it connects
     '''
     
-    def __init__(self, point):
+    def __init__(self, point, loadpathLevel):
         self.position = point
-        self.loadpathLevel = 0
-        self.connectingMembers = []
+        self.loadpathLevel = loadpathLevel
 
     # Method that acts on the node's position attribute to change it from one
     # place to another

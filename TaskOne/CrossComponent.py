@@ -12,14 +12,14 @@ class CrossComponent():
 
   def __init__(self,
                leftNode, rightNode,
-               deformableLength):
+               rigidLength):
 
     self.leftNode = leftNode  # the first node is chosen as the one closest 
                               # to the barrier 
     self.rightNode = rightNode
 
 # THIS CHANGES DURING DEFORMATION !!!
-    self.deformableLength = deformableLength
+    self.rigidLength = rigidLength
     self.originalDiffOfNodes = self.leftNode.position - self.rightNode.position
     self.noContNoElong = False 
     self.deformationStepIsValid = 1

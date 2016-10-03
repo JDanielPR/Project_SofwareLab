@@ -14,7 +14,6 @@ and the methods that act upon these attributes
                leftNode, rightNode,
                rigidLength,
                componentsName,
-               loadpathLevel,
                rightComponent = None,
                isStructural=True,
                gapIndex = None):
