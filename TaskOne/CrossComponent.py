@@ -1,7 +1,7 @@
 import logging
 logger = logging.getLogger('CrossComponentLogger')
 
-import otherFunctions as others
+##import otherFunctions as others
 
 class CrossComponent():
   '''

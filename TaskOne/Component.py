@@ -1,15 +1,15 @@
 import logging
-import otherFunctions as others
+##import otherFunctions as others
 
 logger = logging.getLogger('component')
 logging.basicConfig(level=logging.DEBUG)
 
 class Component():
-'''
-Component class contains all of the information
-related to both structural and gap components
-and the methods that act upon these attributes
-'''
+  '''
+  Component class contains all of the information
+  related to both structural and gap components
+  and the methods that act upon these attributes
+  '''
   def __init__(self,
                leftNode, rightNode,
                rigidLength,
@@ -69,17 +69,17 @@ and the methods that act upon these attributes
       self.rightComponent.propagate(deforationStep)
 
   def change_perminantlyBlockedDefromation(self, newValue):
-  '''
-  Function changes the attribute perminantlyBlockedDefromation.
-  '''
+    '''
+    Function changes the attribute perminantlyBlockedDefromation.
+    '''
     logger.debug("component {} changed erminantlyBlockedDefromation from {} \
 to {}".format(self.name, self.perminantlyBlockedDefromation, newValue))
     self.erminantlyBlockedDefromation = newValue
 
   def change_temporarilyBlockedDeformation(self, newValue):
-  '''
-  Function changes the attribute temporarilyBlockedDeformation.
-  '''
+    '''
+    Function changes the attribute temporarilyBlockedDeformation.
+    '''
     logger.debug("component {} changed temporarilyBlockedDeformation from {} \
 to {}".format(self.name, self.temporarilyBlockedDeformation,newValue))
     self.temporarilyBlockedDeformation = newValue

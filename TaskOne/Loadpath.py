@@ -1,9 +1,6 @@
 class Loadpath():
-'''
-Class contains it index ,all of the components within the loadpath
-, and counts number of components not able to defrom
-anymore.
-'''
+  '''Class contains it index ,all of the components within the loadpath, and
+counts number of components not able to defrom anymore.'''
   def __init__(self):
     self.listOfComponents = [ ] 
     self.noComponentsNotDeformable= 0 

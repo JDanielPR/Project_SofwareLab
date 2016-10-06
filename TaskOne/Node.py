@@ -5,8 +5,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 class Node():
     '''
-    Class that contains position of the node, its loadpath level, and the components
-    it connects
+    Class that contains position of the node, its loadpath level, and the
+    components it connects
     '''
     
     def __init__(self, point, loadpathLevel):
