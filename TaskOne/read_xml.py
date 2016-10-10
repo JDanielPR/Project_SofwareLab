@@ -19,7 +19,13 @@ def read_xml(path):
     # create the listCrossComponents 
     listCrossComponents = construct_cross_components(root, listLoadpaths)
 
-    return Structure(listLoadpaths, listCrossComponents)
+    # create the Structure object
+    struct = Structure(listLoadpaths, listCrossComponents)
+
+    # initialize the right components
+    struct.init_right_components()
+
+    return struct
 
 def construct_loadpaths(root):
     """Return a list of Loadpath objects, given the root of the .xml tree"""

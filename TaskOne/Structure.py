@@ -10,6 +10,21 @@ gaps all together in a single entity'''
     self.listLoadpaths = listLoadpaths
     self.listCrossComponents = listCrossComponents
 
+  def init_right_components(self):
+    for loadpath in self.listLoadpaths:
+      for component in loadpath.listOfComponents:
+        # create a list of possible rightComponents
+        rightComponents = [rightComponent
+                           for rightComponent in loadpath.listOfComponents
+                           if rightComponent.leftNode == component.rightNode]
+
+        if len(rightComponents) is not 0:
+          # there should be only one!
+          assert len(rightComponents) == 1
+
+          # assign to components its rightComponent
+          [component.rightComponent] = rightComponents
+
   def solve(self):
     '''
     Function polishes and solves the given structure from xml.
