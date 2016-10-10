@@ -41,8 +41,18 @@ class Tree:
         print('{} -> {}'.format(previous, actual))
 
     def go_right(self):
+        """Changes the activeNode to its right neighbour.
+
+If the neighbour doesn't exist, a StopIteration exception is raised.""" 
         previous = self.activeNode
-        self.activeNode = self.activeNode.parent
+        
+        children = iter(self.activeNode.parent.children)
+        for child in children:
+            if child == previous:
+                child = next(children)
+                break
+
+        self.activeNode = child
         actual = self.activeNode
         print('{} -> {}'.format(previous, actual))
         
