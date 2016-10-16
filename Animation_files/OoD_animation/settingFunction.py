@@ -1,16 +1,29 @@
 import bpy
+import math
 
 # Function that set the frames where the displacement takes place
-def setMovement(object, initialFrame, finalFrame , distance):
+def movement(object, initialFrame, finalFrame , distance, offset = 0):
     bpy.context.scene.frame_current = initialFrame
     object.keyframe_insert('location', frame = initialFrame)
     object.location[0] -= distance
+    if offset:
+        object.location[1] += offset #distance * math.tan(angle)
     bpy.context.scene.frame_current = finalFrame
     object.keyframe_insert('location', frame = finalFrame)
     interpolation(object)
+    
+
+# Function that set the frames where the displacement takes place
+def rotation(object, initialFrame, finalFrame , angle):
+    bpy.context.scene.frame_current = initialFrame
+    object.keyframe_insert('rotation_euler', frame = initialFrame)
+    object.rotation_euler[0] -= angle
+    bpy.context.scene.frame_current = finalFrame
+    object.keyframe_insert('rotation_euler', frame = finalFrame)
+    interpolation(object)
 
 # Function that set the frames where the deformation takes place           
-def setDeformation(object, initialFrame, finalFrame , amount):
+def deformation(object, initialFrame, finalFrame , amount):
     bpy.context.scene.frame_current = initialFrame
     object.keyframe_insert('scale', frame = initialFrame)
     object.scale[2] *= 1 - amount
@@ -19,7 +32,7 @@ def setDeformation(object, initialFrame, finalFrame , amount):
     interpolation(object)
 
 # Function that set the frames where the change of color takes place            
-def setColor(object, initialFrame):
+def color(object, initialFrame):
     bpy.context.scene.frame_current = initialFrame
     object.keyframe_insert('color', frame = initialFrame)
     bpy.context.scene.objects.active = object 
@@ -28,12 +41,10 @@ def setColor(object, initialFrame):
     object.keyframe_insert('color', frame = initialFrame + 1)
 
 # Function that set the frames where the removal of the tag takes place 
-def deleteTag(object, initialFrame, finalFrame):
+def elimination(object, initialFrame, finalFrame):
     bpy.context.scene.frame_current = initialFrame
     object.keyframe_insert('scale', frame = initialFrame)
-    object.scale[0] *= 0
-    object.scale[1] *= 0
-    object.scale[2] *= 0
+    object.scale = ( 0, 0 ,0)
     bpy.context.scene.frame_current = finalFrame
     object.keyframe_insert('scale', frame = finalFrame)
     interpolation(object)

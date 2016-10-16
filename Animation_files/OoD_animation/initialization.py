@@ -10,7 +10,7 @@ def initialize():
     for object_name in candidate_list:
         bpy.data.objects[object_name].select = True  
 
-    # remove all selected.
+    # Remove all selected.
     bpy.ops.object.delete()
 
     bpy.ops.object.select_by_type(type = 'MESH')

@@ -1,8 +1,8 @@
 import bpy
 
-def setMaterial(ob, mat):
+def setColor(ob, color):
     me = ob.data
-    me.materials.append(mat)
+    me.materials.append(color)
     
 def makeColor(name, diffuse):
     color = bpy.data.materials.new(name)
@@ -20,3 +20,6 @@ black = makeColor('Black',(0,0,0))
 white = makeColor('White',(1,1,1)) 
 green = makeColor('Green',(0,1,0)) 
 gray =  makeColor('Gray', (0.6,0.6,0.6)) 
+dark_gray =  makeColor('Gray', (0.2,0.2,0.2)) 
+
+
