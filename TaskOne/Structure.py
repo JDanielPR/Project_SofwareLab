@@ -52,4 +52,22 @@ gaps all together in a single entity'''
     initializationStep = nextstep.nextstep(possibilitiesTree,
                                            None, None, self.listCrossMembers,
                                            self.listLoadpaths)
+  def task_two(self, blackbox):
+    """solves"""
+
+    # generate tree
+    tree = self.moustafa_job()  # the tree created has root as active node
+
+    # include the following in moustafa_job()
+      # tree.add_children()
+      # tree.go_down # active node = first child
+
+    # surf the tree
+    while tree.surf(blackbox):
+      if tree.end:
+        return True # completely deformed structure
+
+    # no more right neighbours
+    return False
+      
 
