@@ -1,9 +1,9 @@
 import xml.etree.ElementTree as et
-from Structure import Structure
-from Loadpath import Loadpath
-from Component import Component
-from CrossComponent import CrossComponent
-from Node import Node
+from structure_core.Structure import Structure
+from structure_core.Loadpath import Loadpath
+from structure_core.Component import Component
+from structure_core.CrossComponent import CrossComponent
+from structure_core.Node import Node
 
 def read_xml(path):
     """Return a Structure object, based on the .xml at the given path"""
@@ -88,7 +88,7 @@ tree and the list of loadpaths."""
     for level in root.iter('level'):
         # loop over crossComponents
         for component in level.iter('component'):
-            if component.find('end_level'):
+            if component.find('end_level') is not None:
                 # read the position of the nodes
                 x1 = float(component.find('x1').text)
                 x2 = float(component.find('x2').text)
@@ -101,13 +101,12 @@ tree and the list of loadpaths."""
                 # loop over the loadpaths
                 for loadpath in listLoadpaths:
                     # get loadpathLevel
-                    loadpathLevel = loadpath.listOfComponents[0].\
+                    loadpathLevel = loadpath.listComponents[0].\
                                     leftNode.loadpathLevel
-                    
                     if loadpathLevel == loadpathLevel1:
                         # loadpath 1 found
                         # loop over components:
-                        for comp in loadpath.listOfComponents:
+                        for comp in loadpath.listComponents:
                             if comp.leftNode.position == x1:
                                 left_node = comp.leftNode
                             elif comp.rightNode.position == x1:
@@ -116,7 +115,7 @@ tree and the list of loadpaths."""
                     elif loadpathLevel == loadpathLevel2:
                         # loadpath 2 found
                         # loop over components:
-                        for comp in loadpath.listOfComponents:
+                        for comp in loadpath.listComponents:
                             if comp.leftNode.position == x2:
                                 right_node = comp.leftNode
                             elif comp.rightNode.position == x2:
@@ -140,7 +139,7 @@ tree and the list of loadpaths."""
                 
                 # create crossComponent
                 cross_comp_obj = CrossComponent(left_node, right_node,
-                                                rigid_length)
+                                                rigidLength)
 
                 # save crossComponent
                 listCrossComponents.append(cross_comp_obj)
