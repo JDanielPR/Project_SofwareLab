@@ -35,33 +35,6 @@
 		</system_param>
 		<level>
 			<id>
-				0
-			</id>
-			<mass>
-				<name>
-					m001
-				</name>
-				<x>
-					305.0
-				</x>
-				<value>
-					0.01
-				</value>
-			</mass>
-			<mass>
-				<name>
-					hw
-				</name>
-				<x>
-					1000.0
-				</x>
-				<value>
-					1.75
-				</value>
-			</mass>
-		</level>
-		<level>
-			<id>
 				1
 			</id>
 			<component>
