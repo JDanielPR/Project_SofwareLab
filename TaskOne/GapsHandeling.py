@@ -1,6 +1,5 @@
 import logging
-import Node
-import Component
+from structure_core import Node, Component
 
 gapsHandelingLogger = logging.getLogger('gapsHandeling')
 logging.basicConfig(level=logging.DEBUG)
@@ -214,8 +213,7 @@ def treat_this_gap(currentGap, listLoadpaths):
   #if no more gaps are there after the currentGap, then perform this
   if isThereNextGap is False:
     for component in listLoadpaths[currentGap.leftNode.loadpathLevel].listComponents :
-      print('component ',component.name,' insex is',component.componentIndex)
       if component.componentIndex != currentGap.componentIndex:
         component.change_temporarilyBlockedDeformation(True)
-        print('HEYYYYYYYYYYYYYY')
+      
     
