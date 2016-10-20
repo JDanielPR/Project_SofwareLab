@@ -1,66 +1,56 @@
+from NodeTree import NodeTree
 
-class NodeTree:
-    def __init__(self, data, parent = None):
-        self.data = data # (comp1, comp5)
-        self.parent = parent
-        self.children = [ ]
-        self.isValid = True
-        self.amount = None
-
-    def __repr__(self):
-        return self.data
-    
-    def add_child(self, data):
-        child = NodeTree(data, self)
-        child.check() # stupid but simpler!
-        self.children.append(child)
-
-    def check(self):
-        self.determine_amount()
-        if self.amount == 0:
-            self.isValid = False
-            
-    def determine_amount():
-        """Computes the correct value for self.amount"""
-        
-        raise Exception # not implemented
-    
 class Tree:
-    def __init__(self, possibilities):
-        self.possiblities = possibilities
+    def __init__(self, possibilities, listCrossComponents):
+        self.possibilities = possibilities
+        self.front_gaps_possibilities
         self.root = NodeTree('ROOT')
         self.activeNode = self.root
         self.end = False
-
+        self.listCrossComponents = listCrossComponents
+        ##
+        print('TREE GENERATED')
+        self.activeNode.d_print()
+        
     def __repr__(self):
         return self.activeNode
 
     def add_children(self):
-        for data in possibilities:
-            self.activeNode.add_child(data)
+        assert not self.activeNode.children
+        for data in self.possibilities:
+            self.activeNode.add_child(data, self.listCrossComponents)
+        if any(node.isValid for node in self.activeNode.children):
+            pass # there is at least a valid node
+        else:
+            # no more valid children the end of the tree has been reached
+            self.end = True
+        ##
+        print('ADDING CHILDREN')
+        self.activeNode.d_print()
 
     def go_down(self):
         """Changes the activeNode to its first valid child.
 
-If there isn't any active child, the activeNode is the rightest child and the
+If there isn't any valid child, the activeNode is the rightest child and the
 tree attribute .end is set to True.
 This function should not raise any exception"""
-        self.deform()
-        
+        assert self.activeNode.children
+        assert not self.end
         self.activeNode = self.activeNode.children[0]
-        
+        ##
+        print('GOING DOWN')
+        self.activeNode.d_print()
         if self.activeNode.isValid:
             return
         else:
-            try:
-                self.go_right()
-            except StopIteration:
-                self.end = True
-
+            self.go_right()
+            
     def go_up(self):
         self.end = False # carefully think about that!
         self.undeform()
         self.activeNode = self.activeNode.parent
+        ##
+        self.activeNode.d_print()
 
     def go_right(self):
         """Changes the activeNode to its right neighbour.
@@ -73,7 +63,9 @@ If the neighbour doesn't exist, a StopIteration exception is raised."""
                 child = next(children)
                 break
         self.activeNode = child
-        
+        ##
+        print('GOING RIGHT')
+        self.activeNode.d_print()
         if self.activeNode.isValid:
             return
         else:
@@ -102,26 +94,25 @@ If the neighbour doesn't exist, a StopIteration exception is raised."""
     def surf(self, blackbox):
         """Changes the activeNode.
 
-It goes down or right according to the blackbox response.
-"""
+It goes down or right according to the blackbox response."""
+        assert self.activeNode.isValid
 
-        activeNodeIsCorrect = blackbox(self) # what if active node is correct
-                                            # but it is not valid?
-                                            # could this happen???
-                                            # check first within the blackbox
-                                            # to avoid this case
-                                            # activeNode.isValid = False
-                                            # => activeNodeIsCorrect = False
+        activeNodeIsCorrect = blackbox(self)
+        # if the blackbox can't decide, it should raise an exeption, that will
+        # remain unhandled.
+        # so the possible answers are:
+        # 1. return True
+        # 2. return False
+        # 3. raise ImpossibleDecision (e.g.)
 
         if activeNodeIsCorrect:
             self.deform()
             self.add_children()
-            self.go_down()
-          
+            if not self.end:
+                self.go_down()          
         else:
-            try self.go_right():
-                pass
+            try:
+                self.go_right()
             except StopIteration:
                 return False # no more right neighbours
-            
         return True
