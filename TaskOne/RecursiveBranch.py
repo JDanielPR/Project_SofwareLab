@@ -211,28 +211,6 @@ class RecursiveBranch():
           pass
       else:
         pass
-      #counter += 1
-      #print("finished now with ",round(counter/len(self.possibilitiesTree),2)*100,"% of current level")
-
-    #Solution is output when all of the branches have been forbidden from going on
-    #because their deformations have violated the cross-components' assumptions
-    '''
-    if availableTuplesToDeform == crossComponentsFailureCounter:
-      #print_solution()
-      print("SOLUTION FOUND")
-      logger.debug("the solver has converged to an OoD, and the cross members have played a role in aborting")
-      print("numberOffMemberTerminations is:", numberRigidComponentTerminations)
-      print('one OoD is:')
-      for x in self.solutionPath:
-        for y in x:
-          print(y.name)
-        print('...........')
-      print('end of this found OoD!')
-      self.solutionCounter.increase()
-    else:
-      pass
-    '''
-    #if len(self.listCrossComponents) == 0 and availableTuplesToDeform == 1 and crossComponentsFailureCounter == 0:
     if availableTuplesToDeform == 0 or availableTuplesToDeform == crossComponentsFailureCounter:
       #print('one OoD is:')
       #for x in self.solutionPath:
