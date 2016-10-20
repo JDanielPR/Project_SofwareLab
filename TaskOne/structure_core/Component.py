@@ -1,5 +1,4 @@
 import logging
-##import otherFunctions as others
 
 logger = logging.getLogger('component')
 logging.basicConfig(level=logging.DEBUG)
@@ -31,8 +30,14 @@ class Component():
     self.componentIndex = 0 
     self.rightComponent = None
 
+  def __repr__(self):
+    return self.name
+
   def calc_length(self):
     return abs(self.leftNode.position - self.rightNode.position)
+
+  def deformable_length(self):
+    return self.calc_length() - self.rigidLength
 
   def deform(self, deformationStep):
     '''
@@ -43,14 +48,11 @@ class Component():
     by calling the function propagate()
     '''
     # storing the current configuration before defroming the member
-    others.storeMembersConfig(self)
     logger.debug("component {} has deformed with amount {}"
                  .format(self.name,deformationStep))
-    self.rightNode.change_position(x)
-    if self.rightComponent != None:
-      logger.debug("a motion transfered from component {} to component {}"
-                   .format(self.name,self.rightComponent.name))
-      self.propagate(x)
+    self.rightNode.change_position(deformationStep)
+    if self.rightComponent:
+      self.rightComponent.propagate(deformationStep)
 
   def propagate(self, deformationStep):
     '''
@@ -61,12 +63,11 @@ class Component():
     if it exists
     '''
     # storing the current configuration before deforming the left member
-    others.storeMembersConfig(self.rightComponent)
-    self.rightComponent.rightNode.change_position(x)
-    logger.debug("a motion has been transfered from member {} to \
-                 its adjacent \member {}".format(self.name, self.leftMember.name))
-    if self.rightComponent.rightComponent != None:
-      self.rightComponent.propagate(deforationStep)
+    self.rightNode.change_position(deformationStep)
+    logger.debug("a motion transfered to component {}"
+                 .format(self.name))
+    if self.rightComponent:
+      self.rightComponent.propagate(deformationStep)
 
   def change_perminantlyBlockedDefromation(self, newValue):
     '''
@@ -83,3 +84,7 @@ to {}".format(self.name, self.perminantlyBlockedDefromation, newValue))
     logger.debug("component {} changed temporarilyBlockedDeformation from {} \
 to {}".format(self.name, self.temporarilyBlockedDeformation,newValue))
     self.temporarilyBlockedDeformation = newValue
+
+  def change_gap_index(self,newGapIndex):
+
+    self.gapIndex = newGapIndex

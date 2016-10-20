@@ -1,8 +1,6 @@
 import logging
 logger = logging.getLogger('CrossComponentLogger')
 
-##import otherFunctions as others
-
 class CrossComponent():
   '''
   This class stores the information related to a cross component
@@ -13,9 +11,9 @@ class CrossComponent():
   def __init__(self,
                leftNode, rightNode,
                rigidLength):
-
-    self.leftNode = leftNode  # the first node is chosen as the one closest 
-                              # to the barrier 
+    # the first node is chosen as the one closer to the barrier
+    assert leftNode.position < rightNode.position
+    self.leftNode = leftNode 
     self.rightNode = rightNode
 
 # THIS CHANGES DURING DEFORMATION !!!
@@ -31,13 +29,35 @@ class CrossComponent():
 # this function checks the configuration of the crossMember after the carried 
 # out branch of possibilitiesTree if this cofiguration violates the porposed 
 # assumptions, then it will return False, otherwise True
+
+  def left_deforms(self, list_of_nodes):
+    """True if the given deformation leading nodes would move the leftNode."""
+    return any(node.loadpathLevel == self.leftNode.loadpathLevel 
+               and 
+               node.position <= self.leftNode.position 
+               for node in list_of_nodes)
+
+  def right_deforms(self, list_of_nodes):
+    """True if the given deformation leading nodes would move the rightNode."""
+    return any(node.loadpathLevel == self.rightNode.loadpathLevel 
+               and 
+               node.position <= self.rightNode.position 
+               for node in list_of_nodes)
+  
+  def length(self):
+    """Returns the length in x direction of the crossComponent."""
+    return self.rightNode.position - self.leftNode.position
+  
+  def deformable_length(self):
+    """Returns the deformable length in x direction of the crossComponent."""
+    return self.length() - self.rigidLength
+    
   def check_new_cross_component_config(self):
     '''
     Function checks whether a defromation step is valid to the cross component
     '''
     
     #store the state of the cross member
-    others.store_cross_component_config(self)
 
     logger.debug("a cross component is being examined against a deformation \
 step")

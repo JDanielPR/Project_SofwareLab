@@ -2,14 +2,14 @@ class Loadpath():
   '''Class contains it index ,all of the components within the loadpath, and
 counts number of components not able to defrom anymore.'''
   def __init__(self):
-    self.listOfComponents = [ ] 
+    self.listComponents = [ ] 
     self.noComponentsNotDeformable= 0 
 
   def add_member(self, component):
     '''
     Function addes components to the list of components
     '''
-    self.listOfComponents.append(component)
+    self.listComponents.append(component)
 
   def increase_noComponentsNotDeformable(self):
     '''

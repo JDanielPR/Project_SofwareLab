@@ -13,6 +13,10 @@ class Node():
         self.position = point
         self.loadpathLevel = loadpathLevel
 
+    def __repr__(self):
+        return "Node at {} in loadpath {}".format(self.position,
+                                                  self.loadpathLevel)
+
     # Method that acts on the node's position attribute to change it from one
     # place to another
     def change_position(self, deformationStep):
@@ -20,8 +24,9 @@ class Node():
         Function that acts on the node's position attribute to change it from one
         place to another
         '''
-        message = "node at position {} and loadpath {} has changed its \
-position by {}"
-        logger.debug(message.format(self.position, self.loadpathLevel, x))
+##        message = "node at position {} and loadpath {} has changed its \
+##position by {}"
+##        logger.debug(message.format(self.position, self.loadpathLevel,
+##                                    deformationStep))
         
-        self.position += deformationStep
+        self.position -= deformationStep
