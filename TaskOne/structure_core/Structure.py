@@ -1,7 +1,6 @@
-##import nextstep
-##import itertools
-##import gapsHandeling
-##import otherFunctions
+import itertools
+from tree_core.tree import Tree
+import GapsHandeling
 
 class Structure():
   '''Structure class groups all of the nodes, components, crossComponents, and
@@ -12,10 +11,10 @@ gaps all together in a single entity'''
 
   def init_right_components(self):
     for loadpath in self.listLoadpaths:
-      for component in loadpath.listOfComponents:
+      for component in loadpath.listComponents:
         # create a list of possible rightComponents
         rightComponents = [rightComponent
-                           for rightComponent in loadpath.listOfComponents
+                           for rightComponent in loadpath.listComponents
                            if rightComponent.leftNode == component.rightNode]
 
         if len(rightComponents) is not 0:
@@ -31,7 +30,7 @@ gaps all together in a single entity'''
     '''
 
     #this line adds gaps in between the normal members
-    gapsHandeling.gapsInsertor(self.listLoadpaths)
+    GapsHandeling.gapsInsertor(self.listLoadpaths)
 
     #this line adds indexes to the members (normal and gaps)
     #according to their position with respect to the barrier in
@@ -52,16 +51,13 @@ gaps all together in a single entity'''
     initializationStep = nextstep.nextstep(possibilitiesTree,
                                            None, None, self.listCrossMembers,
                                            self.listLoadpaths)
-  def task_two(self, blackbox):
+
+  def old_task_two(self, blackbox):
     """solves"""
 
     # generate tree
-    tree = self.moustafa_job()  # the tree created has root as active node
-
-    # include the following in moustafa_job()
-      # tree.add_children()
-      # tree.go_down # active node = first child
-
+    tree = self.possibilities_tree_generator() # the first child is
+                                               # the activeNode
     # surf the tree
     while tree.surf(blackbox):
       if tree.end:
@@ -69,5 +65,35 @@ gaps all together in a single entity'''
 
     # no more right neighbours
     return False
-      
 
+  def task_two(self, blackbox):
+    """solves"""
+
+    # generate tree
+    tree = self.possibilities_tree_generator() # the first child is
+                                               # the activeNode
+    # surf the tree
+    while not tree.end:
+      if not tree.surf(blackbox):
+        return False # no more right neighbours
+
+    # completely deformed structure
+    return True
+    
+  def possibilities_tree_generator(self):
+    # Add all of the loadpaths to a list called "structure array" for the sake
+    # of the possibilities tree generation using the embedded module itertools
+    structureArray = []
+    for loadpath in self.listLoadpaths:
+      structureArray.append(loadpath.listComponents)
+
+    # Generate the possibilities tree
+    possibilities = list(itertools.product(*structureArray))
+    tree = Tree(possibilities, self.listCrossComponents)
+
+    # Add children to the root and set the first child as activeNode
+    tree.deform() # nothing happens when performing the root step
+    tree.add_children()
+    tree.go_down()
+    
+    return tree
