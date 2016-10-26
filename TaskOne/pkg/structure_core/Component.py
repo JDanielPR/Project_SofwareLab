@@ -39,7 +39,7 @@ class Component():
   def deformable_length(self):
     return self.calc_length() - self.rigidLength
 
-  def deform(self, deformationStep):
+  def deform(self, deformationStep, savers):
     '''
     Function deforms component and transfers motion to next.
     This function stores first the states of the component before
@@ -52,9 +52,20 @@ class Component():
                  .format(self.name,deformationStep))
     self.rightNode.change_position(deformationStep)
     if self.rightComponent:
-      self.rightComponent.propagate(deformationStep)
+      self.rightComponent.propagate(deformationStep, savers)
 
-  def propagate(self, deformationStep):
+    # save
+    for saver in savers:
+      saver.save(self, 'd', deformationStep)
+      
+  def moves(self, list_of_nodes):
+    return any(node.loadpathLevel == self.leftNode.loadpathLevel
+               and
+               node.position <= self.leftNode.position
+               for node in list_of_nodes)
+    
+    
+  def propagate(self, deformationStep, savers):
     '''
     Function moves next component then transfers motion to next.
     This function first stores the states of the adjacent component
@@ -67,7 +78,11 @@ class Component():
     logger.debug("a motion transfered to component {}"
                  .format(self.name))
     if self.rightComponent:
-      self.rightComponent.propagate(deformationStep)
+      self.rightComponent.propagate(deformationStep, savers)
+
+    # save
+    for saver in savers:
+      saver.save(self, 'm', deformationStep)
 
   def change_perminantlyBlockedDefromation(self, newValue):
     '''

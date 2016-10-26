@@ -1,9 +1,9 @@
 import xml.etree.ElementTree as et
-from structure_core.Structure import Structure
-from structure_core.Loadpath import Loadpath
-from structure_core.Component import Component
-from structure_core.CrossComponent import CrossComponent
-from structure_core.Node import Node
+from .structure_core.Structure import Structure
+from .structure_core.Loadpath import Loadpath
+from .structure_core.Component import Component
+from .structure_core.CrossComponent import CrossComponent
+from .structure_core.Node import Node
 
 def read_xml(path):
     """Return a Structure object, based on the .xml at the given path"""
@@ -138,7 +138,9 @@ tree and the list of loadpaths."""
                 assert rigidLength >= 0
                 
                 # create crossComponent
-                cross_comp_obj = CrossComponent(left_node, right_node,
+                cross_comp_obj = CrossComponent(component.find('name').
+                                                text.strip(),
+                                                left_node, right_node,
                                                 rigidLength)
 
                 # save crossComponent

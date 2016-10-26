@@ -1,6 +1,6 @@
 import itertools
-from tree_core.tree import Tree
-import GapsHandeling
+from ..tree_core.tree import Tree
+from .. import GapsHandeling
 
 class Structure():
   '''Structure class groups all of the nodes, components, crossComponents, and
@@ -52,20 +52,6 @@ gaps all together in a single entity'''
                                            None, None, self.listCrossMembers,
                                            self.listLoadpaths)
 
-  def old_task_two(self, blackbox):
-    """solves"""
-
-    # generate tree
-    tree = self.possibilities_tree_generator() # the first child is
-                                               # the activeNode
-    # surf the tree
-    while tree.surf(blackbox):
-      if tree.end:
-        return True # completely deformed structure
-
-    # no more right neighbours
-    return False
-
   def task_two(self, blackbox):
     """solves"""
 
@@ -75,10 +61,10 @@ gaps all together in a single entity'''
     # surf the tree
     while not tree.end:
       if not tree.surf(blackbox):
-        return False # no more right neighbours
+        return False, False # no more right neighbours
 
     # completely deformed structure
-    return True
+    return tree.savers[0].i_s, [tree.savers[0].ood]
     
   def possibilities_tree_generator(self):
     # Add all of the loadpaths to a list called "structure array" for the sake
@@ -89,7 +75,7 @@ gaps all together in a single entity'''
 
     # Generate the possibilities tree
     possibilities = list(itertools.product(*structureArray))
-    tree = Tree(possibilities, self.listCrossComponents)
+    tree = Tree(possibilities, self)
 
     # Add children to the root and set the first child as activeNode
     tree.deform() # nothing happens when performing the root step

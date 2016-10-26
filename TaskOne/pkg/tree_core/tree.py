@@ -1,12 +1,15 @@
 from .NodeTree import NodeTree
+from ..isdh.isdh_helper import IsdhHelper
 
 class Tree:
-    def __init__(self, possibilities, listCrossComponents):
+    def __init__(self, possibilities, structure):
         self.possibilities = possibilities
         self.root = NodeTree('ROOT')
         self.activeNode = self.root
         self.end = False
-        self.listCrossComponents = listCrossComponents
+        self.structure = structure
+        self.savers = [ ]
+        IsdhHelper().register(self)
         ##
         print('TREE GENERATED')
         self.activeNode.d_print()
@@ -17,7 +20,7 @@ class Tree:
     def add_children(self):
         assert not self.activeNode.children
         for data in self.possibilities:
-            self.activeNode.add_child(data, self.listCrossComponents)
+            self.activeNode.add_child(data, self.structure)
         if any(node.isValid for node in self.activeNode.children):
             pass # there is at least a valid node
         else:
@@ -45,7 +48,8 @@ This function should not raise any exception"""
             self.go_right()
             
     def go_up(self):
-        self.end = False # carefully think about that!
+        self.end = False
+        self.activeNode.isValid = False
         self.undeform()
         self.activeNode = self.activeNode.parent
         ##
@@ -75,20 +79,22 @@ If the neighbour doesn't exist, a StopIteration exception is raised."""
         # if self.activeNode is the ROOT, just pass
         if self.activeNode is self.root:
             return
-        # for each component in data deform
-        amount = self.activeNode.amount
-        for component in self.activeNode.data:
-            component.deform(amount)
+        # deform the structure
+        self.activeNode.deform()
+        # save deformation steps
+        for saver in self.savers:
+            saver.save(self.activeNode)
 
     def undeform(self):
         """Undeforms the structure according to the active node"""
         # if self.activeNode is the ROOT, just pass
         if self.activeNode is self.root:
             return
-        # for each component in data deform
-        amount = self.activeNode.parent.amount
-        for component in self.activeNode.parent.data:
-            component.deform(-amount) # mind the minus, here we UN-deform
+        # unsave deformation steps
+        for saver in self.savers:
+            saver.unsave(self.activeNode)
+        # undeform the structure
+        self.activeNode.undeform()
 
     def surf(self, blackbox):
         """Changes the activeNode.

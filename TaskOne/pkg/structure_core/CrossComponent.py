@@ -9,10 +9,12 @@ class CrossComponent():
   '''
 
   def __init__(self,
+               name,
                leftNode, rightNode,
                rigidLength):
     # the first node is chosen as the one closer to the barrier
     assert leftNode.position < rightNode.position
+    self.name = name
     self.leftNode = leftNode 
     self.rightNode = rightNode
 

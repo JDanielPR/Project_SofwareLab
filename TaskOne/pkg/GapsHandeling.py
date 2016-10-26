@@ -1,5 +1,5 @@
 import logging
-from structure_core import Node, Component
+from .structure_core import Node, Component
 
 gapsHandelingLogger = logging.getLogger('gapsHandeling')
 logging.basicConfig(level=logging.DEBUG)
