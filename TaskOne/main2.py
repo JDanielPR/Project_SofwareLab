@@ -5,6 +5,7 @@ import pkg.GapsHandeling
 ##from pkg.isdh.isdh_helper import IsdhHelper
 
 def blackbox(something):
+    print('blackbox valid?')
     answer = input('y/n?\t')
     if answer == 'y':
         return True

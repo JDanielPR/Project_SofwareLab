@@ -62,6 +62,14 @@ def construct_loadpaths(root):
                         node1 = node
                     if x2 == node.position:
                         node2 = node
+
+                # check proper orientation of the Component
+                if node1.position < node2.position:
+                    pass # this should be the case, if the .xml is correct 
+                else:
+                    # in this case, swap the nodes
+                    node1, node2 = node2, node1
+
                 # calculate rigid length
                 length = abs(x1 - x2)
                 rigidLength = length - float(component.find('defoLength').text)

@@ -6,29 +6,43 @@ class Tree:
         self.possibilities = possibilities
         self.root = NodeTree('ROOT')
         self.activeNode = self.root
-        self.end = False
         self.structure = structure
         self.savers = [ ]
         IsdhHelper().register(self)
         ##
         print('TREE GENERATED')
         self.activeNode.d_print()
+        self.print()
         
     def __repr__(self):
         return self.activeNode
+
+    def print(self):
+        for key, item in self.savers[0].ood.items():
+            print(key)
+            for ds in item:
+                ds.print()
+            print()
 
     def add_children(self):
         assert not self.activeNode.children
         for data in self.possibilities:
             self.activeNode.add_child(data, self.structure)
-        if any(node.isValid for node in self.activeNode.children):
-            pass # there is at least a valid node
-        else:
-            # no more valid children the end of the tree has been reached
-            self.end = True
+        if self.end():
+            print('############# ood saved')
+            for saver in self.savers:
+                saver.save_ood()
         ##
         print('ADDING CHILDREN')
         self.activeNode.d_print()
+        self.print()
+            
+    def end(self):
+        if any(node.isValid for node in self.activeNode.children):
+            return False # there is at least a valid node
+        else:
+            # no more valid children the end of the tree has been reached
+            return True
 
     def go_down(self):
         """Changes the activeNode to its first valid child.
@@ -37,18 +51,25 @@ If there isn't any valid child, the activeNode is the rightest child and the
 tree attribute .end is set to True.
 This function should not raise any exception"""
         assert self.activeNode.children
-        assert not self.end
+        assert not self.end()
         self.activeNode = self.activeNode.children[0]
-        ##
-        print('GOING DOWN')
-        self.activeNode.d_print()
+##        ##
+##        print('GOING DOWN')
+##        self.activeNode.d_print()
+        self.print()
         if self.activeNode.isValid:
+            ##
+            print('GONE DOWN')
+            self.activeNode.d_print()
             return
         else:
             self.go_right()
+        ##
+        print('GONE DOWN')
+        self.activeNode.d_print()
             
     def go_up(self):
-        self.end = False
+        assert self.activeNode is not self.root
         self.activeNode.isValid = False
         self.undeform()
         self.activeNode = self.activeNode.parent
@@ -66,9 +87,10 @@ If the neighbour doesn't exist, a StopIteration exception is raised."""
                 child = next(children)
                 break
         self.activeNode = child
-        ##
-        print('GOING RIGHT')
-        self.activeNode.d_print()
+##        ##
+##        print('GOING RIGHT')
+##        self.activeNode.d_print()
+        self.print()
         if self.activeNode.isValid:
             return
         else:
@@ -113,7 +135,7 @@ It goes down or right according to the blackbox response."""
         if activeNodeIsCorrect:
             self.deform()
             self.add_children()
-            if not self.end:
+            if not self.end():
                 self.go_down()          
         else:
             try:

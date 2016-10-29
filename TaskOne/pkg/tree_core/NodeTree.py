@@ -58,24 +58,27 @@ class NodeTree:
         # Get the minimum amount
         if amountCrossComponents is not None:
             self.amount = min(amount, amountCrossComponents)
+            # if a connection is limiting the amount of deformation
+            if amountCrossComponents < amount:
+                self.amount = amountCrossComponents
+                # in the next defomation step, every component might deform
+                self.keep = False
+            # otherwise
+            else:
+                self.amount = amount
+                # the components that are still deformable should keep on
+                # deforming
+                self.keep = True
         else:
             self.amount = amount
-
-        # if a connection is limiting the amount of deformation
-        if amountCrossComponents < amount:
-            # in the next defomation step, every component might deform
-            self.keep = False
-        # otherwise
-        else:
-            # the components that are still deformable should keep on deforming
             self.keep = True
 
     def cross_components_amount(self, deformationLeadingNodes):
         """Computes the amount of deformation allowed by the crossComponents"""
 
         self.movingComps = [comp
-                            for loadpath in self.structure.loadpathList
-                            for comp in loadpath.componentsList
+                            for loadpath in self.structure.listLoadpaths
+                            for comp in loadpath.listComponents
                             if comp.moves(deformationLeadingNodes)]
 
         self.deformingCrossComps = [crossComp

@@ -141,31 +141,31 @@ def gapsInsertor(listOfLoadpaths):
           leftNode.loadpathLevel)
         )
       
-      # Switch the newly create frontal gap's attribute
-      # temporarilyBlockedDeformation to True and all of the other components'
-      # to False
-      #for componentCounter in range(len(loadpath.listComponents)-1):
-      for component in loadpath.listComponents:
-        #if componentCounter == 0:
-        if component.name == 'gap'+str(component.leftNode.loadpathLevel)+'front':
-          pass
-        else:
-         # loadpath.listComponents[
-         #   componentCounter].change_temporarilyBlockedDeformation(False)
-         component.change_temporarilyBlockedDeformation(False)
+##      # Switch the newly create frontal gap's attribute
+##      # temporarilyBlockedDeformation to True and all of the other components'
+##      # to False
+##      #for componentCounter in range(len(loadpath.listComponents)-1):
+##      for component in loadpath.listComponents:
+##        #if componentCounter == 0:
+##        if component.name == 'gap'+str(component.leftNode.loadpathLevel)+'front':
+##          pass
+##        else:
+##         # loadpath.listComponents[
+##         #   componentCounter].change_temporarilyBlockedDeformation(False)
+##         component.change_temporarilyBlockedDeformation(False)
 
-    # If the current loadpath will not be having a gap at the front, then this
-    # loop will search for gaps in between, and it will turn the attribute
-    # temporarilyBlockedDeformation of the first gap to find to True and the
-    # rest of the component's to False
-    else:  
-      for component in loadpath.listComponents:  
-        if component.isStructural is False:
-          component.change_temporarilyBlockedDeformation(True)
-          for otherComponent in loadpath.listComponents:  
-            if otherComponent.name != component.name:
-              otherComponent.change_temporarilyBlockedDeformation(False)
-          break
+##    # If the current loadpath will not be having a gap at the front, then this
+##    # loop will search for gaps in between, and it will turn the attribute
+##    # temporarilyBlockedDeformation of the first gap to find to True and the
+##    # rest of the component's to False
+##    else:  
+##      for component in loadpath.listComponents:  
+##        if component.isStructural is False:
+##          component.change_temporarilyBlockedDeformation(True)
+##          for otherComponent in loadpath.listComponents:  
+##            if otherComponent.name != component.name:
+##              otherComponent.change_temporarilyBlockedDeformation(False)
+##          break
           
   gapsHandelingLogger.debug('third step has been finished')
 

@@ -51,18 +51,41 @@ gaps all together in a single entity'''
     initializationStep = nextstep.nextstep(possibilitiesTree,
                                            None, None, self.listCrossMembers,
                                            self.listLoadpaths)
+  def task_one(self):
+
+    tree = self.possibilities_tree_generator()
+
+    tree.add_children()
+    while tree.activeNode is not tree.root or not tree.end():
+        while not tree.end():
+            tree.go_down()
+            tree.deform()
+            tree.add_children()
+            
+        while tree.end():
+            tree.go_up()
+            if tree.activeNode is tree.root:
+                break
+    return tree.savers[0].i_s, tree.savers[0].d_h
 
   def task_two(self, blackbox):
     """solves"""
 
     # generate tree
-    tree = self.possibilities_tree_generator() # the first child is
-                                               # the activeNode
+    tree = self.possibilities_tree_generator()
+    
+    tree.add_children()
+    if not tree.end():
+      tree.go_down()
+    else:
+      return False, False
+
     # surf the tree
-    while not tree.end:
+    while True:
       if not tree.surf(blackbox):
         return False, False # no more right neighbours
-
+      if tree.end():
+        break
     # completely deformed structure
     return tree.savers[0].i_s, [tree.savers[0].ood]
     
@@ -77,9 +100,9 @@ gaps all together in a single entity'''
     possibilities = list(itertools.product(*structureArray))
     tree = Tree(possibilities, self)
 
-    # Add children to the root and set the first child as activeNode
-    tree.deform() # nothing happens when performing the root step
-    tree.add_children()
-    tree.go_down()
+##    # Add children to the root and set the first child as activeNode
+##    tree.deform() # nothing happens when performing the root step
+##    tree.add_children()
+##    tree.go_down()
     
     return tree

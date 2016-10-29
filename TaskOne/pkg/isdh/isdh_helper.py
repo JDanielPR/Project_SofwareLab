@@ -1,6 +1,7 @@
 import pkg
 from .component import Component
 from .deformation_step import DeformationStep
+import copy
 
 class IsdhHelper:
     def __init__(self):
@@ -75,7 +76,7 @@ class IsdhHelper:
                 
         for movCrossComp in activeNode.movingCrossComps:
             self.save_defo_step(movCrossComp, 'm', - activeNode.amount)
-            
+
     def save_defo_step(self, comp, stepType, stepAmount):
         """Save or un-save a deformation step of one component."""
         
@@ -105,6 +106,6 @@ class IsdhHelper:
             self.ood[isdh_comp] = [ ]
     
     def save_ood(self):
-        self.d_h.append(self.ood)
+        self.d_h.append(copy.deepcopy(self.ood))
     
         
