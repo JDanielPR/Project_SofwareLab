@@ -139,7 +139,7 @@ gaps all together in a single entity'''
         break
     # completely deformed structure
     return tree.savers[0].i_s, [tree.savers[0].ood]
-    
+'''    
   def possibilities_tree_generator(self):
     # Add all of the loadpaths to a list called "structure array" for the sake
     # of the possibilities tree generation using the embedded module itertools
@@ -157,3 +157,27 @@ gaps all together in a single entity'''
 ##    tree.go_down()
     
     return tree
+'''
+
+  def get_deforming_components( self ):
+    for gap in self.listGaps:
+      if any( component.connectedToBarrier for component in gap.leftNode.towardsBarrier ):
+        for component in gap.rightNode.towardsFirewall:
+          component.link_to_barrier()
+
+      if any( component.connectedToFirewall for component in gap.rightNode.towardsFirewall ):
+        for component in gap.leftNode.towardsBarrier:
+          component.link_to_firewall()
+
+    for crossComponent in self.listCrossComponents:
+      if crossComponent.broken:
+        
+      if any( component.connectedToBarrier for component in crossComponent.leftNode.towardsBarrier ):
+        
+    structureArray = [ ]
+    for loadpath in self.listLoadpaths:
+      structureArray.append( loadpath.valid_components() )
+
+    return( list(itertools.product(*structureArray)) )
+      
+      
