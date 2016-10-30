@@ -5,7 +5,7 @@ gapsHandelingLogger = logging.getLogger('gapsHandeling')
 logging.basicConfig(level=logging.DEBUG)
 
 
-def gapsInsertor(listOfLoadpaths):
+def gapsInsertor(structure):
   '''Function inserts gaps within the loadpaths
 
   This function will take as an input the loadpaths that have been created from
@@ -18,6 +18,7 @@ def gapsInsertor(listOfLoadpaths):
 
   # First step is to determine the maximum x-coordinate that any of the
   # loadpaths start from
+  listOfLoadpaths = structure.listLoadpaths
   
   minimumX = 100000
   for loadpath in listOfLoadpaths:
@@ -69,17 +70,17 @@ def gapsInsertor(listOfLoadpaths):
           componentCounter+1 +gapsCounter]
 
         # Create the new gap
-        loadpath.listComponents.insert (
-          (componentCounter + gapsCounter + 1),
-          Component.Component (
-            gapLeftNode,
-            gapRightNode,
-            0,
-            gapName,
-            gapRightComponent,
-            False,
-            0)
-          )
+        gap = Component.Component (
+          gapLeftNode,
+          gapRightNode,
+          0,
+          gapName,
+          gapRightComponent,
+          True)
+        loadpath.listComponents.insert ((componentCounter + gapsCounter + 1),
+                                        gap)
+        structure.listGaps.append(gap)
+        
         
         # Make the newly created gap as a rightComponent to its adjacent
         # structural component to the left
@@ -125,48 +126,20 @@ def gapsInsertor(listOfLoadpaths):
       gapsName = 'gap'+str(leftNode.loadpathLevel)+'front'  
 
       # Create the new frontal gap
-      loadpath.listComponents.insert (
-        0,
-        Component.Component (
-          frontalGapLeftNode,
-          frontalGapRightNode,
-          0,
-          gapsName,
-          gapsRightComponent,
-          False,
-          0))
+      gap = Component.Component (frontalGapLeftNode,
+                                 frontalGapRightNode,
+                                 0,
+                                 gapsName,
+                                 gapsRightComponent,
+                                 True)
+      loadpath.listComponents.insert(0, gap)
+      structure.listGaps.append(gap)
 
       gapsHandelingLogger.debug(
         'a new gap in the front of loadpath {} has been created'.format(
           leftNode.loadpathLevel)
         )
-      
-##      # Switch the newly create frontal gap's attribute
-##      # temporarilyBlockedDeformation to True and all of the other components'
-##      # to False
-##      #for componentCounter in range(len(loadpath.listComponents)-1):
-##      for component in loadpath.listComponents:
-##        #if componentCounter == 0:
-##        if component.name == 'gap'+str(component.leftNode.loadpathLevel)+'front':
-##          pass
-##        else:
-##         # loadpath.listComponents[
-##         #   componentCounter].change_temporarilyBlockedDeformation(False)
-##         component.change_temporarilyBlockedDeformation(False)
 
-##    # If the current loadpath will not be having a gap at the front, then this
-##    # loop will search for gaps in between, and it will turn the attribute
-##    # temporarilyBlockedDeformation of the first gap to find to True and the
-##    # rest of the component's to False
-##    else:  
-##      for component in loadpath.listComponents:  
-##        if component.isStructural is False:
-##          component.change_temporarilyBlockedDeformation(True)
-##          for otherComponent in loadpath.listComponents:  
-##            if otherComponent.name != component.name:
-##              otherComponent.change_temporarilyBlockedDeformation(False)
-##          break
-          
   gapsHandelingLogger.debug('third step has been finished')
 
   # Forth step involves giving indeces to the gaps depending on their order
@@ -181,39 +154,4 @@ def gapsInsertor(listOfLoadpaths):
 
   # Everythings related to setting up the gaps is now done
     
-#finction that turns the gap that has completely closed OFF, and turns the next one ON (if found)
-#;in addition, it turns all of the other members OFF
-def treat_this_gap(currentGap, listLoadpaths):
-  '''Function deals with the deforming component if it was a gap
-
-  makes the current Gap not to defrom anymore and gives defromation ability to
-  the next. Function that turns the gap that has completely closed Off, and turns the next
-  one On (if found); in addition, it turns all of the other members Off of there was
-  another gap, and On if there wasn't
-  '''
-  #change the state of the current gap to False for elimination
-  currentGap.change_perminantlyBlockedDeformation(False)
-  #this gap cant deform temporarly any more
-  currentGap.change_temporarilyBlockedDeformation(False) 
-
-  isThereNextGap = False
-  
-  #index of the next gap (if available)
-  nextGapIndex = (currentGap.gapIndex) + 1  
-
-  for component in listLoadpaths[currentGap.leftNode.loadpathLevel].listComponents:
-    if component.isStructural is False:
-      if component.gapIndex == nextGapIndex:
-        component.change_temporarilyBlockedDeformation(True)
-        #component.change_perminantlyBlockedDeformation(True)
-        isThereNextGap = True
-      else:
-         component.change_temporarilyBlockedDeformation(False)
-
-  #if no more gaps are there after the currentGap, then perform this
-  if isThereNextGap is False:
-    for component in listLoadpaths[currentGap.leftNode.loadpathLevel].listComponents :
-      if component.componentIndex != currentGap.componentIndex:
-        component.change_temporarilyBlockedDeformation(True)
-      
     

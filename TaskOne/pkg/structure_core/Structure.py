@@ -8,7 +8,44 @@ gaps all together in a single entity'''
   def __init__(self, listLoadpaths, listCrossComponents = None):
     self.listLoadpaths = listLoadpaths
     self.listCrossComponents = listCrossComponents
+    
+    self.listGaps = [ ]
+    self.invalidComponents = [ ]
+    
+##  def create_blocks():
+##    # create blocks
+##    list of blocks 
+##    for node in nodes:
+##      for block in list of blocks:
+##        if node not in block:
+##          list of blocks . append(Block(node))
+##    # qualify blocks
+##    for block in list of blocks:
+##      block.end_to_end()
+##
+##    def stuff
+##
+##    #
+##    for gap in self.listGaps:
+##      leftBlock, = [block for block in list of block
+##                   if gap.leftNode in block]
+##      rightBlock, = [...gap.rightNode
+##
+##      if leftBlock.end_to_end or rightBlock.end_to_end:
+##                     # no priority
+##      else:
+##                     # priority
+##                     
+##
+##    [[lp1],
+##     [lp2],
+##     [lp3]
+##     ]
+##      
+    
 
+    
+          
   def init_right_components(self):
     for loadpath in self.listLoadpaths:
       for component in loadpath.listComponents:
@@ -23,6 +60,20 @@ gaps all together in a single entity'''
 
           # assign to components its rightComponent
           [component.rightComponent] = rightComponents
+
+  def priority_determiner(self):
+    """Initialize self.invalidComponents"""
+    for gap in self.listGaps:
+      validComponents = [comp for comp in gap.leftNode.connectivity
+                         if comp.is_valid()]
+      if len(validComponents) == 1:
+        self.invalidComponents.append(validComponents[0])
+        
+      validComponents = [comp for comp in gap.rigthNode.connectivity
+                         if comp.is_valid()]
+      if len(validComponents) == 1:
+        self.invalidComponents.append(validComponents[0])
+      
 
   def solve(self):
     '''

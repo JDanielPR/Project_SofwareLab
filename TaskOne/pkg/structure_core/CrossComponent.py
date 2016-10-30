@@ -18,14 +18,12 @@ class CrossComponent():
     self.leftNode = leftNode 
     self.rightNode = rightNode
     self.rigidLength = rigidLength
+    
+    self.breakable = False
+    self.broken = False
 
-##    self.originalDiffOfNodes = self.leftNode.position - self.rightNode.position
-##    self.noContNoElong = False 
-##    self.deformationStepIsValid = 1
-##    self.failureCausingCrossComponent = None
-
-##    #list where the history of the states of the cross component are stored
-##    self.history = [ ]
+    self.leftNode.connectivity.append(self)
+    self.rightNode.connectivity.append(self)
 
   def left_deforms(self, list_of_nodes):
     """True if the given deformation leading nodes would move the leftNode."""
@@ -48,43 +46,7 @@ class CrossComponent():
   def deformable_length(self):
     """Returns the deformable length in x direction of the crossComponent."""
     return self.length() - self.rigidLength
-    
-##  def check_new_cross_component_config(self):
-##    '''
-##    Function checks whether a defromation step is valid to the cross component
-##    '''
-##    
-##    #store the state of the cross member
-##
-##    logger.debug("a cross component is being examined against a deformation \
-##step")
-##
-##    self.deformationStepIsValid = 1 #1 means True; 0 means False
-##    deformableLength = self.rigitNode.position - self.leftNode.position - self.rigidLength
-##    currentDiffOfNodes = self.leftNode.position - self.rightNode.position
-##    
-##    if self.noContNoElong == False:
-##      differenceCurrentAndOriginal = abs(self.originalDiffOfNodes) - \
-##                                     abs(currentDiffOfNodes)
-##      if differenceCurrentAndOriginal > deformableLength or \
-##         currentDiffOfNodes >= 0: # the second part of the if statement
-##                                  # condition refers to the fact that we may
-##                                  # have a flip over 
-##        self.deformationStepIsValid = 0
-##        self.failureCausingCrossComponent = self 
-##        logger.debug("a cross component has indicated that this deformation \
-##step has violated an assumption of flipping over or defoming more than \
-##allowed")
-##
-##      if differenceCurrentAndOriginal == deformableLength:
-##        self.NoContNoElong = True
-##        logger.debug("a cross component has reached its deformation limit and \
-##is no longer allowed to deform")
-##
-##    else:
-##      if abs(currentDiffOfNodes) != deformableLength:
-##        logger.debug("a cross component has indicated that this deformation \
-##step has violated an assumption of moving after finishing deforming")
-##        self.deformationStepIsValid = 0
-##        self.failureCausingCrossMember = self 
 
+  def is_valid(self):
+    return not self.broken
+    

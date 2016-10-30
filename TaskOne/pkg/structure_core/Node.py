@@ -12,6 +12,8 @@ class Node():
     def __init__(self, point, loadpathLevel):
         self.position = point
         self.loadpathLevel = loadpathLevel
+        self.towardsFirewall = [ ]
+        self.towardsBarrier = [ ]
 
     def __repr__(self):
         return "Node at {} in loadpath {}".format(self.position,

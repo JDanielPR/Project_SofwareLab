@@ -14,19 +14,18 @@ class Component():
                rigidLength,
                componentsName,
                rightComponent = None,
-               isStructural=True,
-               gapIndex = None):
+               isGap = False):
     
     assert leftNode.position < rightNode.position    
+
     self.name = componentsName
     self.leftNode = leftNode
     self.rightNode = rightNode
     self.rigidLength = rigidLength
-    self.isStructural = isStructural  # change in self.isGap
-    self.gapIndex = gapIndex  
-##    self.history = [ ]
-##    self.componentIndex = 0 
-##    self.rightComponent = None
+    self.isGap = isGap
+    
+    self.leftNode.towardsFirewall.append(self)
+    self.rightNode.towardsBarrier.append(self)
 
   def __repr__(self):
     return self.name
@@ -43,6 +42,5 @@ class Component():
                node.position <= self.leftNode.position
                for node in list_of_nodes)
 
-  def change_gap_index(self,newGapIndex):
-
-    self.gapIndex = newGapIndex
+  def is_valid(self):
+    return not self.isGap
