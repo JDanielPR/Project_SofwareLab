@@ -2,8 +2,7 @@ from .NodeTree import NodeTree
 from ..isdh.isdh_helper import IsdhHelper
 
 class Tree:
-    def __init__(self, possibilities, structure):
-        self.possibilities = possibilities
+    def __init__(self, structure):
         self.root = NodeTree('ROOT')
         self.activeNode = self.root
         self.structure = structure
@@ -15,7 +14,10 @@ class Tree:
         self.print()
         
     def __repr__(self):
-        return self.activeNode
+        try:
+            return self.activeNode.__repr__()
+        except AttributeError:
+            return "Tree obj"
 
     def print(self):
         for key, item in self.savers[0].ood.items():
@@ -26,8 +28,16 @@ class Tree:
 
     def add_children(self):
         assert not self.activeNode.children
-        for data in self.possibilities:
+        for data in self.structure.get_deforming_components():
             self.activeNode.add_child(data, self.structure)
+################################ UNDER TESTING ################################ 
+        # if it isn't possible to keep deforming, activate the children with a
+        # positive amount
+        if self.end():
+            for node in self.activeNode.children:
+                if node.amount > 0:
+                    node.isValid = True
+################################ UNDER TESTING ################################                     
         if self.end():
             print('############# ood saved')
             for saver in self.savers:
@@ -35,7 +45,7 @@ class Tree:
         ##
         print('ADDING CHILDREN')
         self.activeNode.d_print()
-        self.print()
+##        self.print()
             
     def end(self):
         if any(node.isValid for node in self.activeNode.children):
@@ -56,7 +66,7 @@ This function should not raise any exception"""
 ##        ##
 ##        print('GOING DOWN')
 ##        self.activeNode.d_print()
-        self.print()
+##        self.print()
         if self.activeNode.isValid:
             ##
             print('GONE DOWN')
@@ -90,7 +100,7 @@ If the neighbour doesn't exist, a StopIteration exception is raised."""
 ##        ##
 ##        print('GOING RIGHT')
 ##        self.activeNode.d_print()
-        self.print()
+##        self.print()
         if self.activeNode.isValid:
             return
         else:
@@ -106,6 +116,7 @@ If the neighbour doesn't exist, a StopIteration exception is raised."""
         # save deformation steps
         for saver in self.savers:
             saver.save(self.activeNode)
+        self.print()
 
     def undeform(self):
         """Undeforms the structure according to the active node"""

@@ -147,7 +147,7 @@ def gapsInsertor(structure):
   gapIndex = 0
   for loadpath in listOfLoadpaths:
     for component in loadpath.listComponents:
-      if component.isStructural is False:
+      if component.isGap:
         component.change_gap_index(gapIndex)
         gapIndex += 1
     gapIndex = 0

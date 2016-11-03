@@ -2,128 +2,72 @@ import itertools
 from ..tree_core.tree import Tree
 from .. import GapsHandeling
 
+## debugging purpose
+DEBUG = True
+if DEBUG:
+  import pygame
+  pygame.init()
+  size = [700, 500]
+  screen = pygame.display.set_mode(size)
+  # Define some colors as global constants
+  BLACK = (  0,   0,   0)
+  WHITE = (255, 255, 255)
+  RED   = (255,   0,   0)
+  GREEN = (  0, 255,   0)
+  BLUE  = (  0,   0, 255)
+
+
 class Structure():
   '''Structure class groups all of the nodes, components, crossComponents, and
 gaps all together in a single entity'''
+  
   def __init__(self, listLoadpaths, listCrossComponents = None):
     self.listLoadpaths = listLoadpaths
     self.listCrossComponents = listCrossComponents
     
     self.listGaps = [ ]
-    self.invalidComponents = [ ]
-    
-##  def create_blocks():
-##    # create blocks
-##    list of blocks 
-##    for node in nodes:
-##      for block in list of blocks:
-##        if node not in block:
-##          list of blocks . append(Block(node))
-##    # qualify blocks
-##    for block in list of blocks:
-##      block.end_to_end()
-##
-##    def stuff
-##
-##    #
-##    for gap in self.listGaps:
-##      leftBlock, = [block for block in list of block
-##                   if gap.leftNode in block]
-##      rightBlock, = [...gap.rightNode
-##
-##      if leftBlock.end_to_end or rightBlock.end_to_end:
-##                     # no priority
-##      else:
-##                     # priority
-##                     
-##
-##    [[lp1],
-##     [lp2],
-##     [lp3]
-##     ]
-##      
-    
 
-    
-          
-  def init_right_components(self):
-    for loadpath in self.listLoadpaths:
-      for component in loadpath.listComponents:
-        # create a list of possible rightComponents
-        rightComponents = [rightComponent
-                           for rightComponent in loadpath.listComponents
-                           if rightComponent.leftNode == component.rightNode]
-
-        if len(rightComponents) is not 0:
-          # there should be only one!
-          assert len(rightComponents) == 1
-
-          # assign to components its rightComponent
-          [component.rightComponent] = rightComponents
-
-  def priority_determiner(self):
-    """Initialize self.invalidComponents"""
-    for gap in self.listGaps:
-      validComponents = [comp for comp in gap.leftNode.connectivity
-                         if comp.is_valid()]
-      if len(validComponents) == 1:
-        self.invalidComponents.append(validComponents[0])
+  def draw(self):
+    if not DEBUG:
+      return
+    screen.fill(WHITE)
+    for lp in self.listLoadpaths:
+      for comp in lp.listComponents:
+        comp.draw(screen)
         
-      validComponents = [comp for comp in gap.rigthNode.connectivity
-                         if comp.is_valid()]
-      if len(validComponents) == 1:
-        self.invalidComponents.append(validComponents[0])
-      
-
-  def solve(self):
-    '''
-    Function polishes and solves the given structure from xml.
-    '''
-
-    #this line adds gaps in between the normal members
-    GapsHandeling.gapsInsertor(self.listLoadpaths)
-
-    #this line adds indexes to the members (normal and gaps)
-    #according to their position with respect to the barrier in
-    #their corresponding loadpaths
-    otherFunctions.indexor(self.listLoadpaths) 
-
-    #add all of the loadpaths to a list called "structure array"
-    #for the sake of the possibilitiesTree generation
-    structureArray = []
-    for loadpath in self.listLoadpaths:
-      structureArray.append(loadpath.listOfMembers)
-
-    #generate the possibilitiesTree
-    possibilitiesTree = list(itertools.product(*structureArray)) 
-
-    #initiate the solution sequence of the strcuture starting
-    #from the created possiblitiesTree
-    initializationStep = nextstep.nextstep(possibilitiesTree,
-                                           None, None, self.listCrossMembers,
-                                           self.listLoadpaths)
+    for crossComp in self.listCrossComponents:
+      crossComp.draw(screen)
+    # update the screen
+    pygame.display.flip()
+    any_key = input("press any key to go on")
+    
   def task_one(self):
-
-    tree = self.possibilities_tree_generator()
+    """solves"""
+    # generate tree
+    tree = Tree(self)
 
     tree.add_children()
+    self.draw() ###
     while tree.activeNode is not tree.root or not tree.end():
         while not tree.end():
             tree.go_down()
             tree.deform()
+            self.draw() ###
             tree.add_children()
             
         while tree.end():
             tree.go_up()
+            self.draw() ###
             if tree.activeNode is tree.root:
                 break
+    if DEBUG:
+      pygame.quit()
     return tree.savers[0].i_s, tree.savers[0].d_h
 
   def task_two(self, blackbox):
     """solves"""
-
     # generate tree
-    tree = self.possibilities_tree_generator()
+    tree = Tree(self)
     
     tree.add_children()
     if not tree.end():
@@ -139,45 +83,38 @@ gaps all together in a single entity'''
         break
     # completely deformed structure
     return tree.savers[0].i_s, [tree.savers[0].ood]
-'''    
-  def possibilities_tree_generator(self):
-    # Add all of the loadpaths to a list called "structure array" for the sake
-    # of the possibilities tree generation using the embedded module itertools
-    structureArray = []
-    for loadpath in self.listLoadpaths:
-      structureArray.append(loadpath.listComponents)
 
-    # Generate the possibilities tree
-    possibilities = list(itertools.product(*structureArray))
-    tree = Tree(possibilities, self)
-
-##    # Add children to the root and set the first child as activeNode
-##    tree.deform() # nothing happens when performing the root step
-##    tree.add_children()
-##    tree.go_down()
-    
-    return tree
-'''
-
-  def get_deforming_components( self ):
+  def get_deforming_components(self):
+    ###########################################################################
+    ## 1. update the connectedToTheBarrier and connectedToTheFirewall
+    ##    attributes
+    # loop over closed gaps
     for gap in self.listGaps:
-      if any( component.connectedToBarrier for component in gap.leftNode.towardsBarrier ):
-        for component in gap.rightNode.towardsFirewall:
-          component.link_to_barrier()
-
-      if any( component.connectedToFirewall for component in gap.rightNode.towardsFirewall ):
-        for component in gap.leftNode.towardsBarrier:
-          component.link_to_firewall()
-
+      if gap.deformable_length() == 0:
+        # propagate the connection to the barrier
+        if any(component.connectedToBarrier
+               for component in gap.leftNode.towardsBarrier) \
+               or gap.leftNode.onBarrier:
+          for component in gap.rightNode.towardsFirewall:
+            component.link_to_barrier()
+        # propagate the connection to the firewall
+        if any(component.connectedToFirewall
+               for component in gap.rightNode.towardsFirewall) \
+               or gap.rightNode.onFirewall:
+          for component in gap.leftNode.towardsBarrier:
+            component.link_to_firewall()
+    # loop over broken connections
     for crossComponent in self.listCrossComponents:
       if crossComponent.broken:
-        
-      if any( component.connectedToBarrier for component in crossComponent.leftNode.towardsBarrier ):
-        
+        # propagate the disconnections
+        crossComponent.unlink_from_barrier()
+        crossComponent.unlink_from_firewall()
+    ###########################################################################
+    ## 2. create a list of tuples, one for each group of components to deform
     structureArray = [ ]
     for loadpath in self.listLoadpaths:
-      structureArray.append( loadpath.valid_components() )
+      structureArray.append(loadpath.valid_components())
 
-    return( list(itertools.product(*structureArray)) )
+    return list(itertools.product(*structureArray))
       
       

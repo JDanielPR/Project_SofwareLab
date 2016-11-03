@@ -23,5 +23,15 @@ class DeformationStep:
         return NotImplemented
 
     def print(self):
-        for key, item in self.__dict__.items():
-            print(key, ': ', item)
+##        for key, item in self.__dict__.items():
+##            print(key, ': ', item)
+        if self.transformation == 'd':
+            transformation = "deform"
+        if self.transformation == 'm':
+            transformation = "move"
+        print("from {0} to {1}: {2} by {3}"
+              .format(self.frame_begin,
+                      self.frame_end,
+                      transformation,
+                      self.amount)
+              )

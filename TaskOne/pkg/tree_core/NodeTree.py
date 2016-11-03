@@ -15,10 +15,13 @@ class NodeTree:
         self.stretchingCrossComps = [ ]
         
     def __repr__(self):
-        if self.isValid:
-            return str(self.deformingComps)
-        else:
-            return "INVALID"
+        try:
+            if self.isValid:
+                return str(self.deformingComps)
+            else:
+                return "INVALID"
+        except AttributeError:
+            return "NodeTree obj"
 
     def d_print(self):
         """Prints all the details of the NodeTree."""
