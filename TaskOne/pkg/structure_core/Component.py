@@ -4,13 +4,18 @@ logger = logging.getLogger('component')
 logging.basicConfig(level=logging.DEBUG)
 
 ## debugging purpose
-import pygame
+try:
+  import pygame
+except:
+  pass
 # Define some colors as global constants
-BLACK = (  0,   0,   0)
-WHITE = (255, 255, 255)
-RED   = (255,   0,   0)
-GREEN = (  0, 255,   0)
-BLUE  = (  0,   0, 255)
+BLACK       = (  0,   0,   0)
+WHITE       = (255, 255, 255)
+RED         = (255,   0,   0)
+GREEN       = (  0, 255,   0)
+BLUE        = (  0,   0, 255)
+LIGHT_BLUE  = (102, 255, 255)
+DARK_GREEN  = (  0, 100,   0)
 
 class Component():
   '''
@@ -40,35 +45,45 @@ class Component():
   def __repr__(self):
     return self.name
 
-  def draw(self, screen):
-    
+  def draw(self, screen, offset, y_scaling):
     if self.isGap:
-      color = GREEN
+      color = LIGHT_BLUE
     else:
       color = BLUE
-    level = self.leftNode.loadpathLevel
-    level += 1
-    level *= 20
+    level = (self.leftNode.loadpathLevel + 1) * y_scaling
     # draw deformable part
-    x1 = self.leftNode.position + 20
+    x1 = self.leftNode.position + offset
     y1 = level
-    x2 = x1 + self.deformable_length()
+    x2 = x1 + self.length() - self.rigidLength
     y2 = level
-    pygame.draw.line(screen, color, [x1, y1], [x2, y2], 5)
+    pygame.draw.line(screen, color, [x1, y1], [x2, y2], 7)
+    if self.connectedToBarrier:
+      pygame.draw.line(screen, DARK_GREEN, [x1, y1+3], [x2, y2+3], 2)
+    if self.connectedToFirewall:
+      pygame.draw.line(screen, RED, [x1, y1-3], [x2, y2-3], 2)
     # draw left node
-    pygame.draw.circle(screen, RED, [int(x1), int(y1)], int(3))
+    self.leftNode.draw(screen, offset, y_scaling)
     # draw rigid part
     x1 = x2
     x2 = x2 + self.rigidLength
     pygame.draw.line(screen, BLACK, [x1, y1], [x2, y2], 5)
+    if self.connectedToBarrier:
+      pygame.draw.line(screen, DARK_GREEN, [x1, y1+3], [x2, y2+3], 2)
+    if self.connectedToFirewall:
+      pygame.draw.line(screen, RED, [x1, y1-3], [x2, y2-3], 2)
     # draw right node
-    pygame.draw.circle(screen, RED, [int(x2), int(y2)], int(3))
+    self.rightNode.draw(screen, offset, y_scaling)
 
   def length(self):
     return self.rightNode.position - self.leftNode.position
 
   def deformable_length(self):
-    return self.length() - self.rigidLength
+    if (self.connectedToBarrier \
+        and self.connectedToFirewall) \
+        or self.isGap:
+      return self.length() - self.rigidLength
+    else:
+      return 0
       
   def moves(self, list_of_nodes):
     return any(node.loadpathLevel == self.leftNode.loadpathLevel
@@ -80,7 +95,7 @@ class Component():
     if self.connectedToBarrier:
       return
     self.connectedToBarrier = True
-    if self.isGap:
+    if self.isGap and self.deformable_length() > 0:
       return
     else:
       for component in self.rightNode.towardsFirewall:
@@ -90,37 +105,65 @@ class Component():
     if self.connectedToFirewall:
       return
     self.connectedToFirewall = True
-    if self.isGap:
+    if self.isGap and self.deformable_length() > 0:
       return
     else:
       for component in self.leftNode.towardsBarrier:
         component.link_to_firewall()
-
-  def unlink_from_barrier(self):
-    if not self.connectedToBarrier:
-      return
-
-    self.connectedToBarrier = False
-    if any(component.connectedToBarrier and
-           not component.isGap
-           for component in self.rightNode.towardsBarrier) \
-           or self.rightNode.onBarrier:
-      return
-    else:
-      for component in self.rightNode.towardsFirewall:
-        component.unlink_from_barrier()
-
-  def unlink_from_firewall(self):
-    if not self.connectedToFirewall:
-      return
-
-    self.connectedToBarrier = False
-    if any(component.connectedToFirewall and
-           not component.isGap
-           for component in self.leftNode.towardsFirewall) \
-           or self.leftNode.onFirewall:
-      return
-    else:
-      for component in self.leftNode.towardsBarrier:
-        component.unlink_from_firewall()
+    
+  def next_gap(self):
+    # initialize the neighbour
+    neighbour = None
+    # iterate over the right neighbours until a gap is found
+    while not neighbour \
+          or not neighbour.isGap:
+      # try to get the right neighbour
+      try:
+        neighbour, = [comp
+                      for comp in neighbour.rightNode.towardsFirewall
+                      if comp.rightNode.
+                      loadpathLevel == self.rightNode.loadpathLevel]
+      # at first neighbour is None and components should be searched in
+      # self.rightNode.towardsFirewall
+      except AttributeError:
+        try:
+          neighbour, = [comp
+                        for comp in self.rightNode.towardsFirewall
+                        if comp.rightNode.
+                        loadpathLevel == self.rightNode.loadpathLevel]
+        except ValueError:
+          return None # if no neighbour could be found
+      except ValueError:
+        return None # if no neighbour could be found
+    # neighbour is a gap, return it
+    return neighbour
+      
+      
+##  def unlink_from_barrier(self):
+##    if not self.connectedToBarrier:
+##      return
+##
+##    self.connectedToBarrier = False
+##    if any(component.connectedToBarrier and
+##           not component.isGap
+##           for component in self.rightNode.towardsBarrier) \
+##           or self.rightNode.onBarrier:
+##      return
+##    else:
+##      for component in self.rightNode.towardsFirewall:
+##        component.unlink_from_barrier()
+##
+##  def unlink_from_firewall(self):
+##    if not self.connectedToFirewall:
+##      return
+##
+##    self.connectedToBarrier = False
+##    if any(component.connectedToFirewall and
+##           not component.isGap
+##           for component in self.leftNode.towardsFirewall) \
+##           or self.leftNode.onFirewall:
+##      return
+##    else:
+##      for component in self.leftNode.towardsBarrier:
+##        component.unlink_from_firewall()
       

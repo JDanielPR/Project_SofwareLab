@@ -7,6 +7,7 @@ class NodeTree:
         self.children = [ ]
         self.isValid = True
         self.keep = None
+        self.substitute = False
         
         self.deformingComps = deformingComps # (comp1, comp5):possibility tuple
         self.movingComps = [ ]
@@ -33,15 +34,113 @@ class NodeTree:
         print()
     
     def add_child(self, deformingComps, structure):
-        child = NodeTree(deformingComps, structure, self)
-        child.check_amount() # stupid but simpler!
-        child.check_keep_deforming()
-        self.children.append(child)
+        """Append a child to the list self.children.
 
-    def check_amount(self):
+        If the child is not valid, because the deformingComps contains
+        undeformable gaps, other children are created (varying deformingComps)
+        and appended to the list self.children.
+
+        Args:
+            self:
+                the parent NodeTree object
+            deformingComps:
+                tuple of structure_core.Component objects to deform
+            structure:
+                the unique structure_core.Structure object, to which
+                structure_core.Component objects belong
+        Returns:
+            nothing is returned
+        Raises:
+            nothing is raised
+        """
+        # create the NodeTree object
+        child = NodeTree(deformingComps, structure, self)
+        # check the amount
+        child.check_amount() # child.isValid might be set to False
+                             # child.substitute might be set to True
+        # initialize a list with the child to append
+        next_children = [child]
+        # while the child has to be substituted with other children
+        while child.substitute:
+            # create a new generation of children form the previous one
+            next_children = child.next_children(next_children)
+                                    # child.substitute might be set to False
+        for child in next_children:
+            child.check_keep_deforming()
+            self.children.append(child)
+
+    def check_amount(self): # here the gap could be substituted
         self.determine_amount()
         if self.amount == 0:
             self.isValid = False
+            if any(comp.isGap for comp in self.deformingComps):
+                self.substitute = True
+
+    def next_children(self, previous_children = None):
+        """"""
+        # here self is the child that has to be substituted
+        
+        # create the list next_deformingComps, with lists of deformingComps
+        # for the next generation of children
+        next_deformingComps = [ ]
+        for child in previous_children:
+            for component in child.deformingComps:
+                if component.isGap:
+                    # create the deformingComps from those of child,
+                    # subtituting one gap with the next_gap
+                    next_gap = component.next_gap()
+                    if next_gap:
+                        deformingComps = [comp for comp in child.deformingComps
+                                          if comp is not component]
+                        deformingComps.append(next_gap)
+                        
+                        next_deformingComps.append(deformingComps)
+                    else:
+                        pass
+        # if the next_deformingComps list is empty, thus no next generation
+        # could be generated
+        if not next_deformingComps:
+            # stop looking for next generations of children
+            self.substitute = False
+        # create the next generation of children
+        next_children = [ ]
+        for deformingComps in next_deformingComps:
+            # create child
+            child = NodeTree(deformingComps, self.structure)
+            # check its amount
+            child.check_amount()
+            # append it
+            next_children.append(child)
+        # if there is at least a valid child
+        if any(child.isValid for child in next_children):
+            # subtitute self in parent.children with next_children
+            self.substitute_children(next_children)
+            # don't look for next generations of children
+            self.substitute = False
+        # return the next_generation
+        return next_children
+    
+    def substitute_children(self, next_children):
+        """Sets the objects in next_children as proper children of self.parent. 
+
+        Args:
+            self:
+                the NodeTree object 'child' to substitute, created in
+                .add_child()
+                REMARK: at this point self.parent exists, but
+                self.parent.children doesn't contain self: i.e. the link
+                between child and parent only goes from the child to the parent
+            next_children:
+                list of NodeTree objects to substitute self in the tree.
+        Returns:
+            Nothing is returned.
+        Raises:
+            Nothing is raised.
+        """
+
+        for child in next_children:
+            child.parent = self.parent
+            self.parent.children.append(child)
             
     def determine_amount(self):
         """Computes the correct value for self.amount"""
@@ -123,7 +222,8 @@ class NodeTree:
             # get from the parent node the comps that should keep on deforming
             stillDeformingComps = [comp
                                    for comp in self.parent.deformingComps
-                                   if comp.deformable_length() > 0]
+                                   if comp.deformable_length() > 0
+                                   and not comp.isGap]
             # if one of them is not deforming anymore
             if not all(comp in self.deformingComps
                        for comp in stillDeformingComps):

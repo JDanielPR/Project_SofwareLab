@@ -84,9 +84,35 @@ def construct_loadpaths(root):
                 # save component
                 loadpath.add_member(comp_obj)        
 
-        # save the loadpath
-        listLoadpaths.append(loadpath)
+        # save the loadpath, if it isn't empty
+        if loadpath.listComponents:
+            listLoadpaths.append(loadpath)
 
+    # there might be some loadpaths that are implicitly defined by
+    # crossComponents. these must be added as well.
+    
+    # loop over crossComponents
+    for level in root.iter('level'):
+        for component in level.iter('component'):
+            if component.find('end_level') is not None:
+                # create the node
+                x = float(component.find('x2').text)
+                end_level = int(component.find('end_level').text)
+                node = Node(x, end_level)
+                # look for the loadpath where the crossComponent ends
+                lp_found = any(end_level == int(level.find('id').text)
+                               for level in root.iter('level'))
+                if lp_found:
+                    # since listLoadpaths doesn't contain any empty loadpath,
+                    # it's safe to write
+                    loadpath, = [loadpath for loadpath in listLoadpaths
+                                 if loadpath.listComponents[0].leftNode
+                                 .loadpathLevel == end_level]
+                    loadpath.add_node(node)
+                else:
+                    loadpath = Loadpath()
+                    loadpath.add_node(node)
+                    listLoadpaths.append(loadpath)
     return listLoadpaths
 
 def construct_cross_components(root, listLoadpaths):
@@ -100,7 +126,6 @@ tree and the list of loadpaths."""
     for level in root.iter('level'):
         # loop over crossComponents
         for component in level.iter('component'):
-            print("I'm in")
             if component.find('end_level') is not None:
                 # read the position of the nodes
                 x1 = float(component.find('x1').text)
@@ -124,7 +149,7 @@ tree and the list of loadpaths."""
                                 if comp.leftNode.position == x1:
                                     left_node = comp.leftNode
                                 elif comp.rightNode.position == x1:
-                                    left_node = comp.leftNode
+                                    left_node = comp.rightNode
                                     
                         elif loadpathLevel == loadpathLevel2:
                             # loadpath 2 found
@@ -140,18 +165,7 @@ tree and the list of loadpaths."""
 
 
                 # ensure that the nodes have been found
-                try:
-                    assert left_node
-                except AssertionError:
-                    raise Exception("Unable to find left node of {0}"
-                                    .format(component.find('name')
-                                            .text.strip()))
-                try:
-                    assert right_node
-                except AssertionError:
-                    raise Exception("Unable to find right node of {0}"
-                                    .format(component.find('name')
-                                            .text.strip()))
+                assert left_node, right_node
 
                 # check proper orientation of the crossComponent
                 if left_node.position < right_node.position:
@@ -173,7 +187,6 @@ tree and the list of loadpaths."""
 
                 # save crossComponent
                 listCrossComponents.append(cross_comp_obj)
-                print("I'm out")
 
     return listCrossComponents
 
@@ -207,13 +220,14 @@ def gaps_insertor(structure):
 
         # sort the loadpath components by position of the left node
         loadpath.listComponents.sort(key = lambda comp: comp.leftNode.position)
-
         # create two iterable
         components, next_components = tee(loadpath.listComponents)
         # make next_components advance by one
         ignore_me = next(next_components)
         for comp, next_comp in zip(components, next_components):
             if comp.rightNode is not next_comp.leftNode:
+                print(comp.rightNode, next_comp.leftNode)
+                assert comp.rightNode.position < next_comp.leftNode.position
                 gap = Component(comp.rightNode,     # left node
                                 next_comp.leftNode, # right node
                                 0,                  # rigid length
@@ -231,7 +245,7 @@ def gaps_insertor(structure):
 
             # get all the loadpath linked to the right of the node 
             lp_levels = [crossComp.rightNode.loadpathLevel
-                         for crossComp in node.towadsFireWall]
+                         for crossComp in node.towardsFirewall]
             # for each of them get its right limit
             rightLimits = [ ]
             for lp in structure.listLoadpaths:
@@ -256,6 +270,23 @@ def gaps_insertor(structure):
         structure.listGaps += tmp
         # sort the loadpath components by position of the left node
         loadpath.listComponents.sort(key = lambda comp: comp.leftNode.position)
+        
+##    # delete nodes that are linked only to gaps
+##    for gap in structure.listGaps:
+##        node = gap.rightNode
+##        if len(node.towardsFirewall) == 1 \
+##        and len(node.towardsBarrier) == 1 \
+##        and node.towardsFirewall[0].isGap \
+##        and node.towardsBarrier[0].isGap:
+##            gap_to_delete = node.towardsFirewall[0]
+##            print(gap_to_delete)
+##            structure.listGaps.remove(gap_to_delete)
+##            
+##            gap.rightNode = gap_to_delete.rightNode
+##            gap.connectedToFirewall = gap_to_delete.connectedToFirewall
+##            gap.rightNode.towardsBarrier = [gap]
+##            gap.rightNode.towardsFirewall = gap_to_delete.rightNode \
+##                                            .towardsFirewall
 
 def gap_name(level):
     counter = 0

@@ -19,7 +19,8 @@ class IsdhHelper:
         tree.savers.append(self)
         # initialise self.i_s
         components = [comp for loadpath in tree.structure.listLoadpaths
-                      for comp in loadpath.listComponents]
+                      for comp in loadpath.listComponents
+                      if not comp.isGap]
         crossComps = [crossComp
                       for crossComp in tree.structure.listCrossComponents]
         for comp in components:

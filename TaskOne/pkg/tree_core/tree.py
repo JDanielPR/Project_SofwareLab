@@ -1,6 +1,6 @@
 from .NodeTree import NodeTree
 from ..isdh.isdh_helper import IsdhHelper
-
+PRINT = True
 class Tree:
     def __init__(self, structure):
         self.root = NodeTree('ROOT')
@@ -9,9 +9,10 @@ class Tree:
         self.savers = [ ]
         IsdhHelper().register(self)
         ##
-        print('TREE GENERATED')
-        self.activeNode.d_print()
-        self.print()
+        if PRINT:
+            print('TREE GENERATED')
+            self.activeNode.d_print()
+            self.print()
         
     def __repr__(self):
         try:
@@ -20,6 +21,7 @@ class Tree:
             return "Tree obj"
 
     def print(self):
+        return
         for key, item in self.savers[0].ood.items():
             print(key)
             for ds in item:
@@ -27,7 +29,9 @@ class Tree:
             print()
 
     def add_children(self):
+        """Add children to self.activeNode."""
         assert not self.activeNode.children
+        self.structure.reset_connections_to_barrier_and_firewall()
         for data in self.structure.get_deforming_components():
             self.activeNode.add_child(data, self.structure)
 ################################ UNDER TESTING ################################ 
@@ -39,15 +43,26 @@ class Tree:
                     node.isValid = True
 ################################ UNDER TESTING ################################                     
         if self.end():
-            print('############# ood saved')
             for saver in self.savers:
                 saver.save_ood()
+            if PRINT: ##
+                print('############# ood saved')
         ##
-        print('ADDING CHILDREN')
-        self.activeNode.d_print()
-##        self.print()
-            
+        if PRINT:
+            print('ADDING CHILDREN')
+            self.activeNode.d_print()
+        
     def end(self):
+        """end() -> True or False.
+
+        Args:
+            self:
+        Returns:
+            True if self.activeNode has any valid children,
+            False otherwise.
+        Raises:
+        """
+        
         if any(node.isValid for node in self.activeNode.children):
             return False # there is at least a valid node
         else:
@@ -57,34 +72,34 @@ class Tree:
     def go_down(self):
         """Changes the activeNode to its first valid child.
 
-If there isn't any valid child, the activeNode is the rightest child and the
-tree attribute .end is set to True.
-This function should not raise any exception"""
+        If there isn't any valid child, the activeNode is the rightest child.
+        This function should not raise any exception.
+        """
         assert self.activeNode.children
         assert not self.end()
         self.activeNode = self.activeNode.children[0]
-##        ##
-##        print('GOING DOWN')
-##        self.activeNode.d_print()
-##        self.print()
         if self.activeNode.isValid:
             ##
-            print('GONE DOWN')
-            self.activeNode.d_print()
+            if PRINT:
+                print('GONE DOWN')
+                self.activeNode.d_print()
             return
         else:
             self.go_right()
         ##
-        print('GONE DOWN')
-        self.activeNode.d_print()
+        if PRINT:
+            print('GONE DOWN')
+            self.activeNode.d_print()
             
     def go_up(self):
         assert self.activeNode is not self.root
         self.activeNode.isValid = False
         self.undeform()
         self.activeNode = self.activeNode.parent
+        self.structure.reset_connections_to_barrier_and_firewall()
         ##
-        self.activeNode.d_print()
+        if PRINT:
+            self.activeNode.d_print()
 
     def go_right(self):
         """Changes the activeNode to its right neighbour.
@@ -97,14 +112,8 @@ If the neighbour doesn't exist, a StopIteration exception is raised."""
                 child = next(children)
                 break
         self.activeNode = child
-##        ##
-##        print('GOING RIGHT')
-##        self.activeNode.d_print()
-##        self.print()
-        if self.activeNode.isValid:
-            return
-        else:
-            self.go_right()
+        while not self.activeNode.isValid:
+            self.activeNode = next(children)
 
     def deform(self):
         """Deforms the structure according to the active node"""
@@ -116,7 +125,8 @@ If the neighbour doesn't exist, a StopIteration exception is raised."""
         # save deformation steps
         for saver in self.savers:
             saver.save(self.activeNode)
-        self.print()
+        if PRINT:
+            self.print()
 
     def undeform(self):
         """Undeforms the structure according to the active node"""

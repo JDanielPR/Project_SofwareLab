@@ -1,16 +1,24 @@
 import pkg.tree_core
 from pkg.structure_core.Structure import Structure
-from pkg.read_xml import read_xml
+from pkg.read_xml2 import read_xml
 import pkg.GapsHandeling
+from math import factorial
 
-#### needed for testing
-##from pkg.tree_core.tree import Tree
+# read input
+struct = read_xml('/Users/massimosferza/Desktop/benchmark.xml')
 
-
-struct = read_xml('/Users/massimosferza/Desktop/no-block-example.xml')
-
+# solve
+import time
+start = time.time()
 [i_s, d_h] = struct.task_one()
+end = time.time()
 
-#### testing
-##tree = Tree(struct)
-##tree.add_children()
+# message
+print("\nSolved in {0}s".format(end - start))
+sol_found = len(d_h) # valid solutions found
+precomp_sol = 1 # max number of possible solutions
+for lp in struct.listLoadpaths:
+    precomp_sol *= factorial(len(lp.listComponents))
+message = "{0} valid solutions found out of {1} \
+theoretically possible solutions"
+print(message.format(sol_found, precomp_sol))

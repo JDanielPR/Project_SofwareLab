@@ -3,34 +3,29 @@ from . import Component
 class Loadpath():
   '''Class contains it index ,all of the components within the loadpath, and
 counts number of components not able to defrom anymore.'''
-  def __init__(self):
+  def __init__(self, level):
     self.listComponents = [ ]
+    self.setNodes = set()
+    self.level = level
 
   def add_member(self, component):
-    '''
-    Function addes components to the list of components
+    '''Function addes components to the list of components
     '''
     self.listComponents.append(component)
 
   def valid_components(self):
-    # if there are valid gaps
-    valid_gaps = [comp for comp in self.listComponents
-                  if comp.isGap
-                  and comp.connectedToBarrier
-                  and comp.connectedToFirewall
-                  and comp.deformable_length() > 0]
-    if any(valid_gaps):
-      # return a list with only the one closer to the barrier
-      valid_gaps.sort(key=lambda gap: gap.leftNode.position)
-      return [valid_gaps[0]]
-    
-    # else
-    # return all the valid components (gaps included)
-    return [comp
-            for comp in self.listComponents
-            if (comp.connectedToBarrier
-            and comp.connectedToFirewall)
-            or comp.isGap]
+    validComps = [comp
+                  for comp in self.listComponents
+                  if comp.deformable_length() > 0]
+    # gaps priority
+    if any(validComps) \
+       and all(comp.isGap for comp in validComps):
+      # if there is any valid component and they are all gaps
+      # return a list with the most left one
+      return [min(validComps,
+                  key = lambda gap: gap.leftNode.position)]
+    else:
+      return validComps
 
   def add_node(self, node):
     """Creates gaps to add the node to the loadpath.
