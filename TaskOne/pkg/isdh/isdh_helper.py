@@ -1,13 +1,12 @@
 import pkg
 from .component import Component
 from .deformation_step import DeformationStep
-import copy
 
 class IsdhHelper:
     def __init__(self):
-        self.i_s = [ ]
-        self.d_h = [ ]
-        self.isdh_dict = dict()
+        self.i_s = [ ] # initial state list
+        self.d_h = [ ] # deformation history list (list of dictionaries)
+        self.isdh_dict = dict() # isdh_dict[comp] == isdh_comp
         self.ood = dict()
         self.amount = 0
 
@@ -27,7 +26,7 @@ class IsdhHelper:
             isdh_comp = Component(comp.name,
                                   comp.leftNode.position,
                                   comp.rightNode.position,
-                                  comp.deformable_length(),
+                                  comp.length() - comp.rigidLength,
                                   comp.leftNode.loadpathLevel,
                                   comp.rightNode.loadpathLevel)
             self.i_s.append(isdh_comp)
@@ -36,7 +35,7 @@ class IsdhHelper:
             isdh_comp = Component(comp.name,
                                   comp.leftNode.position,
                                   comp.rightNode.position,
-                                  comp.deformable_length(),
+                                  comp.length() - comp.rigidLength,
                                   comp.leftNode.loadpathLevel,
                                   comp.rightNode.loadpathLevel)
             self.i_s.append(isdh_comp)
@@ -80,7 +79,12 @@ class IsdhHelper:
 
     def save_defo_step(self, comp, stepType, stepAmount):
         """Save or un-save a deformation step of one component."""
-        
+
+        try:
+            if comp.isGap:
+                return
+        except AttributeError:
+            pass
         assert self.isdh_dict[comp] in self.i_s
         assert stepType in ['d', 'm']
         # get the related isdh_comp
@@ -105,8 +109,13 @@ class IsdhHelper:
     def init_ood(self):
         for isdh_comp in self.i_s:
             self.ood[isdh_comp] = [ ]
-    
-    def save_ood(self):
-        self.d_h.append(copy.deepcopy(self.ood))
-    
+
+    def copy_ood(self):
+        copy = dict()
+        for key, value in self.ood.items():
+            copy[key] = value.copy()
+        return copy 
+
+    def save_ood(self):        
+        self.d_h.append(self.copy_ood())
         
