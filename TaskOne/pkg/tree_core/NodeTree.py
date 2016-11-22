@@ -36,6 +36,7 @@ class NodeTree:
     def add_child(self, deformingComps, structure):
         """Append a child to the list self.children.
 
+        
         If the child is not valid, because the deformingComps contains
         undeformable gaps, other children are created (varying deformingComps)
         and appended to the list self.children.

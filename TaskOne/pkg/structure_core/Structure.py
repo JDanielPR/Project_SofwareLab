@@ -3,7 +3,7 @@ from ..tree_core.tree import Tree
 from .. import GapsHandeling
 
 ## debugging purpose
-DEBUG = True
+DEBUG = False
 STEPWISE = False
 if DEBUG:
   import pygame
@@ -92,6 +92,21 @@ gaps all together in a single entity'''
     return tree.savers[0].i_s, [tree.savers[0].ood]
 
   def reset_connections_to_barrier_and_firewall(self):
+    """Updates the connections of components, cross components and nodes.
+
+    The attributes .connectedToBarrier and .connectedToFirewall of every
+    structure_core.Component and structure_core.CrossComponent object are
+    updated.
+    The attributes .onBarrier and .onFirewall of every structure_core.Node
+    object are updated.
+
+    Args:
+        nothing is taken
+    Returns:
+        nothing is returned
+    Raises:
+        nothing is raised
+    """
     # undo all connections
     for loadpath in self.listLoadpaths:
       for component in loadpath.listComponents:

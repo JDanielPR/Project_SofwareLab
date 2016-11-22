@@ -1,8 +1,18 @@
 from .NodeTree import NodeTree
 from ..isdh.isdh_helper import IsdhHelper
-PRINT = True
+PRINT = False
 class Tree:
     def __init__(self, structure):
+        """Constructor of the class tree_core.Tree.
+
+        Args:
+            structure:
+                the structure_core.Structure object to which the tree is linked
+        Returns:
+            nothing is returned
+        Raises:
+            nothing is raised
+        """
         self.root = NodeTree('ROOT')
         self.activeNode = self.root
         self.structure = structure
@@ -15,13 +25,35 @@ class Tree:
             self.print()
         
     def __repr__(self):
+        """Return the string representation of the object.
+
+        If the activeNode attribute is defined, its string representation is
+        returned. Otherwise "Tree obj" is returned.
+        
+        Args:
+            nothing is taken
+        Returns:
+            nothing is returned
+        Raises:
+            nothing is raised
+"""
         try:
             return self.activeNode.__repr__()
         except AttributeError:
             return "Tree obj"
 
     def print(self):
-        return
+        """Print in detail the current Order of Deformation, as saved.
+
+        The content of 
+        
+        Args:
+            nothing is taken
+        Returns:
+            nothing is returned
+        Raises:
+            nothing is raised
+"""
         for key, item in self.savers[0].ood.items():
             print(key)
             for ds in item:
