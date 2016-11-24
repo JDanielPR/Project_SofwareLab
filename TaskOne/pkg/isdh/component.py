@@ -10,7 +10,17 @@ class Component:
         # mass part
         if p:
             self.mass = True # True or False
-            self.mass_position = p # [345, 355, ...] for example (absolute position)
+            self.mass_position = p # [345, 355, ...] for example (absolute
+                                   # position)
 
     def __repr__(self):
+        """Return the string representation of the object.
+        
+        Args:
+            nothing is taken
+        Returns:
+            string
+        Raises:
+            nothing is raised
+        """
         return 'isdh-' + self.name

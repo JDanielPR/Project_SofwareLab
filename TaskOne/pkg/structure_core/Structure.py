@@ -1,6 +1,6 @@
-import itertools
-from ..tree_core.tree import Tree
-from .. import GapsHandeling
+##import itertools
+##from ..tree_core.tree import Tree
+##from .. import GapsHandeling
 
 ## debugging purpose
 DEBUG = False
@@ -19,10 +19,21 @@ if DEBUG:
 
 
 class Structure():
-  '''Structure class groups all of the nodes, components, crossComponents, and
-gaps all together in a single entity'''
+  """Groups all the entities of the topological model."""
   
   def __init__(self, listLoadpaths, listCrossComponents = None):
+    """Constructor of the class structure_core.structure.Structure.
+
+    Args:
+      listLoadpaths:
+        a list of structure_core.loadpath.Loadpath objects
+      listCrossComponents:
+        structure_core.cross_component.CrossComponent
+    Returns:
+      an object of the class.
+    Raises:
+      nothing is raised.
+    """
     self.listLoadpaths = listLoadpaths
     self.listCrossComponents = listCrossComponents
     
@@ -31,6 +42,15 @@ gaps all together in a single entity'''
                      if comp.isGap]
 
   def draw(self):
+    """Draws onto the screen the current state of the strucure (DEBUG purpose).
+
+    Args:
+      nothing is taken
+    Returns:
+      nothing is returned
+    Raises:
+      nothing is raised.    
+    """
     if not DEBUG:
       return
     screen.fill(WHITE)
@@ -48,31 +68,83 @@ gaps all together in a single entity'''
       any_key = input("press any key to go on")
     
   def task_one(self):
-    """solves"""
+    """Finds all the Order of Deformation of the structure.
+
+    self.task_one() -> [i_s, d_h].
+    
+    Args:
+      nothing is taken
+    Returns:
+      i_s, a list of isdh.component.Component objects
+      d_h, a list of dictionaries such as:
+          {  isdh-comp1 : [DeformationStep1,
+                           DeformationStep2,
+                           ...],
+             isdh-comp2 : [DeformationStep1,
+                           DeformationStep2,
+                           ...],
+             isdh-comp3 : [DeformationStep1,
+                           DeformationStep2,
+                           ...],
+          },
+          where the keys are the elements of i_s and the values are lists of
+          isdh.deformation_step.DeformationStep objects.
+    Raises:
+      nothing is raised.
+    """
     # generate tree
     tree = Tree(self)
-
+    # add children
     tree.add_children()
     self.draw() ###
+    # loop until all Order of Deformation have been found, this happens when
+    # the activeNode is the root and there are no more valid children
     while tree.activeNode is not tree.root or not tree.end():
-        while not tree.end():
-            tree.go_down()
-            tree.deform()
-            self.draw() ###
-            tree.add_children()
-            self.draw() ###
-            
-        while tree.end():
-            tree.go_up()
-            self.draw() ###
-            if tree.activeNode is tree.root:
-                break
+      # while there are valid children, keep going down deforming
+      while not tree.end():
+        tree.go_down()
+        tree.deform()
+        self.draw() ###
+        tree.add_children()
+        self.draw() ###
+      # while there are not valid children, keep going up undeforming
+      while tree.end():
+        tree.go_up()
+        self.draw() ###
+        if tree.activeNode is tree.root:
+          break
+    
     if DEBUG:
       pygame.quit()
     return tree.savers[0].i_s, tree.savers[0].d_h
 
   def task_two(self, blackbox):
-    """solves"""
+    """Finds the physical Order of Deformation of the structure.
+
+    self.task_one() -> [i_s, d_h].
+
+    Args:
+      blackbox:
+        a function that decides whether the activeNode of the tree of the
+        structure is the valid next deformationStep or not.
+    Returns:
+      i_s, a list of isdh.component.Component objects
+      d_h, a list with one dictionary such as:
+          {  isdh-comp1 : [DeformationStep1,
+                           DeformationStep2,
+                           ...],
+             isdh-comp2 : [DeformationStep1,
+                           DeformationStep2,
+                           ...],
+             isdh-comp3 : [DeformationStep1,
+                           DeformationStep2,
+                           ...],
+          },
+          where the keys are the elements of i_s and the values are lists of
+          isdh.deformation_step.DeformationStep objects.
+    Raises:
+      exceptions raised by the blackbox, remain unhandled.
+    """
     # generate tree
     tree = Tree(self)
     

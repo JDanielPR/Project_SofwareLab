@@ -33,10 +33,10 @@ class Tree:
         Args:
             nothing is taken
         Returns:
-            nothing is returned
+            string
         Raises:
             nothing is raised
-"""
+        """
         try:
             return self.activeNode.__repr__()
         except AttributeError:
@@ -45,7 +45,20 @@ class Tree:
     def print(self):
         """Print in detail the current Order of Deformation, as saved.
 
-        The content of 
+        The dictionary self.savers[0].ood contains, for each component, the
+        list of isdh.DeformationStep objects from the tree root to
+        self.activeNode.
+        self.savers[0].ood = {  isdh-comp1 : [DeformationStep1,
+                                              DeformationStep2,
+                                              ...],
+                                isdh-comp2 : [DeformationStep1,
+                                              DeformationStep2,
+                                              ...],
+                                isdh-comp3 : [DeformationStep1,
+                                              DeformationStep2,
+                                              ...],
+                              }
+        The content of this dictionary is printed in detail.
         
         Args:
             nothing is taken
@@ -53,7 +66,7 @@ class Tree:
             nothing is returned
         Raises:
             nothing is raised
-"""
+        """
         for key, item in self.savers[0].ood.items():
             print(key)
             for ds in item:
@@ -61,19 +74,30 @@ class Tree:
             print()
 
     def add_children(self):
-        """Add children to self.activeNode."""
+        """Add children to self.activeNode.
+
+        The children of self.activeNode are generated and appended to the list
+        self.activeNode.children.
+        If the end of the tree as been reached (no valid child has been found),
+        the current Order of Deformation is saved.
+
+        Args:
+            nothing is taken
+        Returns:
+            nothing is returned
+        Raises:
+            nothing is raised
+        """
         assert not self.activeNode.children
         self.structure.reset_connections_to_barrier_and_firewall()
         for data in self.structure.get_deforming_components():
             self.activeNode.add_child(data, self.structure)
-################################ UNDER TESTING ################################ 
         # if it isn't possible to keep deforming, activate the children with a
         # positive amount
         if self.end():
             for node in self.activeNode.children:
                 if node.amount > 0:
                     node.isValid = True
-################################ UNDER TESTING ################################                     
         if self.end():
             for saver in self.savers:
                 saver.save_ood()
@@ -88,11 +112,12 @@ class Tree:
         """end() -> True or False.
 
         Args:
-            self:
+            nothing is taken
         Returns:
             True if self.activeNode has any valid children,
-            False otherwise.
+            False otherwise
         Raises:
+            Nothing is raised
         """
         
         if any(node.isValid for node in self.activeNode.children):
@@ -104,9 +129,17 @@ class Tree:
     def go_down(self):
         """Changes the activeNode to its first valid child.
 
-        If there isn't any valid child, the activeNode is the rightest child.
-        This function should not raise any exception.
+        If there isn't any valid child, the activeNode is the rightest child 
+        and the function raises a StopIteration error.
+
+        Args:
+            nothing is taken
+        Returns:
+            nothing is returned
+        Raises:
+            StopIteration
         """
+        StopIteration
         assert self.activeNode.children
         assert not self.end()
         self.activeNode = self.activeNode.children[0]
@@ -124,6 +157,18 @@ class Tree:
             self.activeNode.d_print()
             
     def go_up(self):
+        """Changes the activeNode to its parent.
+
+        The parent becomes the activeNode and the structure is consistently
+        undeformed restoring the state before the deformation of self.
+
+        Args:
+            nothing is taken
+        Returns:
+            nothing is returned
+        Raises:
+            Nothing is raised
+        """
         assert self.activeNode is not self.root
         self.activeNode.isValid = False
         self.undeform()
@@ -136,7 +181,15 @@ class Tree:
     def go_right(self):
         """Changes the activeNode to its right neighbour.
 
-If the neighbour doesn't exist, a StopIteration exception is raised.""" 
+        If the neighbour doesn't exist, a StopIteration exception is raised.
+
+        Args:
+            nothing is taken
+        Returns:
+            nothing is returned
+        Raises:
+            StopIteration       
+        """ 
         
         children = iter(self.activeNode.parent.children)
         for child in children:
@@ -148,7 +201,18 @@ If the neighbour doesn't exist, a StopIteration exception is raised."""
             self.activeNode = next(children)
 
     def deform(self):
-        """Deforms the structure according to the active node"""
+        """Deforms the structure according to the active node.
+
+        The deformationSteps that occur as a consequence are saved by the
+        savers.
+        
+        Args:
+            nothing is taken
+        Returns:
+            nothing is returned
+        Raises:
+            nothing is raised
+        """
         # if self.activeNode is the ROOT, just pass
         if self.activeNode is self.root:
             return
@@ -161,7 +225,18 @@ If the neighbour doesn't exist, a StopIteration exception is raised."""
             self.print()
 
     def undeform(self):
-        """Undeforms the structure according to the active node"""
+        """Undeforms the structure according to the active node.
+
+        The deformationSteps that are undone as a consequence are unsaved by
+        the savers.
+        
+        Args:
+            nothing is taken
+        Returns:
+            nothing is returned
+        Raises:
+            nothing is raised
+        """
         # if self.activeNode is the ROOT, just pass
         if self.activeNode is self.root:
             return
@@ -174,7 +249,21 @@ If the neighbour doesn't exist, a StopIteration exception is raised."""
     def surf(self, blackbox):
         """Changes the activeNode.
 
-It goes down or right according to the blackbox response."""
+        It surfs the tree going down or right according to the blackbox
+        response.
+
+        Args:
+            blackbox:
+                a function that decides whether self.activeNode is the valid
+                next deformationStep or not.
+        Returns:
+            True, if self.activeNode or one of its neighbours was the correct
+            one.
+            False, if neither self.activeNode nor one of its neighbours was the
+            correct one.
+        Raises:
+            exceptions raised by the blackbox, remain unhandled.
+        """
         assert self.activeNode.isValid
 
         activeNodeIsCorrect = blackbox(self)
