@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<root>
+	<level>
+		<id>0</id>
+		<component>
+			<name>e00</name>
+			<x1>3</x1>
+			<x2>6</x2>
+			<defoLength>0</defoLength>
+			<defoRatio>0.0</defoRatio>
+		</component>
+	</level>
+	<level>
+		<id>1</id>
+		<component>
+			<name>e10</name>
+			<x1>1</x1>
+			<x2>2</x2>
+			<defoLength>0</defoLength>
+			<defoRatio>0.0</defoRatio>
+		</component>
+	</level>
+</root>
