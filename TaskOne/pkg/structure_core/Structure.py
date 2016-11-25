@@ -215,40 +215,39 @@ class Structure():
         backNode.onFirewall = True
         for comp in backNode.towardsBarrier:
           comp.link_to_firewall()
-    self.draw()
+    self.draw() ##
 
   def get_deforming_components(self):
-##    ###########################################################################
-##    ## 1. update the connectedToTheBarrier and connectedToTheFirewall
-##    ##    attributes
-##    # loop over closed gaps
-##    for gap in self.listGaps:
-##      if gap.deformable_length() == 0:
-##        # propagate the connection to the barrier
-##        if any(component.connectedToBarrier
-##               for component in gap.leftNode.towardsBarrier) \
-##               or gap.leftNode.onBarrier:
-##          for component in gap.rightNode.towardsFirewall:
-##            component.link_to_barrier()
-##        # propagate the connection to the firewall
-##        if any(component.connectedToFirewall
-##               for component in gap.rightNode.towardsFirewall) \
-##               or gap.rightNode.onFirewall:
-##          for component in gap.leftNode.towardsBarrier:
-##            component.link_to_firewall()
-##    # loop over broken connections
-##    for crossComponent in self.listCrossComponents:
-##      if crossComponent.broken:
-##        # propagate the disconnections
-##        crossComponent.unlink_from_barrier()
-##        crossComponent.unlink_from_firewall()
-##    ###########################################################################
-##    ## 2. create a list of tuples, one for each group of components to deform
+    """Return a list of deforming components tuples.
+
+    Returns a list of tuples. Each tuple contains the components to deform, one
+    from every loadpath. There exists a tuple for every possible combination of
+    components.
+    
+    Args:
+        nothing is taken
+    Returns:
+        a list of tuples, e.g.:
+          [(comp1-lp1, comp1-lp2),
+           (comp1-lp1, comp2-lp2),
+           (comp2-lp1, comp1-lp2),
+           (comp2-lp1, comp2-lp2),
+           (comp3-lp1, comp1-lp2),
+           (comp3-lp1, comp2-lp2)]
+    Raises:
+        nothing is raised
+    """
+    # initialise a list
     structureArray = [ ]
     for loadpath in self.listLoadpaths:
+      # append a list to structureArray
       structureArray.append(loadpath.valid_components())
+    # here structureArray is
+    # [[comps from loadpath 1],
+    #  [comps from loadpath 2],
+    #  ...]
 
-
+    # return a list with all the possible combinations
     return list(itertools.product(*structureArray))
       
       
