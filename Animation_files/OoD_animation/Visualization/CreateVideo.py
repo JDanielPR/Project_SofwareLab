@@ -20,15 +20,24 @@ class CreateVideo():
     
         Args:
             i_s: 
-                initial state
+                list, initial state
             d_h:
-                deformation history
+                dictionary, deformation history
             v_o: 
-                vertical offset-distance between horizontal paths
+                integer, vertical offset-distance between horizontal paths
+                Depending on the length of the elements this value can be
+                varied by from 1 to 1000. For very short elements this
+                ratio can have the value of 1. For complex structures
+                this value can have up to 1000.
+                Typical values are 1 and 50.
             fps: 
-                frames per second
+                float, animation speed. This value can vary from 0.1 to 4  
             resolution:
-                Number of pixels in the render image
+                integer, quality of the animation. The resolution affects
+                the time in which the program will create the video in .avi
+                The value is 1 is faster but the resolution is not good
+                where as 4 is good enough with a relative good
+                speed of video creation.
             path directory:
                 path where the video will be stored
     
@@ -54,7 +63,6 @@ class CreateVideo():
         # Prepare blender for a new video  
         initialization.initialize() 
         
-
         for i in range(len(i_s)):
             # Create members in Blender according to the parameters
             lMembers.append(e.generalMember(i_s[i].name,
@@ -93,9 +101,6 @@ class CreateVideo():
                 steps.append(deformationSteps)
             except Exception:
                 steps.append(0)
-        
-        
-        
         
         for i in range(len(i_s)):
             #Loop over the initial state elements
@@ -136,14 +141,12 @@ class CreateVideo():
                         #which it deforms
                         #Note : It is necessary to know the state of 
                         #the angle and the length in each step
-                        
                         dX = dX - s.amount
-                        
                         if dX == 0:
                             newAngle = 0
                         else:
                             newAngle = m.atan(dY / dX)
-                            
+                           
                         # Amount: Percentage of the original object to deform
                         newAmount     =  s.amount / newDefoLength 
                         newDefoLength =  newDefoLength - s.amount
@@ -197,11 +200,18 @@ class CreateVideo():
         lbz = -100
         locationOfBackground = (lbx, lby, lbz)
         
+        # Location of the camera
+        lcx =  min(listOfX1) + 3 * widthOfTheStructure  / 8
+        lcy = -heightOfTheStructure / 2
+        lcz = 100
+        locationOfCamera = (lcx, lcy, lcz)
+        
         # Set Render function
         setRender.Parameters(numberOfFrames, 
                              resolution,
                              locationOfWall,
                              locationOfBackground,
+                             locationOfCamera, 
                              widthOfTheStructure, 
-                             heightOfTheStructure, 
+                             heightOfTheStructure,
                              pathDirectory)

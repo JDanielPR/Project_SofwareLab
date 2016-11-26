@@ -14,6 +14,7 @@ def Parameters(numberOfFrames,
                resolution,
                locationWall,
                locationBackground,
+               locationOfCamera,
                width, 
                height, 
                pathDirectory):
@@ -30,6 +31,8 @@ def Parameters(numberOfFrames,
         locationBackground:
             coordinate of the position of the element which 
             represents the background.
+        locationCamera:
+            coordinate of the position of the camera.
         width:
             float, the width of the structure.
         height:
@@ -88,6 +91,6 @@ def Parameters(numberOfFrames,
     # Set lamp parameters
     setLamp.setLamp(scn,width / 2 ,-height / 2 , width * 2)
     # Set Camera parameters
-    setCamera.setCamera(scn, width/2, -height / 2, width * 2, 3 * height / 4 )
+    setCamera.setCamera(scn, locationOfCamera , 3 * height / 4 )
     # Create video
     #bpy.ops.render.render(animation=True)
