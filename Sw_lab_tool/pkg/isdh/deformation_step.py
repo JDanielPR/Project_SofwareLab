@@ -10,21 +10,60 @@ class DeformationStep:
 ##        # 'b': the element breaks
 
     def __repr__(self):
+        """Return the string representation of the object.
+        
+        Args:
+            nothing is taken
+        Returns:
+            string
+        Raises:
+            nothing is raised
+        """
         return self.transformation + ': ' + str(self.amount)
 
     def __eq__(self, other):
+        """Return self == other.
+        
+        Args:
+            other:
+                DeformationStep object.
+        Returns:
+            True or False.
+        Raises:
+            NotImplementedError is raised, if other is not a DeformationStep
+            object.
+        """
         if isinstance(other, self.__class__):
             return self.__dict__ == other.__dict__
-        return NotImplemented
+        raise NotImplementedError
 
     def __ne__(self, other):
+        """Return self != other.
+        
+        Args:
+            other:
+                DeformationStep object.
+        Returns:
+            True or False.
+        Raises:
+            NotImplementedError is raised, if other is not a DeformationStep
+            object.
+        """
+
         if isinstance(other, self.__class__):
             return not self.__eq__(other)
-        return NotImplemented
+        raise NotImplementedError
 
     def print(self):
-##        for key, item in self.__dict__.items():
-##            print(key, ': ', item)
+        """Print a detailed description of the object.
+
+        Args:
+            nothing is taken.
+        Returns:
+            nothing is returned.
+        Raises:
+            nothing is raised.
+        """
         if self.transformation == 'd':
             transformation = "deform"
         if self.transformation == 'm':

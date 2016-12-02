@@ -3,8 +3,8 @@ import sys
 import os
 sys.path.append('path of the folder where the main is')
 from Visualization import CreateVideo
-from pkg.structure_core.Structure import Structure
-from pkg.read_xml2 import read_xml
+from pkg.structure_core.structure import Structure
+from pkg.read_xml import read_xml
 
 def main():
     ''' Define main function
