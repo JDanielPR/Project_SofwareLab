@@ -1,6 +1,5 @@
-##import itertools
-##from ..tree_core.tree import Tree
-##from .. import GapsHandeling
+import itertools
+from ..tree_core.tree import Tree
 
 ## debugging purpose
 DEBUG = False

@@ -1,4 +1,4 @@
-from .NodeTree import NodeTree
+from .node_tree import NodeTree
 from ..isdh.isdh_helper import IsdhHelper
 PRINT = False
 class Tree:

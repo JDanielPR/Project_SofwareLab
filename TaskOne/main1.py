@@ -1,6 +1,6 @@
 import pkg.tree_core
-from pkg.structure_core.Structure import Structure
-from pkg.read_xml2 import read_xml
+from pkg.structure_core.structure import Structure
+from pkg.read_xml import read_xml
 import pkg.GapsHandeling
 from math import factorial
 
