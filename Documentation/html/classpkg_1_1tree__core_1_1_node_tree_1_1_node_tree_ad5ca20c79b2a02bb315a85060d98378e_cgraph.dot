@@ -1,0 +1,9 @@
+digraph "pkg.tree_core.NodeTree.NodeTree.next_children"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node23 [label="pkg.tree_core.NodeTree.Node\lTree.next_children",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node23 -> Node24 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node24 [label="pkg.tree_core.NodeTree.Node\lTree.substitute_children",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classpkg_1_1tree__core_1_1_node_tree_1_1_node_tree.html#a860de6d4f6b44ec80112d0e186f2beea"];
+}

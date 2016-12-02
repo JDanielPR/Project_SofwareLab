@@ -1,0 +1,11 @@
+digraph "pkg.structure_core.Component.Component.deformable_length"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node4 [label="pkg.structure_core.Component.\lComponent.deformable_length",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node4 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="pkg.structure_core.Component.\lComponent.link_to_barrier",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classpkg_1_1structure__core_1_1_component_1_1_component.html#a69caf579aae72574d1717889e78953e2"];
+  Node4 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="pkg.structure_core.Component.\lComponent.link_to_firewall",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classpkg_1_1structure__core_1_1_component_1_1_component.html#aeede0d1a1c5664f83ea37149fb809e25"];
+}

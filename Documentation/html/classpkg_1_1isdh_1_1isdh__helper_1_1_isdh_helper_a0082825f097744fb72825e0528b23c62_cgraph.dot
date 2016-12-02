@@ -1,0 +1,9 @@
+digraph "pkg.isdh.isdh_helper.IsdhHelper.register"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node6 [label="pkg.isdh.isdh_helper.Isdh\lHelper.register",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node6 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="pkg.isdh.isdh_helper.Isdh\lHelper.init_ood",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classpkg_1_1isdh_1_1isdh__helper_1_1_isdh_helper.html#a81d896368133ab93e87bab8d36e2d13b"];
+}

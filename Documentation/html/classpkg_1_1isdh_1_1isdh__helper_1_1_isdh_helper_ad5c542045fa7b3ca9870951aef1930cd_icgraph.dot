@@ -1,0 +1,11 @@
+digraph "pkg.isdh.isdh_helper.IsdhHelper.update_amount"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node25 [label="pkg.isdh.isdh_helper.Isdh\lHelper.update_amount",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node25 -> Node26 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node26 [label="pkg.isdh.isdh_helper.Isdh\lHelper.save",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classpkg_1_1isdh_1_1isdh__helper_1_1_isdh_helper.html#ad136269aa3fc77f0a7201868581428fd"];
+  Node25 -> Node27 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node27 [label="pkg.isdh.isdh_helper.Isdh\lHelper.unsave",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classpkg_1_1isdh_1_1isdh__helper_1_1_isdh_helper.html#a721efc0884f57b4cabb99ed464b05869"];
+}
