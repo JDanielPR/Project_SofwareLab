@@ -1,2 +1,2 @@
 print('tree_core package successfully imported')
-from . import tree, NodeTree
+from . import tree, node_tree
