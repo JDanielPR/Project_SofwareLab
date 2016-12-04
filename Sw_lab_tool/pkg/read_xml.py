@@ -1,9 +1,9 @@
 import xml.etree.ElementTree as et
-from .structure_core import structure
-from .structure_core import loadpath
-from .structure_core import component
+from .structure_core import Structure
+from .structure_core import Loadpath
+from .structure_core import Component
 from .structure_core import cross_component
-from .structure_core import node
+from .structure_core import Node
 from itertools import tee
 
 def read_xml(path):

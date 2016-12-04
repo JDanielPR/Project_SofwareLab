@@ -15,18 +15,18 @@ class Node():
     """Constructs the nodes that define the boundary of the components"""
     
     def __init__(self, point, loadpathLevel):
-    """Constructor of the class structure_core.Node.Node.
+        """Constructor of the class structure_core.Node.Node.
 
-    Args:
-      point:
-        a scalar value defines the position of the node
-      loadpathLevel:
-        a scalar value defines  the level of the containing loadpath
-    Returns:
-      an object of the class
-    Raises:
-      nothing is raised
-    """
+        Args:
+          point:
+            a scalar value defines the position of the node
+          loadpathLevel:
+            a scalar value defines  the level of the containing loadpath
+        Returns:
+          an object of the class
+        Raises:
+          nothing is raised
+        """
         self.position = point
         self.loadpathLevel = loadpathLevel
         self.towardsFirewall = [ ]
@@ -39,8 +39,7 @@ class Node():
                                                   self.loadpathLevel)
 
     def __eq__(self, other):
-    """
-    """
+
         if not isinstance(other, Node):
             return False
         return self.position == other.position \
@@ -50,20 +49,20 @@ class Node():
         return hash(self.position) ^ hash(self.loadpathLevel)
 
     def draw(self, screen, offset, y_scaling):
-      """Draws onto the screan the current statw of the structure (DEBUG purpose).
+        """Draws onto the screan the current statw of the structure (DEBUG purpose).
 
-      Args:
-        screan:
-          defines the screan to output the debugging data and its properties
-        offset:
-          ...
-        y_scaling:
-          ...
-      Returns:
-         nothing is returned
-      Raises:
-         nothing is raised
-      """
+          Args:
+            screan:
+              defines the screan to output the debugging data and its properties
+            offset:
+              ...
+            y_scaling:
+              ...
+          Returns:
+             nothing is returned
+          Raises:
+             nothing is raised
+          """
         x = self.position + offset
         y = (self.loadpathLevel + 1) * y_scaling
         if self.onBarrier:
@@ -77,16 +76,16 @@ class Node():
     # Method that acts on the node's position attribute to change it from one
     # place to another
     def change_position(self, deformationStep):
-      """Chnages the position of the node.
+        """Chnages the position of the node.
 
-      Args:
-        deformationStep:
-          the amount of the motion the node should move with
-      Returns:
-        nothing is returned
-      Raises:
-        notjhing is raised
-      """
+          Args:
+            deformationStep:
+              the amount of the motion the node should move with
+          Returns:
+            nothing is returned
+          Raises:
+            notjhing is raised
+         """
 ##        message = "node at position {} and loadpath {} has changed its \
 ##position by {}"
 ##        logger.debug(message.format(self.position, self.loadpathLevel,
