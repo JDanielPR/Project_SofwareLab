@@ -3,7 +3,7 @@ try:
     import pygame
 except:
     pass
-#Define some colors as global constants
+# Define some colors as global constants
 BLACK       = (  0,   0,   0)
 RED         = (255,   0,   0)
 DARK_GREEN  = (  0, 100,   0)
@@ -39,7 +39,8 @@ class Node():
                                                   self.loadpathLevel)
 
     def __eq__(self, other):
-
+        """
+        """
         if not isinstance(other, Node):
             return False
         return self.position == other.position \
@@ -62,11 +63,7 @@ class Node():
              nothing is returned
           Raises:
              nothing is raised
-<<<<<<< HEAD
-          """
-
         """
->>>>>>> origin/master
         x = self.position + offset
         y = (self.loadpathLevel + 1) * y_scaling
         if self.onBarrier:
@@ -89,11 +86,7 @@ class Node():
             nothing is returned
           Raises:
             notjhing is raised
-
-         """
-=======
         """
-
 ##        message = "node at position {} and loadpath {} has changed its \
 ##position by {}"
 ##        logger.debug(message.format(self.position, self.loadpathLevel,

@@ -18,7 +18,7 @@ def main():
     -Active camara ortho to visualize the structure
     '''
     # read input
-    struct = read_xml('C:\\FAPSA18\\JDPR\\TUM\\Second_Semester\\Sofware_Lab\\BMW\\Sw_lab_tool\\xml\\2_2.xml')
+    struct = read_xml('C:\\FAPSA18\\JDPR\\TUM\\Second_Semester\\Sofware_Lab\\BMW\\Sw_lab_tool\\xml\\2_2_c1.xml')
     # Solve problem
     [i_s, d_h] = struct.task_one()
     # Create video
