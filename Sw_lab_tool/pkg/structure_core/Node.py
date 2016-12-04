@@ -39,12 +39,7 @@ class Node():
                                                   self.loadpathLevel)
 
     def __eq__(self, other):
-<<<<<<< HEAD
 
-=======
-        """
-        """
->>>>>>> origin/master
         if not isinstance(other, Node):
             return False
         return self.position == other.position \
@@ -69,7 +64,7 @@ class Node():
              nothing is raised
 <<<<<<< HEAD
           """
-=======
+
         """
 >>>>>>> origin/master
         x = self.position + offset
@@ -94,11 +89,11 @@ class Node():
             nothing is returned
           Raises:
             notjhing is raised
-<<<<<<< HEAD
+
          """
 =======
         """
->>>>>>> origin/master
+
 ##        message = "node at position {} and loadpath {} has changed its \
 ##position by {}"
 ##        logger.debug(message.format(self.position, self.loadpathLevel,
