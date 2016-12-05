@@ -1,4 +1,4 @@
-from . import Component
+from . import component
 
 class Loadpath():
   """Groups all components and nodes at the same loadpath level."""

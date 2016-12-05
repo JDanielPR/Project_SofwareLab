@@ -1,10 +1,12 @@
 import xml.etree.ElementTree as et
-from .structure_core import Structure
-from .structure_core import Loadpath
-from .structure_core import Component
+from .structure_core import structure
+from .structure_core import loadpath
+from .structure_core import component
 from .structure_core import cross_component
-from .structure_core import Node
+from .structure_core import node
 from itertools import tee
+
+
 
 def read_xml(path):
     """Return a Structure object, based on the .xml at the given path.
@@ -54,33 +56,33 @@ def add_nodes(root, struct):
     for level in root.iter('level'):
         # create a loadpath
         level_id = int(level.find('id').text)
-        loadpath = loadpath.Loadpath(level_id)
+        lp = loadpath.Loadpath(level_id)
         # loop over components to add nodes
         for component in level.iter('component'):
             if component.find('end_level') is None: # skip crossComponents
                 x = float(component.find('x1').text)
-                loadpath.setNodes.add(node.Node(x, level_id))
+                lp.setNodes.add(node.Node(x, level_id))
                 x = float(component.find('x2').text)        
-                loadpath.setNodes.add(node.Node(x, level_id))
+                lp.setNodes.add(node.Node(x, level_id))
         # append loadpath
-        if loadpath.setNodes:
-            struct.listLoadpaths.append(loadpath)
+        if lp.setNodes:
+            struct.listLoadpaths.append(lp)
     # loop over cross components
     for component in root.iter('component'):
         if component.find('end_level') is not None:
             # look for loadpaths defined implicitly by "end_level" 
             level_id = int(component.find('end_level').text)
             try:
-                loadpath, = [loadpath for loadpath in struct.listLoadpaths
+                lp, = [loadpath for loadpath in struct.listLoadpaths
                              if loadpath.level == level_id]
             except ValueError:
                 # no such a loadpath, create it
-                loadpath = loadpath.Loadpath(level_id)
+                lp = loadpath.Loadpath(level_id)
                 # append loadpath
-                struct.listLoadpaths.append(loadpath)
+                struct.listLoadpaths.append(lp)
             # add node
             x = float(component.find('x2').text)
-            loadpath.setNodes.add(node.Node(x, level_id))
+            lp.setNodes.add(node.Node(x, level_id))
 
 def add_components(root, struct):
     """Add components to the structure, given the root of the tree to parse.
@@ -103,29 +105,29 @@ def add_components(root, struct):
     # loop over components
     for level in root.iter('level'):
         level_id = int(level.find('id').text)
-        for component in level.iter('component'):
+        for comp in level.iter('component'):
             # if it's a normal component
-            if component.find('end_level') is None:
+            if comp.find('end_level') is None:
                 # get loadpath
                 loadpath, = [loadpath for loadpath in struct.listLoadpaths
                              if loadpath.level == level_id]
                 # get nodes
                 leftNode, = [node for node in loadpath.setNodes
-                             if node.position == float(component.
+                             if node.position == float(comp.
                                                        find('x1').text)]
                 rightNode, = [node for node in loadpath.setNodes
-                              if node.position == float(component.
+                              if node.position == float(comp.
                                                         find('x2').text)]
                 if rightNode.position < leftNode.position:
                     leftNode, rightNode = rightNode, leftNode
                 # compute rigid length
                 length = rightNode.position - leftNode.position
-                rigidLength = length - float(component.find('defoLength').text)
+                rigidLength = length - float(comp.find('defoLength').text)
                 # create and append component
                 loadpath.listComponents.append(
                     component.Component(leftNode, rightNode,
                                         rigidLength,
-                                        component.find('name').text.strip(),
+                                        comp.find('name').text.strip(),
                                         False))
             # if instead it's a cross component
             else:
@@ -134,25 +136,25 @@ def add_components(root, struct):
                              if loadpath.level == level_id]
                 # get leftNode
                 leftNode, = [node for node in loadpath.setNodes
-                             if node.position == float(component.
+                             if node.position == float(comp.
                                                        find('x1').text)]
                 # get second loadpath
-                level_id2 = int(component.find('end_level').text)
+                level_id2 = int(comp.find('end_level').text)
                 loadpath, = [loadpath for loadpath in struct.listLoadpaths
                              if loadpath.level == level_id2]
                 # get rightNode
                 rightNode, = [node for node in loadpath.setNodes
-                              if node.position == float(component.
+                              if node.position == float(comp.
                                                         find('x2').text)]
                 if rightNode.position < leftNode.position:
                     leftNode, rightNode = rightNode, leftNode
                 # compute rigid length
                 length = rightNode.position - leftNode.position
-                rigidLength = length - float(component.find('defoLength').text)
+                rigidLength = length - float(comp.find('defoLength').text)
                 # create and append component
                 struct.listCrossComponents.append(
                     cross_component.
-                    CrossComponent(find('name').text.strip(),
+                    CrossComponent(comp.find('name').text.strip(),
                                    leftNode, rightNode,
                                    rigidLength))
 def gaps_insertor(structure):

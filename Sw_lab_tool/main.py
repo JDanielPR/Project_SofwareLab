@@ -1,24 +1,24 @@
 import imp
 import sys
 import os
-sys.path.append('C:\\FAPSA18\\JDPR\\TUM\\Second_Semester\\Sofware_Lab\\BMW\\Sw_lab_tool')
+sys.path.append('folder with files path')
 from Visualization import CreateVideo
-from pkg.structure_core import Structure
-from pkg import read_xml
+from pkg.structure_core import structure
+from pkg.read_xml import read_xml
 
 def main():
     ''' Define main function
     -Run this program in Blender interface
-    -Choose the path of the xml and the location where the video will be saved
+    -Choose the path of the xml and the location where the video will be saved(use //)
     -Modify this file with the respective parameters to run in the correct
     path.
     -Above all modify the parameters v_o of "Create video" to fit the
     structure into the video
     - Before running go to Window and open Toggle System Console
-    -Active camara ortho to visualize the structure
+    -Active camera ortho to visualize the structure
     '''
-    # read input
-    struct = read_xml('C:\\FAPSA18\\JDPR\\TUM\\Second_Semester\\Sofware_Lab\\BMW\\Sw_lab_tool\\xml\\2_2_c1.xml')
+    # Read input
+    struct = read_xml('xml_path')
     # Solve problem
     [i_s, d_h] = struct.task_one()
     # Create video
@@ -27,7 +27,7 @@ def main():
                                       50, 
                                       1, 
                                       1,
-                                      'C:\\FAPSA18\\JDPR\\TUM\\Second_Semester\\Sofware_Lab\\BMW\\Animation_files\\OoD_animation\\Video\\OoD.avi')
+                                      'video_path')
                                 
 main()
 
